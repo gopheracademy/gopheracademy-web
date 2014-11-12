@@ -19,6 +19,6 @@ Since it was to be a new project, we thought again about whether Go would be the
 
 The only concern we had at the time was if the garbage collector would cause us problems. While most installations of Influx are running fine without issues from GC pauses, there are certain cases where it's an open issue for us. However, with the coming [improvements to the GC in 1.5](https://docs.google.com/document/d/16Y4IsnNRCN43Mx0NZc5YXZLovrHvvLhK_h0KN8woTO4/edit), it looks like the Go team is again doing the hard work for us.
 
-The major advantage to Go that I'd like to close this post out with, but certainly not that last advantage, is the community. The growth of the Go community has been astounding. There are so many incredibly smart and enthusiastic members in this community doing great things with this new language. The InfluxDB team feels lucky and privileged to have stumbled upon it almost by accident 2 years ago.
+The major advantage to Go that I'd like to close this post out with, but certainly not the last advantage, is the community. The growth of the Go community has been astounding. There are so many incredibly smart and enthusiastic members in this community doing great things with this new language. The InfluxDB team feels lucky and privileged to have stumbled upon it almost by accident 2 years ago.
 
 Happy birthday Go, we're looking forward to an even more exciting 5 years ahead.
