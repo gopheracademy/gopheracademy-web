@@ -141,7 +141,7 @@ hr {
   color:#333;
   display:block;
   text-decoration:none;
-
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
 }
 
 .sidebar-nav li a:hover
@@ -351,6 +351,7 @@ article p.lead {
 }
 
 article p.lead a{
+  color: #005893;
   font-size: 32px;
   border: 0;
 }
@@ -370,7 +371,7 @@ article div.post a.readmore {
   background:#428bca;
 	color: #fafafa;
 	border-radius: .3125em;
-	font-size: 16px;
+	font-size: 14px;
 	display: inline-block;
 }
 
@@ -891,7 +892,9 @@ time2
 
 
 .post_search{
- padding:0 10px;
+	padding: 10px 10px;
+	width: 95%;
+	margin: 0 auto;
 }
 
 /* centered columns styles */
