@@ -3,17 +3,17 @@
 
 body
 {
-  font-family: 'Roboto', Helvetica, Arial, sans-serif;
-  line-height: 28px;
-  color:#2c3e50;
-  background-color:white;
-  width:100%;
+  font-family: "Lora", Georgia, serif;
+  font-size: 10px;
+  line-height: 1.5;
+  color:#666;
+  width: 100%;
  /* border-top:10px solid #f36d5b; */
 }
 
 h1,h2,h3,h4,h5,h6
 {
-  color:#2c3e50
+  color:#2c3e50;
 }
 
 h1
@@ -346,7 +346,9 @@ article #content-font {
   padding-bottom: 15px;
 }
 
-article p.lead {}
+article p.lead {
+	margin-top: 20px;
+}
 
 article p.lead a{
   font-size: 32px;
@@ -362,8 +364,14 @@ article:hover p.lead time {
 }
 
 article div.post a.readmore {
-  border: 0;
-  font-size: 16px;
+	margin: 0.7em 0 0;
+	padding: .35em .65em;
+	border: .08em solid rgba(0,0,0,.1);
+  background:#428bca;
+	color: #fafafa;
+	border-radius: .3125em;
+	font-size: 16px;
+	display: inline-block;
 }
 
 /** POST PAGE **/
@@ -371,12 +379,13 @@ article div.post a.readmore {
 .article-title {
   font-size:32px;
   font-weight:400;
-  color:#428bca;
+	color: #2c3e50;
   padding:25px 0 10px;
   line-height: 36px;
 }
 
 #article-body {
+  max-width: 900px;
   background: white;
   padding: 20px 40px 40px 0px;
 }
