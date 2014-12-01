@@ -1,6 +1,6 @@
 +++
 author = ["Damian Gryski"]
-date = "2014-12-02T08:00:00+00:00"
+date = "2014-12-01T08:00:00+00:00"
 title = "Probabilistic Data Structures for Go"
 series = ["Advent 2014"]
 +++
