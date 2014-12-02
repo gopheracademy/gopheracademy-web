@@ -7,7 +7,7 @@
 
 ## Delve
 
-Delve is a Go debugger. Currently the project is in beta, with most of the functionality implemented, and various improvements and platform support on the way.
+[Delve](https://github.com/derekparker/delve) is a Go debugger. Currently the project is in beta, with most of the functionality implemented, and various improvements and platform support on the way.
 
 ### Why
 
