@@ -1,11 +1,21 @@
 gopheracademy-web
 =================
 
+## Contributing Articles
+
+If you'd like to contribute an article, please fork this repository create a pull request. Your articles should go in the `upcoming` directory and your post assets/images should go in `public/postimages`. Please notice that the article metadata needs to be at the very top in between +++, like so:
+```
++++
+author = ["Miles Davis"]
+date = "1959-11-25T00:00:00-08:00"
+title = "So What"
+series = ["Birthday Bash 2014"]
++++
+```
+
+## Working with Hugo
+
 There are two parts to the code now. The main Hugo app still runs the blog with **config.toml** while an aditional **config-main.toml** runs the main website.
-
-Stay tuned while I get the layouts and design done for the main website. Right now it looks exactly like the blog page.
-
-# Working with Hugo
 
 1. Clone the repo
 2. Install [Hugo](http://hugo.spf13.com)
