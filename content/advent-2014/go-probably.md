@@ -22,7 +22,7 @@ almost always better to process things exactly, if you have the memory though.
 These algorithms can be slower than exact answers for small data sets.)
 
 I also like this package because it was one of the first I contributed to on
-GitHub, and also my first commit-bit on somebody else's repository.
+GitHub, and my first commit-bit on somebody else's repository.
 
 Let's look at how the types in this package would handle the above problems.
 
@@ -47,7 +47,7 @@ First we construct an instance of a HyperLogLog estimator with
 `NewHyperLogLog()`.  Then for each item, we need to pass a 32-bit hash of the
 value to `Add()`, and at the end we call `Count()` to get the estimate.
 
-For this example I'm using crc32 as our hash function.  It works good enough
+For this example I'm using crc32 as our hash function.  It works "good enough"
 and has the advantage of being in the standard library.  In production I might
 use [murmur3](https://github.com/spaolacci/murmur3) or
 [xxhash](https://github.com/vova616/xxhash), both of which are faster but are
@@ -78,7 +78,7 @@ func main() {
 
 The next data structure provided by `go-probably` is [Count-Min
 Sketch](https://en.wikipedia.org/wiki/Count%E2%80%93min_sketch).  A CM-sketch
-lets you estimate the how many times you've seen different elements in your
+lets you estimate how many times you've seen different elements in your
 data set.  A count-min sketch is similar to a [Bloom
 filter](https://en.wikipedia.org/wiki/Bloom_filter) in that they're both
 probabilistic, but a Bloom filter returns a boolean "Have I seen this", rather
@@ -96,7 +96,7 @@ func (s *Sketch) Increment(h string) (val uint32)
 func (s Sketch) Count(h string) uint32
 ```
 
-Unlike with HyperLogLog, we don't need to provide a hash function; Add() uses
+Unlike with HyperLogLog, we don't need to provide a hash function; `Add()` uses
 its own hash function internally.  This demo program reads an input file and
 then prompts the user for entries to provide estimated counts for.
 
