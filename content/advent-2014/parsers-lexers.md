@@ -1,6 +1,6 @@
 +++
 author = ["Ben Johnson"]
-date = "2014-12-01T00:00:00-06:00"
+date = "2014-12-02T00:00:00-06:00"
 title = "Handwritten Parsers & Lexers in Go"
 series = ["Advent 2014"]
 +++
