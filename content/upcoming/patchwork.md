@@ -21,7 +21,7 @@ Once you have things working locally though, you start running into troubles: ho
 1. Hack a simple web/ws server and/or setup an [MQTT](http://mqtt.org) broker and publish to it
 2. Find and integrate using an existing IoT framework/toolkit
 
-Without going into much details, we got tired of doing 1. over and over again, and couldn't find 2. that would satisfy our expectations in being *simple*, *lightweight*, *easy to deploy and work with*. With these goals in mind, we started creating [patchwork](http://patchwork-toolkit.github.io/) - a lightweight toolkit for IoT development that offers integration of devices through configuration and provides basic services for discovery of resources and services on the network.
+Without going into much details, we got tired of doing #1 over and over again, and couldn't find #2. That would satisfy our expectations in being *simple*, *lightweight*, *easy to deploy and work with*. With these goals in mind, we started creating [Patchwork](http://patchwork-toolkit.github.io/) - a lightweight toolkit for IoT development that offers integration of devices through configuration and provides basic services for discovery of resources and services on the network. And Go was the technology of our choice that helped us quickly create prototypes, evaluate them, rewrite and test them again, and finally roll out the first version ready for publicity.
 
 
 # Architecture
