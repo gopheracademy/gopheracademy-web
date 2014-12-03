@@ -1,8 +1,8 @@
 ++++
-+author = ["Derek Parker"]
-+date = "2014-12-03T00:00:00-06:00"
-+title = "Delve: Go debugger"
-+series = ["Advent 2014"]
+author = ["Derek Parker"]
+date = "2014-12-03T00:00:00-06:00"
+title = "Delve: Go debugger"
+series = ["Advent 2014"]
 ++++
 
 ## Delve
