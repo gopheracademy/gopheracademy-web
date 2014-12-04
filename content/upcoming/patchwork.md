@@ -16,6 +16,25 @@ What the Patchwork toolkit is all about can be expressed simple like this (consi
 
 All you need is your creativity and just focusing on the implementation of your **idea, not infrastructure!**
 
+# Table of contents
+
+- [Why](#why)
+- [Architecture](#architecture)
+  - [Overview](#overview)
+  - [Device Gateway](#device-gateway)
+  - [Discovery of Devices and Services](#discovery-of-devices-and-services)
+- [Implementation highlights](#implementation-highlights)
+  - [Using Go's standard library](#using-go-standard-library)
+  - [Process management](#process-management)
+  - [Communication patterns](#communication-patterns)
+  - [Logging](#logging)
+  - [Dependencies management](#dependencies-management)
+  - [Cross-platform builds and deployment](#cross-platform-builds-and-deployment)
+- [Usage example](#usage-example)
+  - [Dashboard out of the box](#dashboard-out-of-the-box)
+  - [Quick prototyping using IBM's NodeRed](#quick-prototyping-using-IBM-NodeRed)
+- [Summary and future work](#summary-and-future-work)
+
 # Why
 <!--
 *  Device integration: access to hardware resources via over the network (e.g., smart home/office scenarios)
@@ -75,8 +94,8 @@ Similarly, Service Catalog provides a registry of services running on the networ
 
 To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_networking) and discovery of services and IoT devices without manual configuration of the endpoints or IP addresses, we use [DNS-SD](http://dns-sd.org/) discovery and advertise the Service Catalog endpoint on the network. Having discovered the Service Catalog, applications can query it for available services and then search for devices by querying the discovered Device Catalog.
 
-# Implementation highlights
 
+# Implementation highlights
 
 * Flaws in java, python solutions
 * Why Go:
@@ -87,7 +106,7 @@ To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_
  * productivity
  * fun
 
-### Using Go's standard library
+## Using Go's standard library
 
 * Standard library
  * `net/http` implements most of the required functionality, only `gorilla/mux` router and `codegangsta/negroni` middleware for future extensions
@@ -95,53 +114,97 @@ To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_
  * Network stack for implementing (m)dns(-sd)
 
 
-### Process management
+## Process management
 
 One of the key goals of DGW was executing external programs, which should *talk* to the hardware resources using a low level (close to metal) interfaces and protocols and keep the communication with DGW using *stdin* and *stdout* streams. These external programs can be executed once upon request (task), periodically executed  (timer) or constantly running and producing output (service).
 
 The idea of how to implement such process management came from [Foreman](http://ddollar.github.io/foreman/) - a Procfile-based applications manager. Luckily we found 2 ports of this great developer's tool to Go: [Forego](https://sourcegraph.com/github.com/ddollar/forego) and [Goreman](https://github.com/mattn/goreman). In fact we had the same requirement, but instead of using Procfile we had our JSON-based configuration and the processes had different types of execution.
 
-### Communication patterns
+## Communication patterns
 
-Another challenge in creating DGW was how to implement request processing pipeline:
+Another challenge in creating DGW was how to implement HTTP request processing pipeline:
  1. RESTful API handler receives _HTTP GET_ request
  2. DGW resolves which agent is exposed under request's URI
  3. DGW invokes a corresponding executable (if it is a _task_) and captures its standard output stream or reads the latest cached value (if it is a _timer_ or a _service_)
  4. DGW returns the value (or an error) back to the HTTP request handler
  5. The handler composes and sends the HTTP response
 
-Or another scenario, which is event more complex:
+Or another scenario, which is even more complex:
  1. RESTful API handler receives _HTTP PUT_ request, which requires changing the corresponding hardware resource state (using actuator rather than sensor)
  2. DGW resolves which agent is exposed under request's URI
- 3. DGW invokes a corresponding executable (if it is a _task_) and writes received PUT data to its standard input stream, then captures its standard output stream or write to a standard input stream pipe with a running executable (if it is a _service_). We do not support writes for _timer_ agent types.
- 4. The rest of the steps are similar as in the previous scenario.
+ 3. DGW invokes a corresponding executable (if it is a _task_) and writes received PUT data to its standard input stream, then captures its standard output stream. We do not support writes for _timer_ agent types.
+ 4. The rest of the steps are similar to steps 4 and 5 in the previous scenario.
+
+This is where [advanced Go concurrency patterns](http://blog.golang.org/advanced-go-concurrency-patterns) help a lot. Good luck synchronizing your threads when writing it in other conventional language! In our implementation each HTTP handler has access to agent manager's _inbox_ channel, which it sends a special request structure to. This special request structure has another channel (read by handler's goroutine) so an agent manager can send execution results back to the handler's goroutine:
+
+```
+type AgentManager struct {
+    ...
+	dataRequestInbox chan DataRequest
+    ...
+}
+
+type DataRequest struct {
+    ...
+    Reply      chan AgentResponse
+}
+
+dr := DataRequest{
+	ResourceId: resourceId,
+	Reply:      make(chan AgentResponse),
+}
+mgr.dataRequestInbox <- dr
+
+repl := <-dr.Reply
+
+```
 
 <!-- * Channels and diverse concurrency patterns -->
 
 ## Logging
 
-* Simple logging from multiple modules with `log`
+Similar to other developers coming from other programming languages (Python, Java, etc) we were first uncomfortable having such a ascetic `log` package in the standard library: hey, where are the log levels? 
+
+Disappointed by its  austerity we have tried many of the existing _clones/ports_ packages such as [log4go](https://code.google.com/p/log4go/), [glog](https://github.com/golang/glog) and [go-logging](https://github.com/op/go-logging) but after all came back to the standard `log` and sticked to it for its simplicity. And you know what? We still didn't run into a severe need of having those logging levels and colourful output in the terminal. Just rely on the famous [The Twelve-Factor App methodology](http://12factor.net) (chapter [XI. Logs](http://12factor.net/logs)): do leave the task of implying something from your logs to an external tool (which is already implemented) when it bites you.
 
 ## Dependencies management
 
 * `godep` for dependency management and vendoring
 
-## Cross-platform builds & deployment
+## Cross-platform builds and deployment
 
-TBD...
+Another reason to be happy with Go is a possibility to cross-compile the Go code for different operating systems and processor architectures on the same machine without running a bunch of virtual boxes and custom management of toolchains. Patchwork's binary release process is blazing fast (running on the 2.7 GHz Intel Core i7 with 8 cores / 16 GB RAM MacBook Pro) and creates executables for OSX (amd64), Linux (amd64, arm) and Windows (amd64) running a single command with a help of [Gox](https://github.com/mitchellh/gox), which is _a simple, no-frills tool for Go cross compilation that behaves a lot like standard go build_, _parallelize builds for multiple platforms_ and _also build the cross-compilation toolchain for you_.
 
 # Usage example
 
+Here we would like to share with you how the Patchwork is used and how you can use it at home or in the office. Once you have your IoT infrastructure created with Patchwork, it's up to you which tools, languages, IDEs to use for hacking into your interconnected hardware. We just give you a couple of suggestions here.
+
 ## Dashboard out of the box
+
+The dashboard (based on [Freeboard](https://github.com/Freeboard/freeboard)) comes out of the box when you run a DGW. This is the simplest thing you can do - connect the hardware, run the Patchwork, open a dashboard on your wall-mounted screen and configure a monitoring view for your environment.
 
 ![Build-in Freeboard](images/pw-dashboard.png)
 
 ## Quick prototyping using IBM's NodeRed
 
+Observing the sensors values is fun for the first 2 hours, but later you would definitely get an itch to program something sophisticated. Why not to try a [Visual Programming Paradigm](http://en.wikipedia.org/wiki/Visual_programming_language) in practice and explore a little bit of [Dataflow](http://en.wikipedia.org/wiki/Dataflow_programming) with the help of [IBM's NodeRed](http://nodered.org) - a visual tool for wiring the IoT?
+
+On the screenshots above you can see 2 flows (this is how programs are called in dataflow programming) we have created within minutes using our Patchwork APIs. The first flow it performing data fusion of three sensors: magnetic window opened/closed sensor, PIR motion sensor and Indoor Air Quality (IAQ) sensor. The combined array of 3 values is passed to downstream only when at least once sensor value changes and the array is published to the preconfigured MQTT broker, exposed also as a service using Patchwork's SC (Service Catalog).
+
 ![Data fusion using Device Gateway's API](images/pw-nodered-1.png)
+
+On the second flow we subscribe to the sensor data array, published by the flow described above, and evaluate a the following rules:
+ * IF air quality is bad (for mental work; using constant threshold) AND window is closed AND there is movement in the office THEN pass the data to downstream
+ * otherwise do nothing
+
+ The downstream process composes an english sentence that suggests user to ventilate a room and passes that sentence to a TTS (Text-To-Speech) component and generate a standard OSX desktop notification to inform a user.
 
 ![Audio and visual notifications](images/pw-nodered-2.png)
 
-# Summay
+# Summary and future work
 
-Future work
+In this article we have described a [Patchwork](http://patchwork-toolkit.github.io/) software written completely in Go to simplify creation of IoT infrastructures and focus on the actual problem (either research question or a creative idea).
+
+The current version of Patchwork is completely focused on creating a smart environment within a LAN. We are currently exploring different ways to support creation of distributed smart environments and providing different ways of manage data streams and implement services execution between them.
+
+Additionally, we are working on adding support for more service protocols (CoAP, Websockets) and data formats to the DGW and catalogs APIs.
