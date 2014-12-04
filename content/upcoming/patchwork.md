@@ -12,7 +12,9 @@ Briefly, what that all above and especially further in this article means is sho
 
 ![](images/pw-tldr.png)
 
-What the Patchwork toolkit is all about can be expressed simple like this (considering you as a hacker/hobbyist): you take your favourite electronics (bunch of sensors, LED strip, robot-toys, etc), connect them to a pocket-size Linux box, install Patchwork, do some quick configuration and you get RESTful API, data streams using MQTT, directory of your services, discovery in the LAN using Bonjour and _a damn-sexy, open source real-time dashboard_ based on [Freeboard](https://github.com/Freeboard/freeboard). All you need is your creative and focus on implementation of your **idea, not infrastructure!**
+What the Patchwork toolkit is all about can be expressed simple like this (considering you as a hacker/hobbyist): you take your favourite electronics (bunch of sensors, LED strip, robot-toys, etc), connect them to a pocket-size Linux box, install Patchwork, do some quick configuration and you get RESTful API, data streams using MQTT, directory of your services, discovery in the LAN using Bonjour and _a damn-sexy, open source real-time dashboard_ based on [Freeboard](https://github.com/Freeboard/freeboard). 
+
+All you need is your creativity and just focusing on the implementation of your **idea, not infrastructure!**
 
 # Why
 <!--
@@ -84,6 +86,27 @@ To enable [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking)
  * performance
  * productivity
  * fun
+
+### Managing the processes with Go
+
+One of the key goals of DGW was executing external programs, which should *talk* to the hardware resources using a low level (close to metal) interfaces and protocols and keep the communication with DGW using *stdin* and *stdout* streams. These external programs can be executed once upon request (task), periodically executed  (timer) or constantly running and producing output (service).
+
+The idea of how to implement such process management came from [Foreman](http://ddollar.github.io/foreman/) - a Procfile-based applications manager. Luckily we found 2 ports of this great developer's tool to Go: [Forego](https://sourcegraph.com/github.com/ddollar/forego) and [Goreman](https://github.com/mattn/goreman). In fact we had the same requirement, but instead of using Procfile we had our JSON-based configuration and the processes had different types of execution.
+
+### Communication between HTTP server and executables
+
+Another challenge in creating DGW was how to implement request processing pipeline:
+ 1. RESTful API handler receives _HTTP GET_ request
+ 2. DGW resolves which agent is exposed under request's URI
+ 3. DGW invokes a corresponding executable (if it is a _task_) and captures its standard output stream or reads the latest cached value (if it is a _timer_ or a _service_)
+ 4. DGW returns the value (or an error) back to the HTTP request handler
+ 5. The handler composes and sends the HTTP response
+
+Or another scenario, which is event more complex:
+ 1. RESTful API handler receives _HTTP PUT_ request, which requires changing the corresponding hardware resource state (using actuator rather than sensor)
+ 2. DGW resolves which agent is exposed under request's URI
+ 3. DGW invokes a corresponding executable (if it is a _task_) and writes received PUT data to its standard input stream, then captures its standard output stream or write to a standard input stream pipe with a running executable (if it is a _service_). We do not support writes for _timer_ agent types.
+ 4. The rest of the steps are similar as in the previous scenario.
 
 ## Highlights
 
