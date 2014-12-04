@@ -22,11 +22,11 @@ Once you have things working locally though, you start running into troubles: ho
 1. Write a simple web/ws server and/or setup an [MQTT](http://mqtt.org) broker and publish to it (and hardcode endpoints)
 2. Find an existing IoT framework/toolkit and integrate your devices/applications with it
 
-Without going into much details, we got tired of doing 1. over and over again, and couldn't find 2. that would satisfy our expectations in being **simple**, **lightweight**, **easy to deploy and work with**. With these goals in mind, we started creating [patchwork](http://patchwork-toolkit.github.io/) - a lightweight toolkit for IoT development that offers integration of devices through configuration and provides basic services for zeroconf discovery of resources and services on the network.
+Without going into much details, we got tired of doing 1. over and over again, and couldn't find 2. that would satisfy our expectations in being **simple**, **lightweight**, **easy to deploy and work with**. With these goals in mind, we started creating [Patchwork](http://patchwork-toolkit.github.io/) - a lightweight toolkit for IoT development that offers integration of devices through configuration and provides basic services for zeroconf discovery of resources and services on the network.
 
 # Architecture
 ## Overview
-A bird's-eye-view of the patchwork architecture is shown in the picture:
+A bird's-eye-view of the Patchwork architecture is shown in the picture:
 
 ![overview](images/pw-overview.png)
 
@@ -50,10 +50,10 @@ A high-level architecture of the DGW capturing its main modules is shown in the 
 * **Process Manager** manages the Device Agents (system processes) and forwards data between them and the communication Services
 * **Services** expose the devices managed by Device Agents via common APIs (REST/MQTT) and forward requests/responses and data streams to the applications communicating with them
 
-Device agents for patchwork can be implemented in any programming language suitable for integration of a particular device and [example agents](https://github.com/patchwork-toolkit/agent-examples) are provided. Having a device agent, the integration of a new device reduces to describing its capabilities and parameters to the agent and communication protocols in a json configuration file. The device will be then registered in the Device Catalog and its resources exposed via configured APIs.
+Device agents for Patchwork can be implemented in any programming language suitable for integration of a particular device and [example agents](https://github.com/patchwork-toolkit/agent-examples) are provided. Having a device agent, the integration of a new device reduces to describing its capabilities and parameters to the agent and communication protocols in a json configuration file. The device will be then registered in the Device Catalog and its resources exposed via configured APIs.
 
 ## Discovery of Devices and Services
-In patchwork, we distinguish between discovery of network services and IoT devices, which is implemented by the Device and Service catalogs correspondingly. The catalogs serve as registries for both patchwork components and third-party applications and services and expose RESTful APIs.
+In Patchwork, we distinguish between discovery of network services and IoT devices, which is implemented by the Device and Service catalogs correspondingly. The catalogs serve as registries for both Patchwork components and third-party applications and services and expose RESTful APIs.
 
 Devices integrated with the DGW are automatically registered in its local Device Catalog, which can be used by applications to search for devices with specific capabilities/meta-information integrated with a specific DGW. In addition to that, a network-wide Device Catalog can be configured and populated with registrations of devices from all DGWs in the network. 
 
