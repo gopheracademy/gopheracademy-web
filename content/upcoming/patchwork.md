@@ -75,9 +75,8 @@ Similarly, Service Catalog provides a registry of services running on the networ
 
 To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_networking) and discovery of services and IoT devices without manual configuration of the endpoints or IP addresses, we use [DNS-SD](http://dns-sd.org/) discovery and advertise the Service Catalog endpoint on the network. Having discovered the Service Catalog, applications can query it for available services and then search for devices by querying the discovered Device Catalog.
 
-# Implementation
+# Implementation highlights
 
-## Technology evaluation
 
 * Flaws in java, python solutions
 * Why Go:
@@ -88,13 +87,21 @@ To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_
  * productivity
  * fun
 
-### Managing the processes with Go
+### Using Go's standard library
+
+* Standard library
+ * `net/http` implements most of the required functionality, only `gorilla/mux` router and `codegangsta/negroni` middleware for future extensions
+ * `crypto/tls` surprisingly easy to use TLS (for MQTT)
+ * Network stack for implementing (m)dns(-sd)
+
+
+### Process management
 
 One of the key goals of DGW was executing external programs, which should *talk* to the hardware resources using a low level (close to metal) interfaces and protocols and keep the communication with DGW using *stdin* and *stdout* streams. These external programs can be executed once upon request (task), periodically executed  (timer) or constantly running and producing output (service).
 
 The idea of how to implement such process management came from [Foreman](http://ddollar.github.io/foreman/) - a Procfile-based applications manager. Luckily we found 2 ports of this great developer's tool to Go: [Forego](https://sourcegraph.com/github.com/ddollar/forego) and [Goreman](https://github.com/mattn/goreman). In fact we had the same requirement, but instead of using Procfile we had our JSON-based configuration and the processes had different types of execution.
 
-### Communication between HTTP server and executables
+### Communication patterns
 
 Another challenge in creating DGW was how to implement request processing pipeline:
  1. RESTful API handler receives _HTTP GET_ request
@@ -109,17 +116,19 @@ Or another scenario, which is event more complex:
  3. DGW invokes a corresponding executable (if it is a _task_) and writes received PUT data to its standard input stream, then captures its standard output stream or write to a standard input stream pipe with a running executable (if it is a _service_). We do not support writes for _timer_ agent types.
  4. The rest of the steps are similar as in the previous scenario.
 
-## Highlights
+<!-- * Channels and diverse concurrency patterns -->
 
-* JSON configs
-* Channels and diverse concurrency patterns
-* Process management from forego
-* Standard library
- * `net/http` implements most of the required functionality, only `gorilla/mux` router and `codegangsta/negroni` middleware for future extensions
- * `crypto/tls` surprisingly easy to use TLS (for MQTT)
- * Network stack for implementing (m)dns(-sd)
-* `godep` for dependency management and vendoring
+## Logging
+
 * Simple logging from multiple modules with `log`
+
+## Dependencies management
+
+* `godep` for dependency management and vendoring
+
+## Cross-platform builds & deployment
+
+TBD...
 
 # Usage example
 
