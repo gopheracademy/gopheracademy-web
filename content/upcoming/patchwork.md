@@ -45,21 +45,21 @@ A high-level architecture of the DGW capturing its main modules is shown in the 
 
 ![dgw](images/pw-dgw.png)
 
-* **Devices** are IoT devices connected to the DGW host communicating their native protocols (Serial, ZigBee, etc) with Device Agents
+* **Devices** are IoT devices connected to the DGW host and communicating using their native protocols (Serial, ZigBee, etc) with Device Agents
 * **Device Agents** are small programs running on the DGW and communicating through *stdin/stdout* with the Process Manager
 * **Process Manager** manages the Device Agents (system processes) and forwards data between them and the communication Services
-* **Services** expose the devices managed by Device Agents via common APIs (REST/MQTT) and forward requests/responses and data streams to the applications communicating with them
+* **Services** expose the devices managed by Device Agents via common APIs (REST/MQTT) and forward requests/responses and data streams to the applications
 
-Device agents for Patchwork can be implemented in any programming language suitable for integration of a particular device and [example agents](https://github.com/patchwork-toolkit/agent-examples) are provided. Having a device agent, the integration of a new device reduces to describing its capabilities and parameters to the agent and communication protocols in a json configuration file. The device will be then registered in the Device Catalog and its resources exposed via configured APIs.
+Device agents for Patchwork can be implemented in any programming language suitable for integration of a particular device and [example agents](https://github.com/patchwork-toolkit/agent-examples) are provided. Having a device agent, the integration of a new device reduces to describing its capabilities and parameters to the agent and communication protocols in a json configuration file. Using this configuration, the DGW will register the device in the Device Catalog and expose its resources via configured APIs.
 
 ## Discovery of Devices and Services
-In Patchwork, we distinguish between discovery of network services and IoT devices, which is implemented by the Device and Service catalogs correspondingly. The catalogs serve as registries for both Patchwork components and third-party applications and services and expose RESTful APIs.
+In Patchwork, we distinguish between discovery of network services and IoT devices, which is implemented by Device and Service catalogs correspondingly. The catalogs serve as registries for both Patchwork components and third-party applications and services and expose RESTful APIs.
 
-Devices integrated with the DGW are automatically registered in its local Device Catalog, which can be used by applications to search for devices with specific capabilities/meta-information integrated with a specific DGW. In addition to that, a network-wide Device Catalog can be configured and populated with registrations of devices from all DGWs in the network. 
+Devices integrated with the DGW are automatically registered in its local Device Catalog, which can be used by applications to search for devices with required capabilities/meta-information integrated with that DGW. In addition to that, a network-wide Device Catalog can be configured on DGWs and populated with information about devices connected to them. 
 
-Similarly, Service Catalog provides a registry of services running on the network, and can be used by applications to search for services by their meta-information. For example, the network-wide Device Catalogs can be registered in one or many Service Catalogs to be discovered by applications.
+Similarly, Service Catalog provides a registry of services running on the network, and can be used by applications to search for services by meta-information. For example, the network-wide Device Catalog can be registered in the Service Catalog to be discovered by applications.
 
-To enable [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking) networking and enable discovery of services and IoT devices by applications without manually configuring the endpoints or IP addresses, we use [DNS-SD](http://dns-sd.org/) to advertise the Service Catalog endpoint on the network. Having discovered the Service Catalog, applications may proceed by querying it for available services and then discover devices by querying the Device Catalog.
+To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_networking) and discovery of services and IoT devices without manual configuration of the endpoints or IP addresses, we use [DNS-SD](http://dns-sd.org/) discovery and advertise the Service Catalog endpoint on the network. Having discovered the Service Catalog, applications can query it for available services and then search for devices by querying the discovered Device Catalog.
 
 # Implementation
 ## Technology evaluation
