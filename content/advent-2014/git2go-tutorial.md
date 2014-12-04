@@ -75,6 +75,11 @@ treeId, err := idx.WriteTree()
 if err != nil {
 	panic(err)
 }
+
+err = idx.Write()
+if err != nil {
+	panic(err)
+}
 ```
 
 That will put our article in the staging area. The next step is to commit this changes!
