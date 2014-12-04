@@ -1,6 +1,6 @@
 ++++
 +author = ["David Calavera"]
-+date = "2014-12-05T08:00:00+00:00"
++date = "2014-12-04T08:00:00+00:00"
 +title = "Git2go inception"
 +series = ["Advent 2014"]
 ++++
