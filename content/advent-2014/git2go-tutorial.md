@@ -29,7 +29,7 @@ With `web`, we're telling git2go to clone the project in the directory `web` fro
 Now that we have the project downloaded to our machine, let's create a branch to put our article.
 
 When you create a new branch, Git creates a reference to the commit you're current on. There is a fantastic explanation about creating branches in [Pro Git](http://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) that explains this concept further.
-Since we just cloned the repository, we can get the current commit from `HEAD`. That will give us the latest commit in the master branch. This operation is recorded in the reflog with the signature of the author and a message. Git2go let you, additionally, decide if you want to force the creation of the branch or not. I'd recommend you to always use `false` to not force the creation and avoid side effects.
+Since we just cloned the repository, we can get the current commit from `HEAD`. That will give us the latest commit in the master branch. This operation is recorded in the reflog with the signature of the author and a message. Git2go allows you, additionally, to decide if you want to force the creation of the branch or not. I'd recommend you to always use `false` to not force the creation and avoid side effects.
 
 ```go
 import (
