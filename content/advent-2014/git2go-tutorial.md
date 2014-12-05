@@ -7,7 +7,7 @@ series = ["Advent 2014"]
 
 How many levels of inception we need to master git?
 
-This tutorial that explains how to use [git2go](https://github.com/libgit2/git2go) to publish and article for the Go Advent 2014.
+This tutorial that explains how to use [git2go](https://github.com/libgit2/git2go) to publish an article for the Go Advent 2014.
 
 Git2go implements go bindings for [libgit2](https://github.com/libgit2/libgit2), a pure C implementation of the Git core methods. This is important because, unlike other libraries, libgit2 doesn't talk with any git binary.
 
