@@ -26,7 +26,10 @@ if err != nil {
 
 With `web`, we're telling git2go to clone the project in the directory `web` from our current one.
 
-Now that we have the project download in our machine, let's create a branch to put our article. We need to important pieces of information before that. First we need the commit that we'll use as a target for the branch. We also need to create a signature for the author, myself in this case.
+Now that we have the project downloaded to our machine, let's create a branch to put our article.
+
+When you create a new branch, Git creates a reference to the commit you're current on. There is a fantastic explanation about creating branches in [Pro Git](http://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) that explains this concept further.
+Since we just cloned the repository, we can get the current commit from `HEAD`. That will give us the latest commit in the master branch. This operation is recorded in the reflog with the signature of the author and a message. Git2go let you, additionally, decide if you want to force the creation of the branch or not. I'd recommend you to always use `false` to not force the creation and avoid side effects.
 
 ```go
 import (
@@ -50,13 +53,13 @@ if err != nil {
 	panic(err)
 }
 
-branch, err = repo.CreateBranch("git2go-tutorial", head.Target(), false, signature, "Branch for git2go's tutorial")
+branch, err = repo.CreateBranch("git2go-tutorial", headCommit, false, signature, "Branch for git2go's tutorial")
 if err != nil {
 	panic(err)
 }
 ```
 
-Once we have the branch created, we need to add our markdown document to the index, sometime referred as the staging area. This is the same operation that you would do using `git add file`.
+Once we have the branch created, we need to add our markdown document to the index, sometimes referred as the staging area. This is the same operation you would do using `git add file`.
 
 ```go
 import "github.com/libgit2/git2go"
@@ -84,7 +87,7 @@ if err != nil {
 
 That will put our article in the staging area. The next step is to commit this changes!
 
-We're going to use some information from the branch we just created and the tree where the index is pointing to to create this commit. We'll also reuse my previous signature as a committer and author.
+To create the commit, we're going to use some information from the branch we just created. We need the tree that the index is pointing to and my signature as a committer and author.
 
 ```go
 import "github.com/libgit2/git2go"
@@ -110,7 +113,8 @@ With this, we created a new commit. We also pointed the reference `refs/heads/gi
 
 Now, it's time to push our branch to my fork of the project. For this, we're going to need another remote repository. I have my fork in https://github.com/calavera/gopheracademy-web.
 
-Git2go uses a callbacks system to feed some processes with intermediate information. I'm goint to use the ssh credentials in my machine to connect to my repository. In this case, I'll need to provide a callback that connects with the ssh agent in my machine. I'll also need another callback to verify that I'm connecting to GitHub:
+Git2go uses callbacks to feed some processes with intermediate information when it's needed. In this case, I'll need to provide two callbacks: one that connects with the ssh agent in my machine to extract my credentials, and a second callback to verify that I'm connecting with Github:
+
 
 ```go
 import "github.com/libgit2/git2go"
