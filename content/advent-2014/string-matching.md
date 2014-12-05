@@ -172,3 +172,8 @@ documents actually contain the query string.  It's possible to have trigram
 matches for a query, even if the document doesn't actually contain them.  For
 example, the document `GopherGoggles`, would match the query `rGop` (trigrams:
 `rGo`, `Gop`).
+
+I've covered three different algorithms for string matching, but there are
+[many more](http://www-igm.univ-mlv.fr/~lecroq/string/).  The area of [string
+searching](https://en.wikipedia.org/wiki/String_searching_algorithm) is still
+an active research topic, with applications in a number of different fields.
