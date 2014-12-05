@@ -97,21 +97,14 @@ To enable [zeroconf networking](http://en.wikipedia.org/wiki/Zero-configuration_
 
 # Implementation highlights
 
-* Flaws in java, python solutions
-* Why Go:
- * concurrency for process management
- * static linking (deployment on pocket-size computers)
- * cross-platform builds
- * performance
- * productivity
- * fun
+We've chosen Go for implementation for multiple reasons, some of which are described in more details below. Following our basic requirements, we wanted to have *static linking* and *cross-platform builds* for simple deployment on pocket-sized computers and development and testing on multiple platforms. *Performance* and *productivity* also made a great contribution to our choice: targeting at resource-constrained ARM devices, we wanted to have performance comparable to C and productivity comparable to python. Last but not least, it all started as a spare time project and we wanted it to be *fun* to work on.
 
 ## Using Go's standard library
 
-* Standard library
- * `net/http` implements most of the required functionality, only `gorilla/mux` router and `codegangsta/negroni` middleware for future extensions
- * `crypto/tls` surprisingly easy to use TLS (for MQTT)
- * Network stack for implementing (m)dns(-sd)
+As already acclaimed by many, the Go's standard library is very rich and intuitive. Some highlights from our experience:
+* `net/http` was very simple to get started building our http and REST APIs and eventually we ended up with using it almost exclusively. We only took the `gorilla/mux` package to have a more straightforward router configuration and recently included `codegangsta/negroni` middleware for future extensions (without changing our handlers as it conforms to the `net/http` Handler)
+* `crypto/tls` was surprisingly easy (e.g., compared to Bouncycastle in Java) to configure and use TLS sockets (we used that for MQTT)
+* Network stack for implementing (m)dns(-sd)
 
 
 ## Process management
