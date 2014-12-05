@@ -1,9 +1,9 @@
-++++
-+author = ["David Calavera"]
-+date = "2014-12-04T08:00:00+00:00"
-+title = "Git2go inception"
-+series = ["Advent 2014"]
-++++
++++
+author = ["David Calavera"]
+date = "2014-12-04T08:00:00+00:00"
+title = "Git2go inception"
+series = ["Advent 2014"]
++++
 
 How many levels of inception we need to master git?
 
