@@ -160,9 +160,11 @@ Similar to other developers coming from other programming languages (Python, Jav
 
 Disappointed by its  austerity we have tried many of the existing _clones/ports_ packages such as [log4go](https://code.google.com/p/log4go/), [glog](https://github.com/golang/glog) and [go-logging](https://github.com/op/go-logging) but after all came back to the standard `log` and sticked to it for its simplicity. And you know what? We still didn't run into a severe need of having those logging levels and colourful output in the terminal. Just rely on the famous [The Twelve-Factor App methodology](http://12factor.net) (chapter [XI. Logs](http://12factor.net/logs)): do leave the task of implying something from your logs to an external tool (which is already implemented) when it bites you.
 
-## Dependencies management
+## Dependency management
 
-* `godep` for dependency management and vendoring
+Reproducible builds and development environment has got on our radar when one day we got broken code caused by incompatible changes in the [MQTT package](http://git.eclipse.org/c/paho/org.eclipse.paho.mqtt.golang.git/). Although we were initially skeptical about vendoring, it does provide clear benefits when building distributed systems and shipping code on constrained devices lacking Internet connectivity - scenarios which are very relevant for what we are doing with patchwork.
+
+Looking for dependency management and/or vendoring solution, we evaluated several different tools and approaches. We really liked [GPM](https://github.com/pote/gpm)/[GVP](https://github.com/pote/gvp) for their simplicity, but the only cross-platform solution we found was [godep](https://github.com/tools/godep). We started using godep by simply fixing the dependencies versions in the Godeps.json and eventually switched to vendoring, which allows us to build patchwork without Internet connectivity.
 
 ## Cross-platform builds and deployment
 
