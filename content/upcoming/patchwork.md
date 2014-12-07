@@ -51,7 +51,7 @@ The Internet of Things (IoT) is causing a hype all over the Internet, yet implem
 
 The IoT devices market is growing, and it is very simple to build your own "sensor platform" for under $100 using a Raspberry Pi and a handful of [sensors](http://www.adafruit.com/categories/35). Once you have things working locally though, you start running into troubles: how to expose these devices on the network? how to discover and access them to build web/mobile applications to monitor and actuate things? At this point, you basically have two options:
 
-1. Write a simple web/ws server and/or setup an [MQTT](http://mqtt.org) broker (and hardcode endpoints)
+1. Write a simple web/ws server and/or setup an [MQTT](http://mqtt.org) broker (and hard-coded endpoints)
 2. Find an existing IoT framework/toolkit and integrate your devices/applications with it
 
 Without going into much details, we got tired of doing 1. over and over again, and couldn't find 2. that would satisfy our expectations in being **simple**, **lightweight**, **easy to deploy and work with**. With these goals in mind, we started creating [Patchwork](http://patchwork-toolkit.github.io/) - a lightweight toolkit for IoT development that offers integration of devices through configuration and provides basic services for zeroconf discovery of resources and services on the network.
@@ -61,7 +61,7 @@ Without going into much details, we got tired of doing 1. over and over again, a
 ## Overview
 A bird's-eye-view of the Patchwork architecture is shown in the picture:
 
-![overview](images/pw-overview.png)
+![Overview](images/pw-overview.png)
 
 Patchwork integrates devices, applications and services with the help of the following components:
 
@@ -170,7 +170,7 @@ On the second flow we subscribe to the sensor data array, published by the flow 
  * IF air quality is bad (for mental work; using constant threshold) AND window is closed AND there is movement in the office THEN pass the data to downstream
  * otherwise do nothing
 
- The downstream process composes an english sentence that suggests user to ventilate a room and passes that sentence to a TTS (Text-To-Speech) component and generate a standard OSX desktop notification to inform a user.
+ The downstream process composes an English sentence that suggests a user to ventilate a room and passes that sentence to a TTS (Text-To-Speech) component and generate a standard OSX desktop notification to inform a user.
 
 ![Audio and visual notifications](images/pw-nodered-2.png)
 
@@ -190,3 +190,4 @@ Additionally, we are working on adding support for more service protocols (CoAP,
  * [The Twelve-Factor App](http://12factor.net)
  * [Freeboard - pure client-side dashboard](https://github.com/patchwork-toolkit/dashboard)
  * [IBM's NodeRed](http://nodered.org)
+
