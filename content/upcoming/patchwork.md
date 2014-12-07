@@ -26,7 +26,7 @@ All you need is your creativity: focus on the implementation of your **idea, not
   - [Device Gateway](#device-gateway)
   - [Discovery](#discovery)
 - [Implementation highlights](#implementation-highlights)
-  - [Using Go's standard library](#using-go-standard-library)
+  - [Using Go's standard library](#using-gos-standard-library)
   - [Process management](#process-management)
   - [Communication patterns](#communication-patterns)
   - [Logging](#logging)
@@ -34,7 +34,7 @@ All you need is your creativity: focus on the implementation of your **idea, not
   - [Cross-platform builds and deployment](#cross-platform-builds-and-deployment)
 - [Usage example](#usage-example)
   - [Dashboard out of the box](#dashboard-out-of-the-box)
-  - [Quick prototyping using IBM's NodeRed](#quick-prototyping-using-IBM-NodeRed)
+  - [Quick prototyping using IBM's NodeRed](#quick-prototyping-using-ibms-nodered)
 - [Summary and future work](#summary-and-future-work)
 
 # Why
