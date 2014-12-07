@@ -106,7 +106,7 @@ We've chosen Go for implementation for multiple reasons, some of which are descr
 As already acclaimed by many, the Go's standard library is very rich and intuitive. Some highlights from our experience:
 * `net/http` was very simple to get started building our http and REST APIs and eventually we ended up with using it almost exclusively. We only took the `gorilla/mux` package to have a more straightforward router configuration and recently included `codegangsta/negroni` middleware for future extensions (without changing our handlers as it conforms to the `net/http` Handler)
 * `crypto/tls` was surprisingly easy (e.g., compared to Bouncycastle in Java) to configure and use TLS sockets (we used that for MQTT)
-* `net` together with `golang.org/x/net` (where _x_ stands for _cool_ as [@Francesc](https://twitter.com/francesc/status/533708202110885888) mentioned in his Twitter) helped us write a very rough implementation of the [mDNS](http://www.multicastdns.org/)/[DNS-SD](http://www.dns-sd.org) standards for services discovery.
+* `net` together with `golang.org/x/net` (where _x_ stands for _cool_ as [@Francesc](https://twitter.com/francesc/status/533708202110885888) mentioned in his Twitter) helped us write a very rough implementation of the [mDNS](http://www.multicastdns.org/)/[DNS-SD](http://www.dns-sd.org) standards for services discovery: you can check it out in our [Bonjour](https://github.com/oleksandr/bonjour) repository.
 
 
 ## Process management
@@ -181,3 +181,12 @@ In this article we have described a [Patchwork](http://patchwork-toolkit.github.
 The current version of Patchwork is completely focused on creating a smart environment within a LAN. We are currently exploring different ways to support creation of distributed smart environments and providing different ways of manage data streams and implement services execution between them.
 
 Additionally, we are working on adding support for more service protocols (CoAP, Websockets) and data formats to the DGW and catalogs APIs.
+
+# Useful links
+
+ * [Patchwork Toolkit website](http://patchwork-toolkit.github.io)
+ * [Pure Go implementation of some of mDNS/DNS-SD standards](https://github.com/oleksandr/bonjour)
+ * [Go Concurrency Patterns: Pipelines and cancellation](http://blog.golang.org/pipelines)
+ * [The Twelve-Factor App](http://12factor.net)
+ * [Freeboard - pure client-side dashboard](https://github.com/patchwork-toolkit/dashboard)
+ * [IBM's NodeRed](http://nodered.org)
