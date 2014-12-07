@@ -106,7 +106,7 @@ We've chosen Go for implementation for multiple reasons, some of which are descr
 As already acclaimed by many, the Go's standard library is very rich and intuitive. Some highlights from our experience:
 * `net/http` was very simple to get started building our http and REST APIs and eventually we ended up with using it almost exclusively. We only took the `gorilla/mux` package to have a more straightforward router configuration and recently included `codegangsta/negroni` middleware for future extensions (without changing our handlers as it conforms to the `net/http` Handler)
 * `crypto/tls` was surprisingly easy (e.g., compared to Bouncycastle in Java) to configure and use TLS sockets (we used that for MQTT)
-* Network stack for implementing (m)dns(-sd)
+* `net` together with `golang.org/x/net` (where _x_ stands for _cool_ as [@Francesc](https://twitter.com/francesc/status/533708202110885888) mentioned in his Twitter) helped us write a very rough implementation of the [mDNS](http://www.multicastdns.org/)/[DNS-SD](http://www.dns-sd.org) standards for services discovery.
 
 
 ## Process management
@@ -130,31 +130,7 @@ Or another scenario, which is even more complex:
  3. DGW invokes a corresponding executable (if it is a _task_) and writes received PUT data to its standard input stream, then captures its standard output stream. We do not support writes for _timer_ agent types.
  4. The rest of the steps are similar to steps 4 and 5 in the previous scenario.
 
-This is where [advanced Go concurrency patterns](http://blog.golang.org/advanced-go-concurrency-patterns) help a lot. Good luck synchronizing your threads when writing it in other conventional language! In our implementation each HTTP handler has access to agent manager's _inbox_ channel, which it sends a special request structure to. This special request structure has another channel (read by handler's goroutine) so an agent manager can send execution results back to the handler's goroutine:
-
-```
-type AgentManager struct {
-    ...
-	dataRequestInbox chan DataRequest
-    ...
-}
-
-type DataRequest struct {
-    ...
-    Reply      chan AgentResponse
-}
-
-dr := DataRequest{
-	ResourceId: resourceId,
-	Reply:      make(chan AgentResponse),
-}
-mgr.dataRequestInbox <- dr
-
-repl := <-dr.Reply
-
-```
-
-<!-- * Channels and diverse concurrency patterns -->
+This is where [advanced Go concurrency patterns](http://blog.golang.org/advanced-go-concurrency-patterns) help a lot. Good luck synchronizing your threads when writing it in other conventional language! In our implementation each HTTP handler has access to agent manager's _inbox_ channel, which it sends a special request structure to. This special request structure has another channel (read by handler's goroutine) so an agent manager can send execution results back to the handler's goroutine.
 
 ## Logging
 
