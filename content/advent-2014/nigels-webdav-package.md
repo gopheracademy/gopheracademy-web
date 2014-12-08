@@ -1,12 +1,9 @@
 +++
 author = ["Dave Cheney"]
-date = "2014-12-07T08:00:00+00:00"
+date = "2014-12-08T08:00:00+00:00"
 title = "Nigel's WebDAV package"
 series = ["Advent 2014"]
 +++
-
-Nigel's WebDAV package
-======================
 
 Nigel Tao and Nick Cooper have been working on a new WebDAV package for the [golang.org/x/net](http://godoc.org/golang.org/x/net) repository. The package is still in its formative stages, so this isn't a review of the package itself. 
 
@@ -42,11 +39,11 @@ The `Handler` type has a [`ServeHTTP`](http://godoc.org/golang.org/x/net/webdav#
 		}               
 	}
 
-As you know, I'm passionate about the ideas of [initialisation and configuration](http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis), so my first instinct when I read the code review was 
+As you know, I'm passionate about the ideas of [initialisation and configuration](http://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis), so my first response when I read the code review was 
 
 >"`h.FileSystem` and `h.LockSystem` are mandatory, the `Handler` can't operate without them, so the package shouldn't permit the caller to create an invalid `Handler`"
 
-Fortunately, I stopped myself pressing send. To explain why, I want to walk through the ways that the WebDAV package could be changed to enforce this precondition.
+Fortunately, I stopped myself before pressing send. To explain why, I want to walk through the ways that the WebDAV package could be changed to enforce this precondition.
 
 A constructor you say
 ---------------------
@@ -69,7 +66,7 @@ Go doesn't have constructors, or destructors for that matter, but we do have the
 		return &Handler{fs: fs, ls: ls}, nil
     }
 
-This is a pretty standard approach, by making `Handler`'s fields private, callers from outside the package cannot access or assign them. 
+By making `Handler`'s fields private, callers from outside the package cannot access or assign them. 
 
 This is a perfectly valid approach, especially when you need more complicated initialisation, usually involving starting some goroutines. However it does not achieve the goal we set; preventing callers from creating invalid `Handler` values. Consider this incorrect usage
 
@@ -132,7 +129,7 @@ I see this pattern of deferred error checking evolving in Go code as we learn mo
 		return lines, scanner.Err()
 	}
 
-In this concocted example `scanner` reads lines of text from `r` and appends them to the result. At some point `scanner.Scan()` will return false and the loop will exit, and it is at that point that we need to check if an error occurred. Comparing this example to one that uses `bufio.Readline` is left as an exercise to the reader. 
+In this concocted example, `scanner` reads lines of text from `r` and appends them to the result. At some point `scanner.Scan()` will return false and the loop will exit, and it is at that point that we need to check if an error occurred. Comparing this example to one that uses `bufio.Readline` is left as an exercise to the reader. 
 
 My take away from this experience: it is easy to dogmatically apply ideas like construction from other languages, but this episode taught me that this should not be my default especially when simpler options are available.
 
