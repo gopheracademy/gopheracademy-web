@@ -12,7 +12,7 @@ author = ["Alexandr Krylovskiy", "Oleksandr Lobunets"]
 Briefly, what that all above and especially further in this article means is shown on the image below.
 -->
 
-![](images/pw-tldr.png)
+![](postimages/patchwork/pw-tldr.png)
 
 Considering you as a hacker/hobbyist, the Patchwork toolkit can be expressed as follows: you take your favourite electronics (bunch of sensors, LED strip, robot-toys, etc), connect them to a pocket-size Linux box, install Patchwork, and after some quick configuration you get RESTful APIs, MQTT data streams, directory of your devices and services, their discovery on the LAN with DNS-SD/Bonjour, and _a damn-sexy, open source real-time dashboard_ based on [Freeboard](https://github.com/Freeboard/freeboard). 
 
@@ -61,7 +61,7 @@ Without going into much details, we got tired of doing 1. over and over again, a
 ## Overview
 A bird's-eye-view of the Patchwork architecture is shown in the picture:
 
-![Overview](images/pw-overview.png)
+![Overview](postimages/patchwork/pw-overview.png)
 
 Patchwork integrates devices, applications and services with the help of the following components:
 
@@ -77,7 +77,7 @@ Patchwork integrates devices, applications and services with the help of the fol
 -->
 A high-level architecture of the DGW capturing its main modules is shown in the picture:
 
-![dgw](images/pw-dgw.png)
+![dgw](postimages/patchwork/pw-dgw.png)
 
 * **Devices** are connected to the host running DGW and communicate with Device Agents using their native protocols (Serial, ZigBee, etc) 
 * **Device Agents** are small programs running on the DGW that communicate with the Process Manager via *stdin/stdout* 
@@ -156,7 +156,7 @@ Here we would like to share with you how Patchwork can be used to implement simp
 
 The dashboard (based on [Freeboard](https://github.com/Freeboard/freeboard)) comes out of the box when you run the DGW. This is the simplest thing you can do: connect the hardware, run the Patchwork's DGW, open a dashboard on your wall-mounted screen and configure a monitoring view for your environment.
 
-![Build-in Freeboard](images/pw-dashboard.png)
+![Build-in Freeboard](postimages/patchwork/pw-dashboard.png)
 
 ## Quick prototyping using IBM's NodeRed
 
@@ -164,7 +164,7 @@ Observing the sensors values is fun for the first 2 hours, but later you would d
 
 On the screenshots below you can see 2 flows (this is how programs are called in dataflow programming) we have created within minutes using our Patchwork APIs. The first flow it performing data fusion of three sensors: magnetic window opened/closed sensor, PIR motion sensor and Indoor Air Quality (IAQ) sensor. The combined array of 3 values is passed to downstream only when at least once sensor value changes and the array is published to the preconfigured MQTT broker, exposed also as a service using Patchwork's SC (Service Catalog).
 
-![Data fusion using Device Gateway's API](images/pw-nodered-1.png)
+![Data fusion using Device Gateway's API](postimages/patchwork/pw-nodered-1.png)
 
 On the second flow we subscribe to the sensor data array, published by the flow described above, and evaluate the following rules:
  * IF the air quality is bad (for mental work; using constant threshold) AND window is closed AND there is movement in the office THEN pass the data to downstream
@@ -172,7 +172,7 @@ On the second flow we subscribe to the sensor data array, published by the flow 
 
  The downstream process composes an English sentence that suggests the user to ventilate the room and passes that sentence to the TTS (Text-To-Speech) component and generates a standard OSX desktop notification to inform the user.
 
-![Audio and visual notifications](images/pw-nodered-2.png)
+![Audio and visual notifications](postimages/patchwork/pw-nodered-2.png)
 
 # Summary and future work
 
