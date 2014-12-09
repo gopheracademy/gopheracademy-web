@@ -1,6 +1,6 @@
 +++
 title = "Patchwork Toolkit - Lightweight Platform for the Network of Things"
-date = 2014-12-02T18:00:00Z
+date = 2014-12-09T18:00:00Z
 author = ["Alexandr Krylovskiy", "Oleksandr Lobunets"]
 +++
 
