@@ -11,7 +11,7 @@ Many people have asked me how we set up the GopherAcademy blog to automatically 
 
 ### Why
 
-Deployment can be the hardest part of any project.  Docker certainly makes that step easier but the ecosystem is still young, and if you want a smooth workfloy you've got to patch a few things together yourself.  There are projects like Dokku at the lower end and Kubernetes at the higher end that do much of this work for you, but for the GopherAcademy setup we need more than Dokku does and much less than Kubernetes can do.
+Deployment can be the hardest part of any project.  Docker certainly makes that step easier but the ecosystem is still young, and if you want a smooth workflow you've got to patch a few things together yourself.  There are projects like Dokku at the lower end and Kubernetes at the higher end that do much of this work for you, but for the GopherAcademy setup we need more than Dokku does and much less than Kubernetes can do.
 
 ### Docker-ize your Application
 
