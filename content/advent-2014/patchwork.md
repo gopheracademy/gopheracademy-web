@@ -2,6 +2,7 @@
 title = "Patchwork Toolkit - Lightweight Platform for the Network of Things"
 date = 2014-12-09T18:00:00Z
 author = ["Alexandr Krylovskiy", "Oleksandr Lobunets"]
+series = ["Advent 2014"]
 +++
 
 [Patchwork](http://patchwork-toolkit.github.io/) is a toolkit for connecting various devices into a network of things or, in a more broad case - Internet of Things (IoT). A tl;dr picture describing the idea behind it is shown below. 
