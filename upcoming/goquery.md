@@ -1,13 +1,13 @@
 +++
 author = ["Martin Angers"]
-date = "2014-12-10T00:00:00-08:00"
+date = "2014-12-11T00:00:00-08:00"
 title = "goquery: a little like that j-thing"
 series = ["Advent 2014"]
 +++
 
-A little over 2 and a half years ago, I started playing with that new language called Go. Coming mostly from .NET and node.js, I was at first intrigued by its concurrency features, its lack of object inheritance, and impressed by the quality of the team behind it. Fast-forward to today and Go is now my go-to (oh please), day-to-day language, and I'm lucky enough to use it both at work at [splice.com][splice] and in my [personal projects][github].
+A little over 2 and a half years ago, I started playing with that new language called Go. Coming mostly from .NET and node.js, I was at first intrigued by its concurrency features and its lack of object inheritance, and impressed by the quality of the team behind it. Fast-forward to today and Go is now my go-to (oh please), day-to-day language, and I'm lucky enough to use it both at work at [splice][] and in my [personal projects][github].
 
-The first open-source project I created with Go is also my most popular one to this day, having crossed the 1000 stars milestone on GitHub just a few weeks ago: [goquery][]. I thought it might be useful to have a convenient and well-known API to manipulate HTML documents server-side, and I was hoping other people might like it too. Never in my wildest dreams had I hoped it would become *that* popular!
+The first open-source project I created with Go is also my most popular one to this day, having crossed the 1000 stars milestone on GitHub just a few weeks ago: [goquery][]. Back then I thought it might be useful to have a convenient and well-known API to manipulate HTML documents server-side, and I was hoping other people might like it too. Never in my wildest dreams had I hoped it would become *that* popular!
 
 ## Sowing The Seeds
 
@@ -20,7 +20,7 @@ Right from the start, I decided to mimic the API of jQuery. The reason was simpl
         fmt.Println(s.Text())
     })
 
-However, jQuery's functions are heavily overloaded and I did not want to end up with a bunch of methods that accepted variadic empty interfaces as arguments, losing most of Go's static typing goodness. Since Go does not support overloaded methods, I came up with a naming convention derived from jQuery's original function names so that it is easy to infer the correct name for someone that already knows jQuery. This approach was inspired by the standard library's `regexp` package and the naming convention is detailed in the [project's readme file][naming].
+However, jQuery's functions are heavily overloaded and I did not want to end up with a bunch of methods that accepted variadic empty interfaces as arguments, losing all of Go's static typing goodness. Since Go does not support overloaded methods, I came up with a naming convention derived from jQuery's original function names so that it is easy to infer the correct name for someone that already knows jQuery. This approach was inspired by the standard library's `regexp` package and the naming convention is detailed in the [project's readme file][naming].
 
 Unlike a javascript library though, this package is not loaded as part of a DOM document, so there are two major differences with jQuery's API:
 
