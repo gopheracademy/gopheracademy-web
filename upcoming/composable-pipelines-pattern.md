@@ -5,13 +5,15 @@ series = ["Advent 2014"]
 title = "Pattern for pluggable pipeline components in Go"
 +++
 
-# A pattern for pluggable pipeline components in Go
+# A pattern for composable concurrent pipelines in Go
 
-I came into Go from the python-world, prevalent in my field, which is bioinformatics (although I work mostly on the infrastructure side).
+I came into Go from the python-world, which is so prevalent in my field, bioinformatics (I work mostly on the infrastructure side though, but do poke around with general applied bioinformatics stuff from time to time, out of sheer curiosity).
 
-In python I had just learned how to write composable lazy-evauated pipelines of string processing operations, using it's generator syntax.
+## Generator function in Python
 
-(Just a note of explanation: The Generator functionality in python basically means that you create a function that instead of returning a single value, such as a list of items, it will return a generator object, which you can iterate over, which is when it will start evaluating itself and yield the objects one by one, in the lazy evaluation fashion)
+In python I had just learned how to write composable lazy-evauated pipelines of string processing operations, using it's generator syntax, which by some simple testing showed to be both vastly less memory consuming, as well as a little faster, than their eager counterparts - and so I was hooked!
+
+The Generator functionality in python basically means that you create a function that instead of returning a single value, such as a list of items, it will return a generator object, which you can iterate over, which is when it will start evaluating itself and yield the objects one by one, in the lazy evaluation fashion.
 
 So, say that we have a file, chr_y.fa containing a little bit of the familiar A, C, G, T DNA nucleotides from the human Y chromosome, in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format):
 
@@ -31,7 +33,7 @@ NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
 NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNTGCATGTTTTAG
 TGATTCATACTAGGTCAGTATTATAAAACTATGCTTTGTCCTTGTAAGGGGAGGCTTAAA
 ````
-(The N:s mean that the nucleotides at those positions are not known, and the first line, starting with '>', is just a label, that should be skipped, which will be seen in the following code examples)
+*(The N:s mean that the nucleotides at those positions are not known, and the first line, starting with '>', is just a label, that should be skipped, which will be seen in the following code examples)*
 
 Then we could read the content of the file, line by line, and process it in sequential steps, using chained generators:
 
@@ -44,10 +46,10 @@ def fasta_reader(filename):
 		for line in infile:
 			yield line
 
-# A little base complementer, which converts
-# each nucleotide in a DNA sequence into it's
-# "complement" nucleotide (the one it will sit paired to,
-# in the actual DNA double-strand helix molecule)
+# A little base complementer, which converts each nucleotide
+# in a DNA sequence into it's "complement" nucleotide (the
+# one it will sit paired to, in the actual DNA double-strand
+# helix molecule)
 def base_complementer(line_generator):
 	for line in line_generator:
 		if line[0] != '>':
@@ -63,7 +65,10 @@ def base_complementer(line_generator):
 			yield newline
 
 def main():
-	# Building up our minimal little workflow consisting of three parts
+	# Connect our super-minimal little "workflow" consisting
+	# - a base complementer
+	# - a file reader
+	# - our print statements right here in the loop
 	fa_reader = fasta_reader('chr_y.fa')
 	for line in base_complementer(fa_reader):
 		print line
@@ -71,9 +76,9 @@ def main():
 
 So here, when we execute the main loop, in the main() function, that loop will, step by step, drive our little pipeline consisting of the three parts: a (fasta) reader, a base complementer generator funciton, and our implicit little printer at the end.
 
-The lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary aggregates of lines building up between the components, which means the program will use more or less the minimal amount of memory possible.
+The lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary aggregates (lists or dicts) of lines building up between the components, which means the program will use more or less the minimal amount of memory possible.
 
-(Some testing of the author has shown that apart from the improved memory usage, one can typically get an improved execution speed of some 10-15% as well, just by using lazy-evaluation in string processing pipelines like this).
+## The Generator pattern in Go
 
 But then, coming in to Go, I was highly intrigued by all the new much more powerful concurrency patterns made possible in this language, elaborated in intriguing blog posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and [the one on "advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
 
@@ -148,4 +153,40 @@ func main() {
 }
 ````
 
-As you can see, we basically replicate the behaviour of python generator functions (although in python it is less obvious how they work): Instead of returning a single value (list etc), we return a channel, on which we can later iterate using the "range" construct, to retrieve the elements in a lazy-evaluation fashion. Of course, in Go, we have the obvious benefit that this will now also run fully concurrently, using all of our CPU cores, if we wish! (The generator pattern is actually [included in Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), as well as [listed on this site](http://www.golangpatterns.info/concurrency/generators).)
+As you can see, we basically replicate the behaviour of python generator functions (although in python it is less obvious how they work): Instead of returning a single value (list etc), we return a channel, on which we can later iterate using the "range" construct (like we do in the main() method above), to retrieve the elements in a lazy-evaluation fashion. Of course, in Go, we have the obvious benefit that this will now also run fully concurrently, using all of our CPU cores, if we wish!
+
+*For reference, The generator pattern is [included in Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), as well as [listed on this site](http://www.golangpatterns.info/concurrency/generators).*
+
+## Composability for general pipelines?
+
+The generator pattern is truly a neat one, when you have a simple "thread-like" pipeline; Just a few processing steps operating on a stream of items from a previous function or process.
+
+But what if we want to build up custom topologies of connected processing components with multiple (streaming) inputs and outputs? The generator patterns clearly has some limitations when going in this direction (EDIT: Or does it?!)
+
+Are we then bound to bury those processing network topologies deep down in spaghetti-code of functions with hard-coded dependencies?
+
+### Enter Flow-based programming
+
+Well, to start with I have to say that the answer to that problem is solved already, in a way that is not covered in this article: You should definitely have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow), which solves this problem more or less to it's core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
+
+Flow based programming solves the complexity problem of complex processing network topologies in a thorough way by suggesting the use of named in- and ou-ports, channels with bounded buffers (already proveded by Go), and a separate network definition. This last thing, separating the network definition from the actual processing components, is what is so crucial to arrive at truly composable pipelines.
+
+I personally had a great deal of fun, playing around with GoFlow, and even have an embryonic little library of proof-of-concept bioinformatics components, written for use with the framework, available at [github](https://github.com/samuell/blow). An example program, using it, can be found [here](https://gist.github.com/samuell/6164115).
+
+### Flow-based like concepts in pure Go?
+
+Still, looking to use Golang as a high-performance alternative to python, I was a little worried with one finding: The communication between components in GoFlow was not as fast as pure golang channels.
+
+This surely doesn't matter for most normal use cases, where the increased flexibility and maintainability will give it it's clear benefits.
+
+Still, for building easy-to-compose high performance bioinformatics programs in GoLang, it was worrying.
+
+This lead me to start experimenting with how far one can go with Flow-based programming-like ideas, without using any 3rd party framework at all (this is btw territory that I have heard that GoFlow's creator, [Vladimir Sibiroc](https://github.com/trustmaster) did explore to some extent, although I haven't found any public information on the outcomes.)
+
+The results of my findings was the following: A pattern for encapsulating concurrent processes in a struct, where the inputs and outputs are struct fields, of type channel (of some subsequent type).
+
+This lets us set up of channels and do all the wiring of the processes, all totally outside of the components themselves.
+
+### Show me the code
+
+So, let's dive in to the actual code.
