@@ -9,7 +9,7 @@ series = ["Advent 2014"]
 
 ## Why another web framework? 
 
-The story began with the [Gogs](https://github.com/gogits/gogs) project, it first uses Martini as its web framework, worked quite well. Soon after, our team found that Martini is good but too minimal, also too many reflections that cause performance issue. Finally, I came up an idea that why don't we just integrate most frequently used middlewares as interfaces(huge reduction for refecltion), and replace default router layer with faster one. It turns out Macaron actually requires [less memory overhead for every request and faster speed than Martini](https://github.com/Unknwon/go-http-routing-benchmark), and at the same time, it reserves my favorite Martini-style coding.
+The story began with the [Gogs](https://github.com/gogits/gogs) project, it first uses Martini as its web framework, worked quite well. Soon after, our team found that Martini is good but too minimal, also too many reflections that cause performance issue. Finally, I came up an idea that why don't we just integrate most frequently used middlewares as interfaces(huge reduction for reflection), and replace default router layer with faster one. It turns out Macaron actually requires [less memory overhead for every request and faster speed than Martini](https://github.com/Unknwon/go-http-routing-benchmark), and at the same time, it reserves my favorite Martini-style coding.
 
 ## Examples
 
