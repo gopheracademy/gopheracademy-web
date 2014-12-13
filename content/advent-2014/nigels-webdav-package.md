@@ -98,7 +98,7 @@ More fundamentally, applying this convention broadly implies that every type wou
 A question of performance
 -------------------------
 
-Some readers may be wondering if there is a performance cost doing those two nil checks for every request. Isn't this `Handler.ServerHTTP` the "inner loop" for this package ?
+Some readers may be wondering if there is a performance cost doing those two nil checks for every request. Isn't this `Handler.ServeHTTP` the "inner loop" for this package ?
 
 This package talks to clients over the network so its performance will be dominated by network transmission. Compared to that `nil` checks are cheap, along with slice bounds checks and interface dynamic method dispatch. Also, we know that the processor can predict that these `nil` checks will never be true, because if they were, the server would not be able to serve any traffic.
 
@@ -115,7 +115,7 @@ Using the `webdav` package is beautifully simple and shows the elegance of compo
     }
     http.Handle("/dav", &handler)
 
-What Nigel and Nick have done is deferred checking the `handler` value is properly initialised until the point you care about it, which in this case is the only public entry point into this type, its `ServerHTTP` method.
+What Nigel and Nick have done is deferred checking the `handler` value is properly initialised until the point you care about it, which in this case is the only public entry point into this type, its `ServeHTTP` method.
 
 I see this pattern of deferred error checking evolving in Go code as we learn more about the language. A great example of this is evolving style is the `bufio.Scanner` type.
 
