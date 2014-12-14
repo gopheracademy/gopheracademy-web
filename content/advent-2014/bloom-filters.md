@@ -1,7 +1,7 @@
 +++
 author = ["Damian Gryski"]
 date = "2014-12-13T08:00:00+00:00"
-title = "Probabalistic Data Structures for Go: Bloom Filters"
+title = "Probabilistic Data Structures for Go: Bloom Filters"
 series = ["Advent 2014"]
 +++
 
