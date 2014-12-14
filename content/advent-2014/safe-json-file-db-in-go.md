@@ -1,6 +1,6 @@
 +++
 author = ["Ben Schwartz"]
-date = "2014-12-13T00:00:00-08:00"
+date = "2014-12-14T00:00:00-08:00"
 title = "Using a JSON File as a Database Safely in Go"
 series = ["Advent 2014"]
 +++
