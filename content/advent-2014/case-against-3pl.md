@@ -1,6 +1,6 @@
 +++
 author = ["Ben Johnson"]
-date = "2014-12-13T08:00:00+00:00"
+date = "2014-12-15T08:00:00+00:00"
 title = "The Case Against Third Party Libraries"
 series = ["Advent 2014"]
 +++
