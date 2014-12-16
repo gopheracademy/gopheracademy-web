@@ -1,6 +1,6 @@
 +++
 author = ["David du Colombier"]
-date = "2014-12-15T08:00:00-00:00"
+date = "2014-12-16T08:00:00-00:00"
 title = "Wrapping Git in rc shell"
 series = ["Advent 2014"]
 +++
