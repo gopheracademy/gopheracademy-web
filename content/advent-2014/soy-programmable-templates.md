@@ -1,6 +1,6 @@
 +++
 author = ["Rob Figueiredo"]
-date = "2014-12-15T08:00:00+00:00"
+date = "2014-12-17T08:00:00+00:00"
 title = "Soy - Programmable templates for Go, Java, JS"
 series = ["Advent 2014"]
 +++
