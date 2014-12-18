@@ -1,7 +1,7 @@
 +++
 author = ["Armon Dadgar"]
 date = "2014-12-18T08:00:00+00:00"
-title = "Atlas: Building with Rails and Go Micro-Services"
+title = "Atlas: Building with Rails and Go Microservices"
 series = ["Advent 2014"]
 +++
 
@@ -11,7 +11,7 @@ application from development through to production. The complexity of the
 problem makes Atlas a sophisticated web service that is composed of many
 moving pieces. This article covers the design of Atlas, and specifically
 the use case of pairing a front-end Rails application with a collection
-of Go micro services in the backend.
+of Go microservices in the backend.
 
 ## Background
 
@@ -20,14 +20,14 @@ the tools we build are done in Go, so when we started building Atlas it
 seemed only natural to build it entirely in Go as well. We are also
 big proponents of service oriented architectures where many loosely
 coupled services work together. This is also visible in the design of our
-open source products into multiple highly focused projects aimed at solving
+open source products as multiple highly focused projects aimed at solving
 specific problems. Go is a great fit for building these micro services for many
 reasons, but critically it has the right balance of developer productivity and
 runtime performance.
 
 ![Atlas Initial Design](/postimages/advent-2014/atlas-initial.png)
 
-The initial architecture of Atlas (then Vagrant Cloud) composed of a
+The initial architecture of Atlas (then Vagrant Cloud) was composed of a
 few backing stores (PostgreSQL and Redis then), many stateless Go services,
 all linked together by [Consul](http://consul.io). There were a few
 Internet-facing Go services, specifically the web service and the BinStore
@@ -37,7 +37,7 @@ into smaller pieces.
 
 While this architecture worked, we were frustrated by a number of
 different issues. Having previously developed large sites in both
-Rails and Django, doing serious web developement in Golang felt like
+Rails and Django, doing serious web development in Go felt like
 a major step backwards for productivity and the availability of libraries
 for common patterns. Instead of simply importing a gem, we found ourselves
 spending hours writing new libraries or adapting existing ones to fairly
@@ -56,7 +56,7 @@ After a few weeks, we decided to step back and re-evaluate our
 design decisions. For almost all of our services, Go seemed like
 the right choice, but the web service was particularly painful
 for at least those two reasons. We decided it was time to try
-something new. This is not a knock on Go or it's community, but rather
+something new. This is not a knock on Go or its community, but rather
 an honest evaluation of the maturity of the web developement
 ecosystem at the time.
 
@@ -70,7 +70,7 @@ had been replaced in just a few hours in Rails. We were sold.
 
 As we completed our migration to Rails, were able to dramatically
 reduce the lines of code we had to maintain by leveraging the community
-tooling. Our bespoke SQL migration system could be replaced with the builtin
+tooling. Our bespoke SQL migration system could be replaced with the built-in
 Rails migration system as well. Instead of writing SQL by hand we were able to
 model our objects and use ActiveRecord to automatically generate queries.
 This was far less error prone and allowed us to iterate more quickly.
@@ -83,11 +83,11 @@ all access went through a well-defined interface. This allowed us
 to change our data model without fear that random services would
 suddenly break.
 
-## A Pinch of Rails, a Smattering of Go
+## A Pinch of Rails, a Sprinkle of Go
 
 While we found that moving our web service to Rails was a huge boost
 in productivity, we've continued to use Go to build all our internal
-services. Over time we've built shared libaries that make it incredibly
+services. Over time we've built shared libraries that make it incredibly
 simple for us to build new services.
 
 Our common pattern for adding features to Atlas is to separate the
@@ -98,7 +98,7 @@ logic and background work is done in small Go services.
 
 The Rails application will react to user interaction or API events
 by calling upstream to the appropriate backend services. Any service
-that needs to be invoked by Rails provides a JSON over HTTP. Using
+that needs to be invoked by Rails provides a JSON over HTTP API. Using
 a common library in Rails, we can discover these backends using Consul
 and make the RPC call. This has been a simple and robust pattern that
 we can re-use across many of our services.
@@ -106,11 +106,11 @@ we can re-use across many of our services.
 A few of our internal services don't fit into the request/response
 model, and instead are more like worker pools. For those services,
 we decouple the Rails application by using an intermediary RabbitMQ.
-The pattern we use is to model these jobs as an FSM (using AASM)
-so that we can intelligently retry under different failure conditions.
+The pattern we use is to model these jobs as a finite state machine (FSM)
+(using the AASM gem) so that we can intelligently retry under different failure conditions.
 Rails creates a database model to track the FSM, and enqueues the
 job in RabbitMQ. Downstream consumers eventually begin processing
-the work, and manipulate internal Rails APIs to change the FSM
+the work, and call internal Rails APIs to change the FSM
 state. In the case of a queue loss (RabbitMQ node failure) we
 can use the FSM state to rebuild the state of the broker.
 
@@ -125,8 +125,9 @@ together.
 We are huge fans of Go at HashiCorp and use it for almost every new service
 or tool we build. For the most part, this has been extremely successful,
 with the exception of our web servers. For our use case, using Rails
-increased our productivity and reduced the code we had to maintain. By
-building simple libraries around common patterns of interactions between
-our various services we've made it painless to build new services Go and
-interoperate with both Rails and other Go services.
+increased our productivity and reduced the code we had to maintain. We've
+standardized the interaction between Rails and our Go services and built
+libraries around those patterns. In turn, it has become painless to build new
+services in Go that all work together. All this allows us to ship features
+quickly and keep the infrastructure simple and modular.
 
