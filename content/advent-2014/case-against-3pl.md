@@ -89,11 +89,11 @@ libraries.
 
 In Go, I try to write and use libraries that have a fixed scope so they only
 need one version. For example, the [css][] library implements the [W3C's CSS
-Syntax Module Level 3][css-syntax] spec so it's scope is fixed. Once implemented
+Syntax Module Level 3][css-syntax] spec so its scope is fixed. Once implemented
 and tested, changes and bug fixes are minimal.
 
 Another example is the [Bolt][] library. It's goal is to provide a simple, fast,
-transactional key/value store. By limiting it's problem space, Bolt is able to
+transactional key/value store. By limiting its problem space, Bolt is able to
 keep a minimal API and be well tested. After nearly six months of running in
 a variety of production systems without issue, Bolt was upgraded to version 1.0
 and development has stopped. The project is not abandoned -- it's simply
