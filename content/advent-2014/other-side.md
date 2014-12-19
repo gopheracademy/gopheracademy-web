@@ -1,11 +1,11 @@
 +++
 author = ["Anthony Starks"]
-date = "2014-12-19T08:00:00+00:00"
-title = "The Other Side of Go: Programming Pictures"
+date = "2014-12-19T17:10:00+05:00"
+title = "The Other Side of Go: Programming Pictures, the Read, Parse, Draw Pattern"
 series = ["Advent 2014"]
 +++
 
-# The other side of Go: Programming Pictures
+# The other side of Go: Programming Pictures, the Read, Parse, Draw Pattern
 
 Go has proven to be extremely versatile and well suited to back-end
 tasks, but sometimes you need a picture, and I've found that Go works
@@ -45,11 +45,13 @@ their own structure.
 
 Given the XML input (thing.xml).
 
+```xml
 	<thing top="100" left="100" sep="100">
     	<item width="50"  height="50"  name="Little" color="blue">This is small</item>
     	<item width="75"  height="100" name="Med"    color="green">This is medium</item>
     	<item width="100" height="200" name="Big"    color="red">This is large</item>
 	</thing>
+```
 	
 First we define the data structures that match the structure of our
 input.  You can see the correspondence between the elements and
@@ -58,6 +60,7 @@ location that defines the drawing's origin, along with an attribute that
 defines the separation between elements. Within the thing is a list of
 items, each one having a width, height, name, color, and text.
 
+```go
 	type Thing struct {
 		Top  int `xml:"top,attr"`
 		Left int `xml:"left,attr"`
@@ -72,18 +75,22 @@ items, each one having a width, height, name, color, and text.
 		Color  string `xml:"color,attr"`
 		Text   string `xml:",chardata"`
 	}
-	
+```
+
 Specify the destination for the generated SVG, standard output, and
 flags for specifying the dimensions of the canvas.
 	
+```go
 	var (
 		canvas = svg.New(os.Stdout)
 		width = flag.Int("w", 1024, "width") 
 		height = flag.Int("h", 768, "height") 
 	)
+```
 
 Next, define a function for reading the input:
 
+```go
 	func dothing(location string) {
 		f, err := os.Open(location)
 		if err != nil {
@@ -93,12 +100,14 @@ Next, define a function for reading the input:
 		defer f.Close()
 		readthing(f)
 	}
-	
+```
+
 An important function is to parse the and load the structs ---this is
 straightforward using the [XML package](http://golang.org/pkg/encoding/xml/) from Go's standard
 library: Pass the `io.Reader` to `NewDecoder`, and `Decode` into the
 thing.
 
+```go
 	func readthing(r io.Reader) {
 		var t Thing
 		if err := xml.NewDecoder(r).Decode(&t); err != nil {
@@ -107,6 +116,7 @@ thing.
 		}
 		drawthing(t)
 	}
+```
 
 Finally, once you have the data loaded, walk the data, making the
 picture. This is where you use the higher-level functions of the SVGo
@@ -115,6 +125,7 @@ and for each item, make a circle that corresponds to the specified size
 and color. Next add the text, with the desired attributes.  Finally,
 apply vertical spacing between each item.
 
+```go
 	func drawthing(t Thing) {
 		x := t.Left
 		y := t.Top
@@ -125,9 +136,11 @@ apply vertical spacing between each item.
 			y += v.Height
 		} 
 	}
+```
 
 The main program kicks things off, reading the input file from the command line:
 
+```go
 	func main() {
 		flag.Parse()
 		for _, f := range flag.Args() {
@@ -136,7 +149,7 @@ The main program kicks things off, reading the input file from the command line:
 			canvas.End()
 		}
 	}
-
+```
 
 running the program sends the SVG to standard output
 
@@ -179,15 +192,18 @@ request, parses the XML response, and makes the picture.
 	
 Generates this response:
 
+```xml
 	<?xml version="1.0" encoding="utf-8" ?> 
 	<rsp stat="ok">
 		<photo id="15871035007" ... secret="84d59df678" server="7546" farm="8" title="flickr-gopher" ... />
 		<photo id="15433662714" ... secret="3b9358c61d" server="7559" farm="8" title="Laurence Maroney 2006..." ... />
 		...
 	</rsp>
+```
 	
 The f50 program uses the id, secret, farm, server and title attributes to build this picture.
 
+```go
 	// makeURI converts the elements of a photo into a Flickr photo URI
 	func makeURI(p Photo, imsize string) string {
 		im := p.Id + "_" + p.Secret
@@ -216,6 +232,7 @@ The f50 program uses the id, secret, farm, server and title attributes to build 
 			xpos += (imageWidth + gutter)
 		}
 	}
+```
 	
 ![Flickr 50 output](https://farm8.staticflickr.com/7546/15871035007_84d59df678_z.jpg "Flickr 50: gopher")
 
