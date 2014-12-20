@@ -1,6 +1,6 @@
 +++
 author = ["Steve Francia"]
-date = "2014-12-17T10:30:19-08:00"
+date = "2014-12-20T10:30:19-08:00"
 title = "Cobra: A Modern & Refined CLI Commander"
 linktitle = "Introducing Cobra"
 series = ["Advent 2014"]
