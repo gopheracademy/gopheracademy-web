@@ -1,6 +1,6 @@
 +++
 author = ["Martin Angers"]
-date = "2014-12-12T00:00:00-08:00"
+date = "2014-12-21T00:00:00-08:00"
 title = "goquery: a little like that j-thing"
 series = ["Advent 2014"]
 +++
