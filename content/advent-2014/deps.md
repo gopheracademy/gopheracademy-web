@@ -1,6 +1,6 @@
 +++
 author = ["Nathan Youngman"]
-date = "2014-12-20T08:00:00+00:00"
+date = "2014-12-21T08:00:00+00:00"
 title = "Managing Dependencies"
 series = ["Advent 2014"]
 +++
