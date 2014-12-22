@@ -9,9 +9,13 @@ series = ["Advent 2014"]
 
 This post will explore two tools and how I've been using them. **Godep** as the consumer of third-party packages, and **gopkg.in** as a library author.
 
-Before getting started, make sure you're comfortable with the fundamentals of [GOPATH][code] and `go get`. If you find GitHub's forking mechanism at odds with the go tool, read Katrina Owen's excellent [*Contributing to Open Source Git Repositories in Go*][remotes].
+# go get
 
-While I've found these tools useful, I don't use them for every project. Please read [*The Case Against Third Party Libraries*][case-against-3pl] by Ben Johnson and be mindful of what you need.
+Before using these tools, get comfortable with the fundamentals of [GOPATH][code] and `go get`. 
+
+At first I found GitHub's forking mechanism at odds with the go tool. It took a shift in perspective -- a slightly different approach to how I was using git. Katrina Owen clearly demonstrates the steps in [*Contributing to Open Source Git Repositories in Go*][remotes].
+
+For many projects `go get` is enough. Before adopting another tool, consider the reasons for doing so. [*The Case Against Third Party Libraries*][case-against-3pl] by Ben Johnson is good food for thought.
 
 # Godep
 
@@ -21,11 +25,11 @@ While I've found these tools useful, I don't use them for every project. Please 
 
 If you are worried about unexpected changes, Godep can provide a safety net, but then so can backing up your `/src` folder. Personally, this isn't the most compelling reason to use Godep.
 
-Some time ago I put Godep through its paces for [*Go Package Management*][go-packages] and [Packages & Dependencies](https://speakerdeck.com/nathany/go-packages) (slides). Still I had little reason to use it -- not until recently.
+Some time ago I put Godep through its paces for [*Go Package Management*][go-packages] and [Packages & Dependencies](https://speakerdeck.com/nathany/go-packages) (slides). Still, I had little reason to use it -- not until recently.
 
 While working with a [library for Apple Push Notifications](https://github.com/timehop/apns), I made a few small pull requests. Benny Wong, who maintains the library, was away on his honeymoon at the time. Congrats Benny!
 
-If my project was a solo effort, I wouldn't feel the need for Godep, but I was working on a team. Suddenly I needed to ensure my team mates had my changes. I wanted something easy to explain while continuing to contribute changes upstream. So I ran:
+If my project was a solo effort, I wouldn't feel the need for Godep, but I was working on a team. Suddenly I needed to ensure my team had my changes. I wanted something easy to explain while continuing to contribute changes upstream. So I ran:
 
 ```console
 godep save
@@ -55,19 +59,15 @@ Godep isn't something I use for libraries either -- for that, let's take a look 
 
 # gopkg.in
 
-Versioning is a crutch. 
+**Versioning is a crutch.** If I could design the perfect API from the beginning, would I bother with version numbers? Nope.
 
-If I could design a solid, stable API from the beginning, would I bother with version numbers? Nope.
-
-Versions can be a signal too. 
-
-Often 1.0 means stability and 2.0 means shiny, but there are [more precise ways to signal changes][srcgraph]. For my code, a new major version just means "Sorry everyone, I broke things."
+**Versions can be a signal too.** Often 1.0 means stability and 2.0 means shiny, but there are [more precise ways to signal changes][srcgraph]. For my code, a new major version just means "Sorry everyone, I broke things."
 
 > "If a complete break is required, create a new package with a new import path." - [Go FAQ][get_version]
 
 Gustavo Niemeyer provides the Go community with a simple stateless website called [gopkg.in][]. It turns branches and tags on GitHub into new import paths.
 
-For those who rather host their own gopkg.in, Stephen Gutekanst wrote [a variation that you can run on your project's own domain][semver].
+For those who rather host their own, Stephen Gutekanst [wrote a variation][semver] that you can run on your project's own domain.
 
 In either case, people use a library just like any other, with `go get` and an import path.
 
@@ -90,17 +90,17 @@ With version 2 and even version 3 in sight, I turned to [gopkg.in][]. It was a r
 * It has one dependency -- the standard library.
 * The entire library is in one package. There are no absolute import paths to internal packages.
 
-So far [gopkg.in][] has worked out quite well. One day I hope to not need it.
+So far [gopkg.in][] has worked out quite well. One day I hope to not need it. ;-)
 
 # I Saw Three Ships Come Sailing In
 
 Godep and gopkg.in [aren't the only options][PackageManagementTools], but they are two community provided tools that can be used alongside `go get`. Both gopkg.in and `godep -r` allow other developers to install a project or library with `go get`. No special tools required. 
 
-If everyone adopted Godep (or similar), there would be little need for gopkg.in. Yet they work together just fine.
+When using Godep for a project, an import proxy like gopkg.in doesn't seem all that necessary. Yet they work just fine together.
 
 It has been 1.5 years since I first wrote about [Go Package Management][history]. In that time I've learned a lot, and [some things have changed](https://github.com/golang/go). The next few years should prove interesting, but I'm really happy with what we have today.
 
-I would like to say thank you to the people who wrote the tools that make my life easier. Thanks!
+I would like to say thank you to the people who wrote the tools that make my life better. Thanks!
 
 P.S. Remember *good things come in small packages.*
 
