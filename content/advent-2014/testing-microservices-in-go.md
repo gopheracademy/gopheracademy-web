@@ -1,6 +1,6 @@
 +++
 author = ["Ben Schwartz"]
-date = "2014-12-19T00:00:00-08:00"
+date = "2014-12-22T00:00:00-08:00"
 title = "Testing Microservices in Go"
 series = ["Advent 2014"]
 +++
