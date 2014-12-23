@@ -1,9 +1,8 @@
 +++
 author = ["Steve Francia"]
-date = "2014-12-17T10:40:33-08:00"
+date = "2014-12-23T10:40:33-08:00"
 series = ["Advent 2014"]
 title = "Viper: Configuration with Fangs"
-draft = true
 +++
 
 One of the hardest things to get right when building command line or
