@@ -1,6 +1,6 @@
 +++
 author = ["Ben Johnson"]
-date = "2014-12-19T00:00:00-08:00"
+date = "2014-12-24T00:00:00-08:00"
 title = "Type safe templating with ego"
 series = ["Advent 2014"]
 +++
