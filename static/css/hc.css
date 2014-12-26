@@ -982,3 +982,14 @@ mark {
 .smallmenu {
   font-size: 16px;
 }
+
+@media print {
+	#sidebar-wrapper {
+		display: none;
+	}
+
+	#wrapper {
+		padding-left: 0;
+		transition: none;
+	}
+}
