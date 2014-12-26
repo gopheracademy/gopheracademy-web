@@ -1,6 +1,6 @@
 +++
 author = ["Anthony Starks"]
-date = "2014-12-19T17:10:00+05:00"
+date = "2014-12-25T17:10:00+05:00"
 title = "The Other Side of Go: Programming Pictures, the Read, Parse, Draw Pattern"
 series = ["Advent 2014"]
 +++
