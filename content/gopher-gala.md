@@ -6,7 +6,7 @@ title = "The world's first Go distributed hackathon."
 
 # Registration is now open for the Gopher Gala - the world's first Go distributed hackathon.
 
-<center>![](/static/images/fancy_gopher.jpg "Designed by Renee French")</center>
+<center>![](/images/fancy_gopher.jpg "Designed by Renee French")</center>
 
 You may have heard of the Rails Rumble, Node Knockout, or Django Dash. Now, Go has its own distributed hackathon: the [Gopher Gala](http://gophergala.com).
 
