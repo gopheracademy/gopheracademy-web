@@ -1,14 +1,14 @@
 +++
 author = ["Casey Rosengren"]
 date = "2015-1-3"
-title = "The world's first Golang distributed hackathon."
+title = "The world's first Go distributed hackathon."
 +++
 
-# Registration is now open for the Gopher Gala - the world's first Golang distributed hackathon
+# Registration is now open for the Gopher Gala - the world's first Go distributed hackathon.
 
-<center>![](/postimages/gopher-gala/fancy_gopher.jpg "Designed by Renee French")</center>
+<center>![](/static/images/fancy_gopher.jpg "Designed by Renee French")</center>
 
-You may have heard of the Node Knockout or the Rails Rumble. Now, Go has its own distributed hackathon: the [Gopher Gala](http://gophergala.com).
+You may have heard of the Rails Rumble, Node Knockout, or Django Dash. Now, Go has its own distributed hackathon: the [Gopher Gala](http://gophergala.com).
 
 The Gopher Gala invites people to write a meaningful standalone application using Go over the course of a weekend. It is an online, virtual competition, and participants compete from all over the world. 
 
