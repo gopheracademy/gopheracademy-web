@@ -1,6 +1,6 @@
 +++
 author = ["Casey Rosengren"]
-date = "2015-1-3"
+date = "2015-01-03T13:12:45-06:00"
 title = "The world's first Go distributed hackathon."
 +++
 
