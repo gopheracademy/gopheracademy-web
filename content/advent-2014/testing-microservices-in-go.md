@@ -66,7 +66,7 @@ Regardless, the reason we're even talking about clients is to support testing ou
 For `weather-go`, I start up an http server on a random port and use the client I've written to perform tests:
 
 ### Suite Setup
-I'm using [gocheck](gopkg.in/check.v1) which allows for things like `setup` and `teardown` functions in addition to higher level `Assert` calls. Following, I use these fixtures to boot a server to test against and to add/drop the location table.
+I'm using [gocheck](http://gopkg.in/check.v1) which allows for things like `setup` and `teardown` functions in addition to higher level `Assert` calls. Following, I use these fixtures to boot a server to test against and to add/drop the location table.
 
 	type TestSuite struct {
 		s *LocationService
