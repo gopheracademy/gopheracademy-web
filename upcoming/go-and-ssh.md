@@ -210,7 +210,7 @@ Next, we'll fire up `bash` for this session and prepare a `close` function to be
 	}
 ```
 
-At this point, we could simple link the inputs and outputs of the `bash` command to the terminal screen, though this would fail since the `bash` command can tell that it is not running inside a [tty](http://en.wikipedia.org/wiki/Teleprinter). In order to trick `bash` into thinking that it is, we'll wrap the command in a [pty](http://en.wikipedia.org/wiki/Pseudo_terminal) (*since we don't have real teletypes anymore, our software terminals emulate them - yeilding pseudo teletypes*)
+At this point, we could simply pipe the inputs and outputs of `bash` to the terminal screen, though this would fail since the `bash` command knows that it's not running inside a [tty](http://en.wikipedia.org/wiki/Teleprinter). In order to trick `bash` into thinking that it is, we'll need to wrap the command in a [pty](http://en.wikipedia.org/wiki/Pseudo_terminal) (*since we don't have real teletypes anymore, our software terminals emulate them - yeilding pseudo teletypes*)
 
 ``` go
 	bashf, err := pty.Start(bash)
@@ -221,7 +221,7 @@ At this point, we could simple link the inputs and outputs of the `bash` command
 	}
 ```
 
-Now, when we link `bash` and the terminal screen together, `bash` correctly assumes it may use [terminal commands](http://wiki.bash-hackers.org/scripting/terminalcodes) to control our `ssh(1)` client. Here, we're using `sync.Once` to ensure our `close` function is only called once.
+Now, when we pipe `bash` and the `connection` together, `bash` correctly assumes it may use [terminal commands](http://wiki.bash-hackers.org/scripting/terminalcodes) to control our `ssh(1)` client. Here, we're using `sync.Once` to ensure our `close` function is only called once.
 
 ``` go
 	var once sync.Once
@@ -235,9 +235,9 @@ Now, when we link `bash` and the terminal screen together, `bash` correctly assu
 	}()
 ```
 
-Finally, we'll receive and respond to each channel request. We **must** reply positively to the `shell` and `pty-req` requests in order to instruct `ssh(1)` that it has access to a shell and it is also a pseudo-teletype. We will also listen for `window-change` and pass on these changes to `bashf` (our `bash`-wrapped pty).
+Finally, we **must** reply positively to the `shell` and `pty-req` channel requests in order to instruct `ssh(1)` that it has access to a shell and it is also a pseudo-teletype. We will also listen for `window-change` events and pass on these updates to `bashf` (our `bash`-wrapped pty).
 
-*As a side node, since channel types and request types are strings, this should tell us they are dynamic. So, in our own applications, we could re-purpose these protocol constructs to suit our own needs as necessary.*
+*As a side note, since channel types and request types are strings, this should tell us they are dynamic. So, in our own applications, we could re-purpose these protocol constructs to suit our own needs as necessary.*
 
 ``` go
 	go func() {
@@ -305,9 +305,7 @@ Last year, I wrote a terminal version of the classic arcade game [Tron](http://w
 
 # Conclusion
 
-HTTP has served us well since 1991, however the web has come a long way since and there is much room for improvement. [SPDY](http://en.wikipedia.org/wiki/SPDY) is one such improvement which sits in-between TCP and HTTP. SDPY has been used as the basis for [HTTP/2](http://en.wikipedia.org/wiki/HTTP/2) (though some still [aren't happy](https://queue.acm.org/detail.cfm?id=2716278) with it). I'm looking forward to [QUIC](http://en.wikipedia.org/wiki/QUIC) as a superior alternative to TCP, TCP+TLS and SSH ([*QUIC: next generation multiplexed transport over UDP*](https://www.youtube.com/watch?v=hQZ-0mXFmk8)).
-
-For now though, if you're stuck with HTTP (writing for browser clients), I would recommend Gzip+JSON over HTTPS for a nice balance of compatibility and network performance. However, if your new project targets an internal server environment, native desktop clients, or native mobile clients - give [SSH](https://golang.org/x/crypto/ssh) a try.
+HTTP has served us well since 1991, however the web has come a long way since and there is much room for improvement. [SPDY](http://en.wikipedia.org/wiki/SPDY) is one such improvement which sits in-between TCP and HTTP. SDPY has been used as the basis for [HTTP/2](http://en.wikipedia.org/wiki/HTTP/2) (though some still [aren't happy](https://queue.acm.org/detail.cfm?id=2716278) with it). I'm looking forward to [QUIC](http://en.wikipedia.org/wiki/QUIC) as a superior alternative to TCP, TCP+TLS and SSH ([*QUIC: next generation multiplexed transport over UDP*](https://www.youtube.com/watch?v=hQZ-0mXFmk8)). For now though, if you're stuck with HTTP (writing for browser clients), I would recommend Gzip+JSON over HTTPS for a nice balance of compatibility and network performance. Finally however, if your new project targets an internal server environment, native desktop clients, or native mobile clients - give [SSH](https://golang.org/x/crypto/ssh) a try.
 
 I'll end with a disclaimer: although this post advocates for SSH over TLS+HTTP, the benefits described may not always outweigh the benefits of HTTP. **Beware of premature optimisation**. **Profile accordingly**.
 
