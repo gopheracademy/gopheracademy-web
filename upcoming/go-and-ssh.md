@@ -22,8 +22,6 @@ comment on the diagram here
 https://docs.google.com/drawings/d/11e0kDfg0IUm7DHz76g7Akkbi8SBIHU-9e2QrCVw-1Tw/edit?usp=sharing
 -->
 
-Instead of reinventing the authentication wheel for every new application, we could use the built-in methods provided by SSH. Also, when network programming with TCP, TLS or WebSockets, we often need some mechanism for multiplexing messages (i.e. routing messages). We commonly solve this problem with HTTP and URL paths or with channel ID tags on each message, with SSH however, we are given logical channels by protocol itself.
-
 # What about TLS?
 
 In this post-Snowden era, authenticity, privacy and integrity are becoming a requirement for all modern networked applications. These three requirements are also met by the popular protocol, [**T**ransport **L**ayer **S**ecurity](http://en.wikipedia.org/wiki/Transport_Layer_Security) along with it's equivalent ([though less secure](https://www.openssl.org/~bodo/ssl-poodle.pdf)) predecessor, SSL. TLS and SSL are often used synonymously since TLS is simply a newer version of SSL. TLS was originally designed by Netscape in 1993 for the HTTP use case and when compared with SSH, results in two main differences:
@@ -46,7 +44,7 @@ Now, the network becomes the main concern creating a distributed system. Where a
 
 ---
 
-Mobile computing is another important entrant onto the modern web ecosystem. Where it would be common for a distributed application to have low latency and high bandwidth connections, it is equally common for mobile connections to have the reverse - high latency and low bandwidth. In a world where [a extra seconds of page load time can cost companies thousands of dollars per year](https://blog.kissmetrics.com/loading-time/), we should  that the network is an important optimisation target.
+Mobile computing is another important entrant onto the modern web ecosystem. Where it would be common for a distributed application to be low latency and high bandwidth connections, it is equally common for mobile to be the reverse. In a world where [a extra seconds of page load time can cost companies thousands of dollars per year](https://blog.kissmetrics.com/loading-time/), we should see that the network is an important optimisation target.
 
 <!--
 Although SSH can only be used in native applications, the issue of load times is still relevant. This issue is alleviated somewhat by SSH, for example, we can save on TCP round trip times since we only need one connection and instead of using text based protocols (like HTTP) we can use succinct binary protocols (like MsgPack).
@@ -59,12 +57,14 @@ The X.509 standard defines the operation of today's PKI, this standard is comple
 SSH has four methods of authentication: password, keyboard challenge (e.g. a series of questions), public key (servers maintain a list of allowed clients), host based (client and server stores host-specific information). In the following proposed authentication system, we'll use SSH's public key method.
 
 <!--
-TODO Also note, SSH key pairs are simple binary blobs, whereas X.509 certificates contain much more information.
+Also note, SSH key pairs are simple binary blobs, whereas X.509 certificates contain much more information.
 -->
 
 Let's design a simple authentication system. We'll say we have a distributed system made up of services. There is always one service per host. There is a central discovery service which stores host information: ID, service type, IP address and public key. Each server hard-codes the discovery service's IP address and public key. At deploy time, the deploy machine generates a key pair for the new service and securely adds the new host to the the discovery service. Private keys are never shared. When a service receives a connection for first time, it compares the source IP address and received public key with the information from discovery service, and accepts or rejects it. And that's it.
 
-In practice, not all use cases will match this example perfectly, aspects may be added and removed where necessary. A few tasks have been left as an exercise for the reader. For example, securely deploying new hosts to the discovery service *(possibly solved by hard-coding the deployment machine's public key into the discovery service)* and scaling and providing redundancy for the discovery service *(possibly solved by a distributed consensus algorithm like [Raft](https://raftconsensus.github.io/))*. The important lesson here is simplicity.
+In practice, not all use cases will match this example perfectly, aspects may be added and removed where necessary. The important lesson here is simplicity.
+
+Note, a few tasks have been left as an exercise for the reader. For example, securely deploying new hosts to the discovery service *(possibly solved by hard-coding the deployment machine's public key into the discovery service)* and scaling and providing redundancy for the discovery service *(possibly solved by a distributed consensus algorithm like [Raft](https://raftconsensus.github.io/) - though with a mostly static environment and a long cache times, lookups would be rare and distributed consensus may be overkill)*.
 
 # HTTP vs SSH
 
@@ -72,7 +72,7 @@ We often choose HTTP for networked applications out of habit and this common cho
 
 **HTTP logins vs SSH authentication**
 
-Even though TLS provides the means perform certificate based authentication, we commonly use `Cookie` header (session tokens) or `Authorization` header (API tokens) for authentication. These artifacts from browser logins provide a less effective authentication scheme for our server environments. Given an environment where all nodes have cryptographically verifiable identities (**public keys**), we can improve our security with a simpler authentication system.
+Even though TLS provides the means perform certificate based authentication, we commonly use `Cookie` header (session tokens) or `Authorization` header (API tokens) for authentication. These artifacts from browser logins provide a less effective authentication scheme for our server environments. Instead of reinventing the authentication wheel for every new application, we can use the built-in primitives provided by SSH.
 
 ---
 
@@ -88,11 +88,11 @@ The lack of publish-subscribe in HTTP is generally solved with WebSockets. A Web
 
 **HTTP paths vs SSH channels**
 
-As mentioned above, HTTP URL paths are generally used for routing requests. Most networked programs will require some form of message routing and SSH would implement routing with channel types. If we view an SSH channel as a single request, we can see it has a URL path (channel type), optional headers (channel data) followed by the request body (the channel's connection stream). Except SSH has the added benefit that the connection stream is fully duplex, it's not limited to a single request and single response and SSH also has out-of-band requests which could be used for all sorts of meta data uses cases (for example, we could send a `content-type` request with data `gzip+json` to change the data encoding).
+When network programming with TCP, TLS or WebSockets, we often need some mechanism for multiplexing messages (i.e. routing messages). We commonly solve this problem with HTTP and URL paths or with channel ID tags on each message, with SSH however, we are given logical channels by protocol itself. If we view an SSH channel as a single request, we can see it has a URL path (channel type), optional headers (channel data) followed by the request body (the channel's connection stream). Except SSH has the added benefit that the connection stream is fully duplex, it's not limited to a single request-response and SSH also has out-of-band requests which could be used for all sorts of meta data uses cases (for example, we could send a `content-type` request with data `gzip+json` to change the data encoding).
 
-**HTTP+JSON vs SSH+CapnProto**
+**HTTP+JSON vs SSH+Binary**
 
-This section isn't a real comparison since, technically, we can use any data encoding scheme with any transport protocol. However, it's mentioned here because we generally assume JSON, when there may be a better choice. For example, many messaging libraries use faster binary encoding schemes since message encoding makes up such a large portion of their runtime. So, if your application performs a lot of message encoding please consider using [Gob](http://golang.org/pkg/encoding/gob/), [MsgPack](https://github.com/ugorji/go), [Cap'nProto](http://kentonv.github.io/capnproto/), etc.
+This section isn't a real comparison since we can use any data encoding scheme with any transport protocol. However, it's mentioned here because we generally use JSON, even though there may be a better choice. For example, many messaging libraries use faster binary encoding schemes since message encoding makes up such a large portion of their runtime. So, if your application performs a lot of message encoding please consider using [Gob](http://golang.org/pkg/encoding/gob/), [MsgPack](https://github.com/ugorji/go), [Cap'nProto](http://kentonv.github.io/capnproto/), etc.
 
 # A small SSH daemon written in Go
 
@@ -210,7 +210,7 @@ Next, we'll fire up `bash` for this session and prepare a `close` function to be
 	}
 ```
 
-At this point, we could simply pipe the inputs and outputs of `bash` to the terminal screen, though this would fail since the `bash` command knows that it's not running inside a [tty](http://en.wikipedia.org/wiki/Teleprinter). In order to trick `bash` into thinking that it is, we'll need to wrap the command in a [pty](http://en.wikipedia.org/wiki/Pseudo_terminal) (*since we don't have real teletypes anymore, our software terminals emulate them - yeilding pseudo teletypes*)
+At this point, we could simply pipe the inputs and outputs of `bash` to the terminal screen, though this would fail since the `bash` command knows that it's not running inside a [tty](http://en.wikipedia.org/wiki/Teleprinter). In order to trick `bash` into thinking that it is, we'll need to wrap the command in a [pty](http://en.wikipedia.org/wiki/Pseudo_terminal) (*since we don't have real teletypes anymore, our software terminals emulate them - yielding pseudo teletypes*)
 
 ``` go
 	bashf, err := pty.Start(bash)
@@ -297,7 +297,7 @@ bash-4.3$ top
 
 # A terminal version of Tron written in Go
 
-Last year, I wrote a terminal version of the classic arcade game [Tron](http://www.classicgamesarcade.com/game/21670/tron-game.html) over `telnet`. After learning about SSH however, I decided to change the backend to SSH for improved client compatibility and for the various terminal commands built into SSH. You can learn more about it and give it a try here:
+Last year, I wrote a terminal version of the classic arcade game [Tron](http://www.classicgamesarcade.com/game/21670/tron-game.html) (Light Cycles) over `telnet`. After learning about SSH however, I decided to change the backend to SSH for improved client compatibility and for the various terminal commands built into SSH. You can learn more about it and give it a try here:
 
 **https://github.com/jpillora/ssh-tron**
 
@@ -305,7 +305,7 @@ Last year, I wrote a terminal version of the classic arcade game [Tron](http://w
 
 # Conclusion
 
-HTTP has served us well since 1991, however the web has come a long way since and there is much room for improvement. [SPDY](http://en.wikipedia.org/wiki/SPDY) is one such improvement which sits in-between TCP and HTTP. SDPY has been used as the basis for [HTTP/2](http://en.wikipedia.org/wiki/HTTP/2) (though some still [aren't happy](https://queue.acm.org/detail.cfm?id=2716278) with it). I'm looking forward to [QUIC](http://en.wikipedia.org/wiki/QUIC) as a superior alternative to TCP, TCP+TLS and SSH ([*QUIC: next generation multiplexed transport over UDP*](https://www.youtube.com/watch?v=hQZ-0mXFmk8)). For now though, if you're stuck with HTTP (writing for browser clients), I would recommend Gzip+JSON over HTTPS for a nice balance of compatibility and network performance. Finally however, if your new project targets an internal server environment, native desktop clients, or native mobile clients - give [SSH](https://golang.org/x/crypto/ssh) a try.
+HTTP has served us well since 1991, however the web has come a long way since and there is much room for improvement. [SPDY](http://en.wikipedia.org/wiki/SPDY) is one such improvement which sits in-between TCP and HTTP. SDPY has been used as the basis for [HTTP/2](http://en.wikipedia.org/wiki/HTTP/2) (though some still [aren't happy](https://queue.acm.org/detail.cfm?id=2716278) with it). I'm looking forward to [QUIC](http://en.wikipedia.org/wiki/QUIC) as a superior alternative to TCP, TLS and SSH ([*QUIC: next generation multiplexed transport over UDP*](https://www.youtube.com/watch?v=hQZ-0mXFmk8)). For now though, if you're stuck with HTTP (writing for browser clients), I would recommend Gzip+JSON over HTTPS for a nice balance of compatibility and network performance. Finally however, if your new project targets an internal server environment, native desktop clients, or native mobile clients - give [crypto/ssh](https://golang.org/x/crypto/ssh) a try.
 
 I'll end with a disclaimer: although this post advocates for SSH over TLS+HTTP, the benefits described may not always outweigh the benefits of HTTP. **Beware of premature optimisation**. **Profile accordingly**.
 
