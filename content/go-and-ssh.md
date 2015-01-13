@@ -1,6 +1,6 @@
 +++
 author = ["Jaime Pillora"]
-date = "2015-01-12T09:00:00+00:00"
+date = "2015-01-13T09:00:00+00:00"
 title = "Go and the Secure Shell protocol"
 +++
 
