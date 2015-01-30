@@ -1,7 +1,7 @@
 +++
 Author = ["Samuel Lampa"]
-date = "2014-12-12T00:00:00-08:00"
-series = ["Advent 2014"]
+date = "2015-01-30T00:00:00-08:00"
+series = [""]
 title = "Pattern for pluggable pipeline components in Go"
 +++
 
