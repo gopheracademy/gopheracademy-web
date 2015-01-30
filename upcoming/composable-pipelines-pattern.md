@@ -169,29 +169,29 @@ Are we then bound to bury those processing network topologies deep down in spagh
 
 Well, to start with I have to say that the answer to that problem is solved already, in a way that is not covered in this article: You should definitely have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow), which solves this problem more or less to it's core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
 
-Flow based programming solves the complexity problem of complex processing network topologies in a thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and a separate network definition. This last thing, separating the network definition from the actual processing components, is what is so crucial to arrive at truly composable pipelines.
+Flow based programming solves the complexity problem of complex processing network topologies in a very thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and a separate network definition. This last thing, separating the network definition from the actual processing components, is what seems to be so crucial to arrive at truly component-oriented, modular and composable pipelines.
 
 I personally had a great deal of fun, playing around with GoFlow, and even have an embryonic little library of proof-of-concept bioinformatics components, written for use with the framework, available at [github](https://github.com/samuell/blow). An example program, using it, can be found [here](https://gist.github.com/samuell/6164115).
 
 ### Flow-based like concepts in pure Go?
 
-Still, it is always nice to be able to rely solely on the standard-library, if you can, which lead me to start experimenting with how far one can go with Flow-based programming-like ideas, without using any 3rd party framework at all (this is btw territory that I have heard that GoFlow's creator, [Vladimir Sibiroc](https://github.com/trustmaster) did explore to some extent, although I haven't found any public information on the outcomes).
+Still, it is always nice to be able to rely solely on the standard-library when you can, which lead me to start experimenting with how far one can go with Flow-based programming-like ideas without using any 3rd party framework at all.
 
-My playing around at least revealed that in Go, there are definitely more than one way to define and wire together components, than the with generator functions in python.
+By playing around, I have at least found that Go definitely provides a lot more flexibility to how to define and wire together components, than the with e.g. the generator functions in python.
 
-One of the patterns I figured out that I tend to like a lot, is to encapsulate concurrent processes in a struct, where the inputs and outputs are struct fields, of type channel (of some subsequent type).
+One of the patterns from my experiements that I tended to like a lot, is one where you encapsulate concurrent processes in a struct, and define the the inputs and outputs are struct fields, of type channel (of some subsequent type).
 
-This lets us set up of channels and do all the wiring of the processes, all totally outside of the components themselves, and in a somewhat semi-declarative fashion.
+This lets us set up of channels and do all the wiring of the processes all totally outside of the components themselves, which might lead to slightly clearer code, since you seapate the business of the components, with the business of the over-all program: How components are connected together.
 
 ### Show me the code
 
-So, what does this look like?
+So, what does this look like in practice?
 
-Code examples can in fact be found in a little github repo I made for this idea, called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well, to keep it integrated:
+Code examples of this little pattern can in fact be found in a little github repo I made for this idea, called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well, to keep it integrated:
 
 #### An example component
 
-First let's just have a look at how a component looks. Every component has one or more "in" and "outports", consisting of struct-fields of type channel (of some type that you choose. `[]byte` arrays in this case). Then it has a run method that initializes a go-routine, and reads on the inports, and writes on the outports, as it processes incoming "data packets":
+First let's just have a look at how a component looks. Every component has one or more "in" and "outports", consisting of struct-fields of type channel (of some type that you choose. `[]byte` arrays in this case). Then it has a run method that initializes a go-routine, and reads on the inports, and writes on the outports, as it processes incoming "data packets" (each component could add it's desired type info, although here we just use []byte, since we are working with simple string processing in ASCII format):
 
 ````go
 package glow
@@ -236,7 +236,7 @@ import (
 )
 
 const (
-	BUFSIZE = 2048 // Set a buffer size to use for channels
+	BUFSIZE = 128 // Set a buffer size to use for channels
 )
 
 func main() {
@@ -311,3 +311,13 @@ Finally, to compile and run the program above, do like this:
 go build basecomplement.go
 cat SomeFastaFile.fa | ./basecomplement > SomeFastaFile_Basecomplemented.fa
 ````
+
+### A final recap
+
+So, what did we do above? Basically we just encapsulated concurrently running functions in structs, and made the incoming and outgoing channels used by the function into struct fields.
+
+So, what did we get by that? - Well, certainly in technical terms not much more than the normal Go generator pattern shown earlier, but my personal gut-feeling is that the struct-based approach gives the network-defining code a bit clearer and more declaratively looking.
+
+Then, in fact, after writing the glow proof-of-concept library, I also realized some other ways of doing this, that would be various kinds of intermediate forms between the generator pattern, and the struct based pattern above. Those might be a topic for another blog post, but the two examples above should at least show two rather different ways of achieving the same thing.
+
+Go is of course still a rather young language, and it remains to be shown what patterns and best practices will stand the test of time, but I hope that this post can at least spark a little discussion on patterns for truly component-oriented concurrent code in Go!
