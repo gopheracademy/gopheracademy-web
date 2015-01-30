@@ -35,6 +35,8 @@ TGATTCATACTAGGTCAGTATTATAAAACTATGCTTTGTCCTTGTAAGGGGAGGCTTAAA
 ````
 *(The N:s mean that the nucleotides at those positions are not known, and the first line, starting with '>', is just a label, that should be skipped in our case, which will be seen in the following code examples)*
 
+*(For the real world Human Y-Chromosome fasta file, that I have been using, use [this link](ftp://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
+
 Then we could read the content of the file, line by line, and process it in sequential steps, using chained generators:
 
 ````python
