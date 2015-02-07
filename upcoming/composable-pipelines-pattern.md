@@ -7,11 +7,11 @@ title = "Pattern for pluggable pipeline components in Go"
 
 # Patterns for composable concurrent pipelines in Go
 
-I came into Go from the python-world, which is quite prevalent in my field, bioinformatics (I work mostly on the infrastructure side though but do poke around with general applied bioinformatics stuff from time to time out of sheer curiosity).
+The author came into Go from the python-world, which is quite prevalent the field of bioinformatics.
 
 ## Generator function in Python
 
-In python I had just learned how to write composable lazy-evauated pipelines of string processing operations, using the generator syntax built into python, which by some simple testing showed to  both use less memory and to befaster than their eager counterparts.
+In python the author had just learned how to write composable lazy-evauated pipelines of string processing operations, using the generator syntax built into python, which by some simple testing showed to  both use less memory and to befaster than their eager counterparts.
 
 The Generator functionality in python basically means that you create a function that, rather than returning a single data structure once, say for example a list of items, it will return a generator object which can be iterated over by repeadetly calling its next method. What is special about a generator compared to other *iterables* in python such as lists, is that the generator function will start evaluating itself and yield the objects one by one only after iteration has started.
 
@@ -82,9 +82,9 @@ The lazy evaluation means that one item at a time will be drawn through the whol
 
 ## The Generator pattern in Go
 
-Coming into Go I was highly intrigued by all the powerful concurrency patterns made possible in this language, elaborated in blog posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
+Coming into Go, the author was highly intrigued by all the powerful concurrency patterns made possible in this language, elaborated in blog posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
 
-I was even more happy to find that the simple and straight-forward generator pattern I knew from python was easy to implement in Go too.
+The author was even more happy to find that the simple and straight-forward generator pattern in python was easy to implement in Go too.
 
 The above python code would read something like this in Go, using the generator pattern (leaving out some imports and const definitions, for brevity):
 
@@ -165,7 +165,7 @@ But of course, in Go, we now have the obvious benefit that this chain of "genera
 
 ## Composability for general pipelines?
 
-The generator pattern neat when we have a simple "thread-like" pipeline with just a bunch processing steps operating serially on a stream of items from a previous function or process.
+The generator pattern is neat when we have a simple "thread-like" pipeline with just a bunch processing steps operating serially on a stream of items from a previous function or process.
 
 But what if we want to build up custom topologies of connected processing components with multiple (streaming) inputs and outputs?
 
