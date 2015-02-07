@@ -35,7 +35,7 @@ TGATTCATACTAGGTCAGTATTATAAAACTATGCTTTGTCCTTGTAAGGGGAGGCTTAAA
 ````
 *(The N:s mean that the nucleotides at those positions are not known, and the first line, starting with '>', is just a label, that should be skipped in our case)*
 
-*(For the real world Human Y-Chromosome fasta file I have been using, see [this link](ftp://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
+*(For the real world Human Y-Chromosome fasta file, see [this link](ftp://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
 
 Then we can read the content of the file line by line and process it in sequential steps, using chained generators:
 
@@ -183,11 +183,11 @@ This begs the quesiton whether there is any pattern that suits this job better t
 
 ### Enter Flow-based programming
 
-Well, to start with I have to say that the answer to that problem is solved already, in a way that is not covered in this article: You should definitely have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow), which solves this problem more or less to its core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
+Well, to start with, the answer to that problem is solved already, in a way that is not covered in this article: You should have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow), which solves this problem at its core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
 
 Flow based programming solves the complexity problem of complex processing network topologies in a very thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and network definition separated from the implementation of the processes. This last thing, separating the network definition from the actual processing components, is what seems to be crucial to arrive at truly component-oriented, modular and composable pipelines.
 
-I personally had a great deal of fun playing around with GoFlow, and even have an embryonic little library of proof-of-concept bioinformatics components written for use with the framework, available at [github](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
+The author of this post had a great deal of fun playing around with GoFlow, and even has an embryonic little library of proof-of-concept bioinformatics components written for use with the framework, available at [github](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
 
 ### Flow-based like concepts in pure Go?
 
