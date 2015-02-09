@@ -2,7 +2,7 @@
 Author = ["Samuel Lampa"]
 date = "2015-01-30T00:00:00-08:00"
 series = [""]
-title = "Pattern for pluggable pipeline components in Go"
+title = "Patterns for composable concurrent pipelines in Go"
 +++
 
 # Patterns for composable concurrent pipelines in Go
