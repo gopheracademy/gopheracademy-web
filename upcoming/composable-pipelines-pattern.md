@@ -9,13 +9,13 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 The author of this post came into the world of Go Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
 
-## Generator function in Python
+## Generators in Python
 
-The Generator functionality in Python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), rather will return a generator object which can later be iterated over by repeadetly calling its next method, or by the shorthand `for item in ...` syntax.
+The generator functionality in Python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), it will return a generator object which can later be iterated over by repeatedly calling its `next()` method or by the shorthand `for item in ...` syntax.
 
-What is special about a generator compared to other *iterables* in Python such as lists (which also support the `for item in ...` syntax), is that the generator function will start evaluating itself and yielding its output objects one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
+What is special about a generator compared to other *iterables* in Python such as lists (which also support the `for item in ...` syntax), is that the generator will start evaluating itself and yielding output one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
 
-To give an example, say that we have a file, chr_y.fa containing a little bit of the familiar A, C, G, T DNA nucleotides from the human Y chromosome, in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format):
+To give an example, say that we have a file, chr_y.fa containing a little bit of DNA sequence data from the human [Y chromosome](http://en.wikipedia.org/wiki/Y_chromosome), in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format), where the ASCII letters A, C, G, T represent their counterparts in the four-letter "[DNA alphabet](http://en.wikipedia.org/wiki/Nucleic_acid_notation)":
 
 **chr_y.fa:**
 ````fasta
@@ -35,7 +35,7 @@ TGATTCATACTAGGTCAGTATTATAAAACTATGCTTTGTCCTTGTAAGGGGAGGCTTAAA
 ````
 *(The N:s mean that the nucleotides at those positions are not known, and the first line, starting with '>', is just a label, that should be skipped in our case)*
 
-*(For the real world Human Y-Chromosome fasta file, see [this link](http://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
+*(For a real world Human Y chromosome FASTA file, see [this link](http://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
 
 Then we can read the content of the file line by line and process it in sequential steps, using chained generators:
 
