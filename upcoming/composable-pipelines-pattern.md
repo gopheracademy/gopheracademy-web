@@ -7,9 +7,9 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 # Patterns for composable concurrent pipelines in Go
 
-## Generator function in Python
-
 The author of this post came into the world of Go Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
+
+## Generator function in Python
 
 The Generator functionality in Python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), rather will return a generator object which can later be iterated over by repeadetly calling its next method, or by the shorthand `for item in ...` syntax.
 
