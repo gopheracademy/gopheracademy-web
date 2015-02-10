@@ -199,7 +199,7 @@ But of course in Go we have the obvious benefit that this chain of "generators" 
 
 ## Composability for general pipelines?
 
-The generator pattern is neat when we have a simple thread-like pipelines with processing steps operating one after each other, similar to a chain of piped programs in unix and linux.
+The generator pattern is neat when we have simple thread-like pipelines with processing steps operating one after each other, similar to a chain of piped programs in Unix and Linux.
 
 But what if we want to build up more complex topologies of connected processing components, with multiple (streaming) inputs and outputs in each component (something more similar to a directed acyclic graph)?
 
@@ -213,13 +213,13 @@ To start with, the answer to that problem is solved already in a way that is not
 
 Flow based programming solves the complexity problem of complex processing network topologies in a very thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and network definition separated from the implementation of the processes. This last thing, separating the network definition from the actual processing components, is what seems to be crucial to arrive at truly component-oriented, modular and composable pipelines.
 
-The author of this post had a great deal of fun playing around with GoFlow, and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [github](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
+The author of this post had a great deal of fun playing around with GoFlow, and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [GitHub](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
 
 ### Flow-based like concepts in pure Go?
 
 Still, for some problems it is nice to be able to rely solely on the standard-library, which lead the author to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all - that is, finding out the most flow-based programming-like pattern one can implement in pure Go.
 
-By playing around, the first thing that became clear is that Go provides a lot more flexibility to how to define and wire together components than the with e.g. the generator functions in Python.
+By playing around, the first thing that became clear is that Go provides a lot more flexibility in how to define and wire together components than generator functions in Python.
 
 One of the patterns arising from this experimentation that the author tends to like a lot is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
 
@@ -232,7 +232,7 @@ This pattern is the subject for this post, and is presented in more detail below
 
 So, what does this pattern look like in practice?
 
-Code examples of this little pattern can be found in a github repo that the author made for this idea, called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well:
+Code examples of this little pattern can be found in a GitHub repo that the author made for this idea, called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well:
 
 #### An example component
 
