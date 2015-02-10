@@ -100,11 +100,21 @@ Coming into Go, the author was highly intrigued by all the powerful concurrency 
 
 Even more interestingly, the simple and straight-forward generator pattern in Python was easy to implement in Go too, as shown in [Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), and also [listed on this site](http://www.golangpatterns.info/concurrency/generators).
 
-The above Python code would read something like this in Go, using the generator pattern (leaving out some imports and const definitions, for brevity):
+The above Python code would read something like this in Go, using the generator pattern:
 
 ````go
+package main
 
-// ...<snip>...
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
+const (
+	BUFSIZE = 128
+)
 
 func fileReaderGen(filename string) chan []byte {
 	fileReadChan := make(chan []byte, BUFSIZE)
@@ -113,14 +123,20 @@ func fileReaderGen(filename string) chan []byte {
 		if err != nil {
 			log.Fatal(err)
 		} else {
-				scan := bufio.NewScanner(file)
-				for scan.Scan() {
-					// Write to the channel we will return, while copying
-					// the buffer slice (which is re-used) ...
-					fileReadChan <- append([]byte(nil), scan.Bytes()...)
-		}
-		close(fileReadChan)
-		fmt.Println("Closed file reader channel")
+			scan := bufio.NewScanner(file)
+			for scan.Scan() {
+				// Write to the channel we will return
+				// We additionally have to copy the content
+				// of the slice returned by scan.Bytes() into
+				// a new slice (using append()) before sending
+				// it to another go-routine since scan.Bytes()
+				// will re-use the slice it returned for
+				// subsequent scans, which will garble up data
+				// later if we don't put the content in a new one.
+				fileReadChan <- append([]byte(nil), scan.Bytes()...)
+			}
+			close(fileReadChan)
+			fmt.Println("Closed file reader channel")
 		}
 	}()
 	return fileReadChan
@@ -129,12 +145,12 @@ func fileReaderGen(filename string) chan []byte {
 // Translation table, used in the base complementer
 // function below
 var baseConv = [256]byte{
-	'A': 'T',
-	'T': 'A',
-	'C': 'G',
-	'G': 'C',
-	'N': 'N',
-	'\n' : '\n',
+	'A':  'T',
+	'T':  'A',
+	'C':  'G',
+	'G':  'C',
+	'N':  'N',
+	'\n': '\n',
 }
 
 func baseComplementGen(inChan chan []byte) chan []byte {
@@ -146,6 +162,10 @@ func baseComplementGen(inChan chan []byte) chan []byte {
 					sequence[pos] = baseConv[sequence[pos]]
 				}
 			}
+			// Copy the content of the sequence slice before sending
+			// to a new go-routine, by appending to a new empty slice,
+			// to avoid data races caused by multiple go-routines
+			// accessing the same slice at the same time.
 			returnChan <- append([]byte(nil), sequence...)
 		}
 		close(returnChan)
@@ -236,6 +256,10 @@ func (self *StdInReader) Init() {
 	go func() {
 		scan := bufio.NewScanner(os.Stdin)
 		for scan.Scan() {
+			// Copy the content of the sequence slice before sending
+			// to a new go-routine, by appending to a new empty slice,
+			// to avoid data races caused by multiple go-routines
+			// accessing the same slice at the same time.
 			self.Out <- append([]byte(nil), scan.Bytes()...)
 		}
 		close(self.Out)
@@ -322,6 +346,10 @@ func (self *StdInReader) Init() {
 	go func() {
 		scan := bufio.NewScanner(os.Stdin)
 		for scan.Scan() {
+			// Copy the content of the sequence slice before sending
+			// to a new go-routine, by appending to a new empty slice,
+			// to avoid data races caused by multiple go-routines
+			// accessing the same slice at the same time.
 			self.Out <- append([]byte(nil), scan.Bytes()...)
 		}
 		close(self.Out)
