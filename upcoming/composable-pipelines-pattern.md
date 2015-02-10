@@ -9,11 +9,11 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 ## Generator function in Python
 
-The author of this post came into Go from the python-world, which is quite prevalent the field of bioinformatics. In python one can easily write composable lazy-evauated pipelines of string processing operations using the generator syntax built into the language, which has been shown to both use less memory and to be a bit faster than their eager counterparts.
+The author of this post came into the world of Go Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
 
-The Generator functionality in python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), rather will return a generator object which can later be iterated over by repeadetly calling its next method, or by the shorthand `for item in ...` syntax.
+The Generator functionality in Python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), rather will return a generator object which can later be iterated over by repeadetly calling its next method, or by the shorthand `for item in ...` syntax.
 
-What is special about a generator compared to other *iterables* in python such as lists (which also support the `for item in ...` syntax), is that the generator function will start evaluating itself and yielding its output objects one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
+What is special about a generator compared to other *iterables* in Python such as lists (which also support the `for item in ...` syntax), is that the generator function will start evaluating itself and yielding its output objects one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
 
 To give an example, say that we have a file, chr_y.fa containing a little bit of the familiar A, C, G, T DNA nucleotides from the human Y chromosome, in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format):
 
@@ -92,9 +92,9 @@ Again, the lazy evaluation means that one item at a time will be drawn through t
 
 Coming into Go, the author was highly intrigued by all the powerful concurrency patterns made possible in this language, elaborated in blog posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
 
-Even more interestingly, the simple and straight-forward generator pattern in python was easy to implement in Go too, as shown in [Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), and also [listed on this site](http://www.golangpatterns.info/concurrency/generators).
+Even more interestingly, the simple and straight-forward generator pattern in Python was easy to implement in Go too, as shown in [Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), and also [listed on this site](http://www.golangpatterns.info/concurrency/generators).
 
-The above python code would read something like this in Go, using the generator pattern (leaving out some imports and const definitions, for brevity):
+The above Python code would read something like this in Go, using the generator pattern (leaving out some imports and const definitions, for brevity):
 
 ````go
 
@@ -163,11 +163,11 @@ func main() {
 }
 ````
 
-As you can see, we basically replicate the behaviour of python generator functions (although in python it is less obvious how they work).
+As you can see, we basically replicate the behaviour of Python generator functions (although in Python it is less obvious how they work).
 
-Just like in python, instead of returning a single value (such as a list), we return something that can be iterated over in a lazy-evaluated way.
+Just like in Python, instead of returning a single value (such as a list), we return something that can be iterated over in a lazy-evaluated way.
 
-Whereas in python this was a generator object, in Go we instead return a channel, which can similarly be iterated over using the `for item := range ...` construct to retrieve the elements lazily (like in the `main()` method above), similar to the `for item in ...` syntax in python.
+Whereas in Python this was a generator object, in Go we instead return a channel, which can similarly be iterated over using the `for item := range ...` construct to retrieve the elements lazily (like in the `main()` method above), similar to the `for item in ...` syntax in Python.
 
 But of course in Go we have the obvious benefit that this chain of "generators" will also run fully concurrently using possibly all of our CPU cores since each "generator" starts its own go-routine (see the `go func() { ...` bits in the code).
 
@@ -193,7 +193,7 @@ The author of this post had a great deal of fun playing around with GoFlow, and 
 
 Still, for some problems it is nice to be able to rely solely on the standard-library, which lead the author to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all - that is, finding out the most flow-based programming-like pattern one can implement in pure Go.
 
-By playing around, the first thing that became clear is that Go provides a lot more flexibility to how to define and wire together components than the with e.g. the generator functions in python.
+By playing around, the first thing that became clear is that Go provides a lot more flexibility to how to define and wire together components than the with e.g. the generator functions in Python.
 
 One of the patterns arising from this experimentation that the author tends to like a lot is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
 
