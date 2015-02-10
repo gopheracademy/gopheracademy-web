@@ -113,7 +113,7 @@ import (
 )
 
 const (
-	BUFSIZE = 128
+	BUFSIZE = 16
 )
 
 func fileReaderGen(filename string) chan []byte {
@@ -252,7 +252,7 @@ type StdInReader struct {
 	Out chan []byte
 }
 
-func (self *StdInReader) Init() {
+func (r *StdInReader) Init() {
 	go func() {
 		scan := bufio.NewScanner(os.Stdin)
 		for scan.Scan() {
@@ -260,9 +260,9 @@ func (self *StdInReader) Init() {
 			// to a new go-routine, by appending to a new empty slice,
 			// to avoid data races caused by multiple go-routines
 			// accessing the same slice at the same time.
-			self.Out <- append([]byte(nil), scan.Bytes()...)
+			r.Out <- append([]byte(nil), scan.Bytes()...)
 		}
-		close(self.Out)
+		close(r.Out)
 	}()
 }
 ````
@@ -284,14 +284,14 @@ import (
 )
 
 const (
-	BUFSIZE = 128 // Set a buffer size to use for channels
+	BUFSIZE = 16 // Set a buffer size to use for channels
 )
 
 func main() {
 	// Create channels / connections
 	chan1 := make(chan []byte, BUFSIZE)
 	chan2 := make(chan []byte, BUFSIZE)
-	chan3 := make(chan int, 0)
+	chan3 := make(chan int)
 
 	// Create components, connecting the channels
 	stdInReader := new(glow.StdInReader)
@@ -337,12 +337,12 @@ type StdInReader struct {
 	Out chan []byte
 }
 
-func (self *StdInReader) OutChan() chan []byte {
-	self.Out = make(chan []byte, 16)
-	return self.Out
+func (r *StdInReader) OutChan() chan []byte {
+	r.Out = make(chan []byte, 16)
+	return r.Out
 }
 
-func (self *StdInReader) Init() {
+func (r *StdInReader) Init() {
 	go func() {
 		scan := bufio.NewScanner(os.Stdin)
 		for scan.Scan() {
@@ -350,9 +350,9 @@ func (self *StdInReader) Init() {
 			// to a new go-routine, by appending to a new empty slice,
 			// to avoid data races caused by multiple go-routines
 			// accessing the same slice at the same time.
-			self.Out <- append([]byte(nil), scan.Bytes()...)
+			r.Out <- append([]byte(nil), scan.Bytes()...)
 		}
-		close(self.Out)
+		close(r.Out)
 	}()
 }
 ````
@@ -403,7 +403,7 @@ baseComplementer.In = fileReader.OutChan()
 printer.In = baseComplementer.OutChan()
 ````
 
-Do you see how the syntax now looks exactly like single-value assignments, while in pracitce it is not sending any actual data yet, but "just" setting up a "channel-powered dataflow network",  through which we can later stream data indefinitely, from the network's input to it's output. In the authors opinion, this is neat indeed.
+Do you see how the syntax now looks exactly like single-value assignments, while in pracitce it is not sending any actual data yet, but "just" setting up a "channel-powered dataflow network",  through which we can later stream data indefinitely, from the network's input to its output. In the authors opinion, this is neat indeed.
 
 Finally, to compile and run the program above, just execute it by piping some FASTA file content, like this:
 ````bash
