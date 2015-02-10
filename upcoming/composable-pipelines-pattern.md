@@ -44,35 +44,41 @@ Then we can read the content of the file line by line and process it in sequenti
 # lines of the file one by one, as we later iterate on
 # the generation function that it returns.
 def fasta_reader(filename):
-	with open(filename,'r') as infile:
-		for line in infile:
-			yield line
+    with open(filename,'r') as infile:
+        for line in infile:
+            yield line
 
 # A base complementer, which converts each nucleotide in a
 # DNA sequence into its "complement" nucleotide (the one it
 # will sit paired to in the double-strand DNA helix molecule)
 def base_complementer(line_generator):
-	for line in line_generator:
-		if line[0] != '>':
-			translation_table = {
-			  'A' : 'T',
-			  'T' : 'A',
-			  'C' : 'G',
-			  'G' : 'C',
-			  'N' : 'N',
-			  '\n' : '\n'}
-			for nuc in line:
-				newline.append(translation_table[nuc])
-			yield newline
+    for line in line_generator:
+        if line[0] != '>':
+            translation_table = {
+                'A' : 'T',
+                'T' : 'A',
+                'C' : 'G',
+                'G' : 'C',
+                'N' : 'N',
+                '\n' : '\n'}
+
+            for nuc in line:
+                newline.append(translation_table[nuc])
+
+            # "Return" one line for every iteration over
+            # the generator returned from this function.
+            yield newline
 
 def main():
-	# Connect our super-minimal little "workflow" consisting
-	# - a base complementer
-	# - a file reader
-	# - our print statements right here in the loop
-	fa_reader = fasta_reader('chr_y.fa')
-	for line in base_complementer(fa_reader):
-		print line
+    # Connect our super-minimal little "workflow" consisting
+    # - a base complementer
+    # - a file reader
+    # - our print statements right here in the loop
+
+    fa_reader = fasta_reader('chr_y.fa')
+
+    for line in base_complementer(fa_reader):
+        print line
 ````
 
 Have a careful look at this line:
@@ -82,9 +88,9 @@ for line in base_complementer(fa_reader):
 	...
 ````
 
-We here see how, rather than sending data into `base_complementer`, we instead send a generator object (`fa_reader`), that `base_complementer` will iterate over, as soon as we start iterating over the the latter.
+We here see how, rather than sending data into `base_complementer`, we instead send a generator object (`fa_reader`), that `base_complementer` will iterate over, as soon as we start iterating over the latter.
 
-So when executing the main loop in `main()``, it will step by step drive our little pipeline consisting of three parts; a (FASTA) reader, a base complementer generator function and a print-statement at the end.
+So when executing the main loop in `main()`, it will step by step drive our little pipeline consisting of three parts; a (FASTA) reader, a base complementer generator function and a print-statement at the end.
 
 Again, the lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary aggregates (lists or dicts) of lines building up between the components, which means the program needs to use very little memory during the process.
 
