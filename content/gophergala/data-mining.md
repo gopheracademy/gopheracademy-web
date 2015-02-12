@@ -7,18 +7,24 @@ title = "Data mining with Go"
 
 # What is the idea behind Gophergala project heatingeffect
 
-The idea is to get the data from chillingeffects.org via a worker called harvester.
-The harvested data gets stored in without changing in a MongoDB database.
+The idea is to provide a visual representation of the raw Notice data from chillingeffects.org.
+This is achieved by getting the data from chillingeffects.org via a worker called harvester.
+The harvested data gets stored directly in a MongoDB database.
 A second worker aggregates the harvested data and stores it in the MongoDB database.
 The aggregated data is displayed through a simple Go http server.
 
-This post will focus on how the data gets from chillingeffects.org into a MongoDB database via the harvester.
+This post will focus on how data gets from chillingeffects.org into a MongoDB database via the harvester.
+
+## [chillingeffects.org](https://chillingeffects.org/)
+
+> The Chilling Effects database collects and analyzes legal complaints and requests for removal of online materials, helping Internet users to know their rights and understand the law. 
+> These data enable us to study the prevalence of legal threats and let Internet users see the source of content removals.
 
 # The chillingeffects.org API
 
 The [chillingeffects.org API](https://github.com/berkmancenter/chillingeffects/blob/master/doc/api_documentation.mkd) is a simple http JSON API.
 To harvest the Notices the harvester only requires one function of the API which is [request a notice](https://github.com/berkmancenter/chillingeffects/blob/master/doc/api_documentation.mkd#request-a-notice).
-The request is a GET call to the endpoint:https://chillingeffects.org/notices/<notice id>.json
+The request is a GET call to the endpoint: ``https://chillingeffects.org/notices/<notice id>.json``
 On success the response body contains a JSON object.
 The package chillingeffects Go package has one function RequestNotice, which returns a Notice struct.
 
@@ -36,14 +42,14 @@ func harvestNotices(low, high int, session *mgo.Session) {
 }
 ```
 
-The problem with this is it simply takes too long to fetch thousands of notices.
-Most of time is spend waiting between a request and a reponse from chillingeffects.org and the database.
+The problem is, it simply takes too long to fetch thousands of notices.
+Most of the time is spend waiting between a request and a response from chillingeffects.org and the database.
 If you use a worker service like iron.io and you are metered by the second your quota is exceeded very fast.
 
 
 # Infusing goroutines
 
-To reduce the time spend on each task, I had to optimize the harvester.
+To reduce the time spend on each task, the harvester has to be optimized.
 One of Go's advertised features are coroutines called goroutines.
 A goroutine runs code concurrently to other goroutines.
 Since they have little overhead, a simple solution to the time problem would be to start each request in it's own goroutine.
@@ -60,13 +66,16 @@ func harvestNotices(low, high int, session *mgo.Session) {
 }
 ```
 
-The above code runs most likly into the problem.
-The main goroutine which starts all the request goroutines finishes and ends the programm before the other goroutines.
+The above code runs but most likely ends in an undesired result.
+The main goroutine which starts all the request goroutines finishes and ends the program before the other goroutines.
 The result is probably nothing but spend processing time.
 
 # sync.WaitGroup
 
-The main goroutine does nothing but spinup the request goroutines and waits for them to finish.
+To avoid an application exit before the request goroutines are done, the main goroutine needs to wait.
+Waiting/blocking can be done with mutexes or channels.
+The Go package sync provides helpful functions for blocking.
+The following code uses sync.WaitGroup to group all request goroutines together and blocks on the main goroutine until all request goroutines have called Done().
 
 
 ``` Go
@@ -92,9 +101,11 @@ The code can be further "improved" by using a groutine pool to avoid creating to
 You never known if somebody decides to pull millions of notices in one go.
 
 Another improvement is to bulk insert the notices into MongoDB instead of each notice on it's own.
+Bulk insert is currently an experimental feature of the Go package mgo.
 
-To achive this, a limited amount of goroutines are created.
-Each goroutine requests multiple notices sequential. After a certain amount of responses, the notices are beeing bulk inserted into a MongoDB database.
+To achieve this, a limited amount of goroutines are created.
+Each goroutine requests multiple notices sequential. After a certain amount of responses, the notices are being bulk inserted into a MongoDB database.
+This is repeated until the ids channel is closed.
 
 ``` Go
 func harvest(low, high int, session *mgo.Session) {
@@ -134,6 +145,7 @@ func work(ids <-chan int, wg *sync.WaitGroup, session *mgo.Session) {
 # A note on error handling
 
 I omitted error handling in the above code examples. You should never ignore a returned error value.
+
 
 # Links
 
