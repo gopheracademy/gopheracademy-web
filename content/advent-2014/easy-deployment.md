@@ -15,7 +15,7 @@ Deployment can be the hardest part of any project.  Docker certainly makes that 
 
 ### Docker-ize your Application
 
-The first step of this process is to create a Docker container that can run your application.  Since the GopherAcademy blog runs on [hugo](https://github.com/spf13/hugo) we need to take that into account.  I started with a base Docker container I borrowed from [tutum](github.com/tutumcloud) and then [heavily modified it](https://github.com/bketelsen/hugo-nginx-base) for our needs.  All containers that we deploy with Hugo websites use this container as the base.
+The first step of this process is to create a Docker container that can run your application.  Since the GopherAcademy blog runs on [hugo](https://github.com/spf13/hugo) we need to take that into account.  I started with a base Docker container I borrowed from [tutum](https://github.com/tutumcloud) and then [heavily modified it](https://github.com/bketelsen/hugo-nginx-base) for our needs.  All containers that we deploy with Hugo websites use this container as the base.
 
 The base Dockerfile looks like this:
 

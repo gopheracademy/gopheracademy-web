@@ -18,8 +18,10 @@ h1,h2,h3,h4,h5,h6
 
 h1
 {
-  font-weight:700;
-  color:#6d7680
+  font-weight:400;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  color:#428bca;
+  font-size: 26px;
 }
 
 .jumbotron h1 {
@@ -31,6 +33,9 @@ h1
 h2,h3
 {
   font-weight:400;
+  font-family: 'Roboto', Helvetica, Arial, sans-serif;
+  color:#428bca;
+  font-size: 22px;
 }
 
 h1 a,h2 a,h3 a,h4 a
@@ -976,4 +981,15 @@ mark {
 
 .smallmenu {
   font-size: 16px;
+}
+
+@media print {
+	#sidebar-wrapper {
+		display: none;
+	}
+
+	#wrapper {
+		padding-left: 0;
+		transition: none;
+	}
 }

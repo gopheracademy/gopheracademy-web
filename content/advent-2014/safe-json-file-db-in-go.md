@@ -118,7 +118,7 @@ Here's one of our jobs for interacting with the database. This job simply implem
 	}
 
 ### Todo Client
-This is the piece which the rest of your application will interact with. It encapsulates the mess associated with pushing jobs and waiting for a response and signal to come through on the error channel. It also maps the raw database model into a more reasonable result (an array in this case.)
+This is the piece which the rest of your application will interact with. It encapsulates the mess associated with pushing jobs and waiting for a response and signal to come through on the error channel. It also maps the raw database model into a more reasonable result (a slice in this case.)
 
 	// client for submitting jobs and providing a repository-like interface
 	type TodoClient struct {
@@ -140,7 +140,7 @@ This is the piece which the rest of your application will interact with. It enca
 		// Collect the found Todos
 		todos <-job.todos
 
-		// Convert Map to Array
+		// Convert Map to Slice
 		for _, value := range todos {
 			arr = append(arr, value)
 		}
@@ -184,7 +184,7 @@ And last but not least, we leverage the `TodoClient` to get some data... safely!
 		Client *TodoClient
 	}
 
-	// Get all todos as an array
+	// Get all todos as a slice
 	func (h *TodoHandlers) GetTodos(c *gin.Context) {
 		todos, err := h.Client.GetTodos()
 		if err != nil {
