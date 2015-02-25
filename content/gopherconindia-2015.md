@@ -27,11 +27,10 @@ Day 2:
 [Amit Upadhyay - An Alternate Approach to Data](https://sourcegraph.com/blog/live/gopherconindia/111638734932)  
 [Piyush Verma - Gottp: A Micro Backend Framework in Go](https://sourcegraph.com/blog/live/gopherconindia/111634755317)  
 [Sriram Melkote - N1QL a Query Language in Go. It Makes "Cents"](https://sourcegraph.com/blog/live/gopherconindia/111638091937)  
-[Lakshan Perera - Building Internet of Things with Go](https://sourcegraph.com/blog/live/gopherconindia/111644528497)  
 [Dr. Sendil Devar - Go for Simulations in Wireless Research](https://sourcegraph.com/blog/live/gopherconindia/111644026097)  
 [Jyotiska NK - Image Processing in Scale with Go](https://sourcegraph.com/blog/live/gopherconindia/111648697747)
 
-Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Spain, Thailand, and the United States.
+Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Spain, Sri Lanka, Thailand, and the United States.
 
 Day 1:  
 [Francesc Campoy Flores - Gopher: From Darkness to Enlightenment](https://sourcegraph.com/blog/live/gopherconindia/111532276007)  
@@ -51,6 +50,7 @@ Day 2:
 [Martin Schoch - bleve - Modern Text Indexing for Go](https://sourcegraph.com/blog/live/gopherconindia/111637392272)  
 [Speaker Q&A](https://sourcegraph.com/blog/live/gopherconindia/111653655537)  
 [David Calavera - High Performance Git Infrastructure with Go](https://sourcegraph.com/blog/live/gopherconindia/111642525197)  
+[Lakshan Perera - Building Internet of Things with Go](https://sourcegraph.com/blog/live/gopherconindia/111644528497)  
 [Matthew Campbell - How to Keep Wall Street Chatting Using Go](https://sourcegraph.com/blog/live/gopherconindia/111645038222)  
 [Guillaume J. Charmes - Raytracing in Go](https://sourcegraph.com/blog/live/gopherconindia/111649268512)  
 [Dave Cheney - Simplicity and the Ideas that Go Left Behind](https://sourcegraph.com/blog/live/gopherconindia/111854129512)
@@ -66,3 +66,7 @@ If I take one thing away from the conference it was the excitement I felt from e
 People experienced how vibrant, warm, friendly, supporting and accessible the local and global Go community is. This helped to foster confidence in people to start conversations, ask questions and remove any doubt that they were on their own. People left the conference knowing that they could all be a part of something that is bigger than themselves. Regardless of where they were on their journey.
 
 In closing, a huge amount of thanks needs to go out to the conference organizers. Ajey Gore, Gautam Rege, Karan Misra, Santosh B Malleshappa and last but not least Satish Talim. Without their vision, passion and drive none of this would have been possible. We all saw how tirelessly they worked over the three days to make the conference run smooth and be the success it was.
+
+#### Slide Decks
+
+Slides for all the talks can be found on [Github](https://github.com/gopherconindia/talks)
