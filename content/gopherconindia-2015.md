@@ -66,3 +66,7 @@ If I take one thing away from the conference it was the excitement I felt from e
 People experienced how vibrant, warm, friendly, supporting and accessible the local and global Go community is. This helped to foster confidence in people to start conversations, ask questions and remove any doubt that they were on their own. People left the conference knowing that they could all be a part of something that is bigger than themselves. Regardless of where they were on their journey.
 
 In closing, a huge amount of thanks needs to go out to the conference organizers. Ajey Gore, Gautam Rege, Karan Misra, Santosh B Malleshappa and last but not least Satish Talim. Without their vision, passion and drive none of this would have been possible. We all saw how tirelessly they worked over the three days to make the conference run smooth and be the success it was.
+
+#### Slide Decks
+
+Slides for all the talks can be found on [Github](https://github.com/gopherconindia/talks)
