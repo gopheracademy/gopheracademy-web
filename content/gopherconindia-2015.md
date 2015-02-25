@@ -27,11 +27,10 @@ Day 2:
 [Amit Upadhyay - An Alternate Approach to Data](https://sourcegraph.com/blog/live/gopherconindia/111638734932)  
 [Piyush Verma - Gottp: A Micro Backend Framework in Go](https://sourcegraph.com/blog/live/gopherconindia/111634755317)  
 [Sriram Melkote - N1QL a Query Language in Go. It Makes "Cents"](https://sourcegraph.com/blog/live/gopherconindia/111638091937)  
-[Lakshan Perera - Building Internet of Things with Go](https://sourcegraph.com/blog/live/gopherconindia/111644528497)  
 [Dr. Sendil Devar - Go for Simulations in Wireless Research](https://sourcegraph.com/blog/live/gopherconindia/111644026097)  
 [Jyotiska NK - Image Processing in Scale with Go](https://sourcegraph.com/blog/live/gopherconindia/111648697747)
 
-Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Spain, Thailand, and the United States.
+Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Singapore, Spain, Thailand, and the United States.
 
 Day 1:  
 [Francesc Campoy Flores - Gopher: From Darkness to Enlightenment](https://sourcegraph.com/blog/live/gopherconindia/111532276007)  
@@ -51,6 +50,7 @@ Day 2:
 [Martin Schoch - bleve - Modern Text Indexing for Go](https://sourcegraph.com/blog/live/gopherconindia/111637392272)  
 [Speaker Q&A](https://sourcegraph.com/blog/live/gopherconindia/111653655537)  
 [David Calavera - High Performance Git Infrastructure with Go](https://sourcegraph.com/blog/live/gopherconindia/111642525197)  
+[Lakshan Perera - Building Internet of Things with Go](https://sourcegraph.com/blog/live/gopherconindia/111644528497)  
 [Matthew Campbell - How to Keep Wall Street Chatting Using Go](https://sourcegraph.com/blog/live/gopherconindia/111645038222)  
 [Guillaume J. Charmes - Raytracing in Go](https://sourcegraph.com/blog/live/gopherconindia/111649268512)  
 [Dave Cheney - Simplicity and the Ideas that Go Left Behind](https://sourcegraph.com/blog/live/gopherconindia/111854129512)
