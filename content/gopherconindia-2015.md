@@ -55,6 +55,8 @@ Day 2:
 [Guillaume J. Charmes - Raytracing in Go](https://sourcegraph.com/blog/live/gopherconindia/111649268512)  
 [Dave Cheney - Simplicity and the Ideas that Go Left Behind](https://sourcegraph.com/blog/live/gopherconindia/111854129512)
 
+On the second day we had 3 people come up on stage to give 5 minute [lighting talks](https://sourcegraph.com/blog/live/gopherconindia/111640712092). These were conference attendees that were incredibly excited and deserving to be a part of the event. Krishna Sundarram discusses the difference between goroutines and threads. Yeshwanth Kumar talk about composing micro containers using Megam PaaS. Finally, Bhasker Kode talked about why it’s important to instrument your Go code.
+
 Dave Cheney provided an inspiring closing talk about understanding and embracing Go’s simplicity. That Go’s [simplicity](https://sourcegraph.com/blog/live/gopherconindia/111854129512) doesn’t mean “easy”, but it might mean “straightforward” or “uncomplicated”. That good programmers write simple programs. “Simplicity is the ultimate sophistication,” as Leonardo da Vinci once said. This simplicity extends itself to provide support for large teams, the need for fewer dependencies and a simple build system.
 
 Two amazing women who were at the workshop came up to me after the conference. They were so excited and eager to be an active part of both the local and global community. When I asked if they would like to be introduced to other women in the community, their faces lit up. For me, their excitement alone made the entire conference worth being there and a success.
