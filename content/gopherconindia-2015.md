@@ -30,7 +30,7 @@ Day 2:
 [Dr. Sendil Devar - Go for Simulations in Wireless Research](https://sourcegraph.com/blog/live/gopherconindia/111644026097)  
 [Jyotiska NK - Image Processing in Scale with Go](https://sourcegraph.com/blog/live/gopherconindia/111648697747)
 
-Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Sir Lanka, Spain, Thailand, and the United States.
+Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, Austria, France, Japan, Mexico, Sri Lanka, Spain, Thailand, and the United States.
 
 Day 1:  
 [Francesc Campoy Flores - Gopher: From Darkness to Enlightenment](https://sourcegraph.com/blog/live/gopherconindia/111532276007)  
