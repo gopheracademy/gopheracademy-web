@@ -14,14 +14,14 @@ The opening talk by Francesc really set the stage for the conference. He talked 
 
 The speakers who came from India all had amazing things to share. I could see the pride in the room when they were on stage giving their talks. I was personally impressed by all of them.
 
-Day 1:
+Day 1:  
 [Niket Patel - Joy of Single Purpose Services in Go](https://sourcegraph.com/blog/live/gopherconindia/111545487187)  
 [Shiju Varghese - Building RESTful Services With Go and MongoDB](https://sourcegraph.com/blog/live/gopherconindia/111559098474)  
 [Baiju Muthukadan - Web Development using Go and Ember.js](https://sourcegraph.com/blog/live/gopherconindia/111591653516)  
 [Rajesh Ramachendran, - CGO, Under the Hood](https://sourcegraph.com/blog/live/gopherconindia/111556333627)  
 [Baishampayan Ghose - Closing Keynote: The Roots of Go](https://sourcegraph.com/blog/live/gopherconindia/111558905792)
 
-Day 2:
+Day 2:  
 [Kunal Powar - EMBD](https://sourcegraph.com/blog/live/gopherconindia/111626334627)  
 [Sunil Sayyaparaju - Concurrent, High Performance Data Access With Go](https://sourcegraph.com/blog/live/gopherconindia/111639383132)  
 [Amit Upadhyay - An Alternate Approach to Data](https://sourcegraph.com/blog/live/gopherconindia/111638734932)  
@@ -33,6 +33,7 @@ Day 2:
 
 Those who travelled internationally also shared great teaching moments, thoughts and opinions. The speakers represented countries from Australia, France, Japan, Mexico, Spain, Thailand, United States and Vienna.
 
+Day 1:  
 [Francesc Campoy Flores - Gopher: From Darkness to Enlightenment](https://sourcegraph.com/blog/live/gopherconindia/111532276007)  
 [Aaron Cruz - Herding Gophers](https://sourcegraph.com/blog/live/gopherconindia/111535062177)  
 [Gabriel Aszalos - The Gopher from the Future](https://sourcegraph.com/blog/live/gopherconindia/111538530397)  
@@ -45,6 +46,7 @@ Those who travelled internationally also shared great teaching moments, thoughts
 [Verónica López - Concurrency by Data Structures (and Nasty Examples)](https://sourcegraph.com/blog/live/gopherconindia/111555835532)  
 [Alan Shreve - Principles of Designing Go APIs with Channels](https://sourcegraph.com/blog/live/gopherconindia/111555846937s)
 
+Day 2:  
 [Bryan Liles - Embracing the Standard Library](https://sourcegraph.com/blog/live/gopherconindia/111625084902)  
 [Martin Schoch - bleve - Modern Text Indexing for Go](https://sourcegraph.com/blog/live/gopherconindia/111637392272)  
 [Speaker Q&A](https://sourcegraph.com/blog/live/gopherconindia/111653655537)  
