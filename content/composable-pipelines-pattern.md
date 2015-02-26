@@ -272,7 +272,7 @@ Notice also inside the go-routine (the `go func() {...}` bit) above, how even th
 
 #### Connecting components - manual way
 
-To connect such processes together (here in the more "manual" way) we create a bunch of channels, a bunch of processes and finally stitch them together and run them:
+To connect such processes together (here in the more "manual" way) we create a bunch of channels, a bunch of processes and finally stitch them together and run:
 
 ````go
 package main
