@@ -11,7 +11,7 @@ The author of this post came into the world of Go from Python, which is quite pr
 
 ## Generators in Python
 
-The generator functionality in Python basically means that you create a function that, rather than returning a single data structure once, like a list of items, it will return a generator object which can later be iterated over by repeatedly calling its `next()` method or by the shorthand `for item in ...` syntax.
+The generator functionality in Python basically means that you create a function that, rather than returning a single data structure once, like a list of items, it will return a generator object which can later be iterated over by repeatedly calling its `next()` method or with the shorthand `for item in ...` syntax.
 
 What is special about a generator compared to other *iterables* in Python such as lists, is that the generator will start evaluating itself and yielding output one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
 
