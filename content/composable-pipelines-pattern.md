@@ -92,7 +92,7 @@ We see here how, rather than sending data into `base_complementer`, we instead s
 
 So when executing the main loop in `main()`, it will step by step drive our little pipeline consisting of three parts; a (FASTA) reader, a base complementer generator function, and a print-statement at the end.
 
-Again, the lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary lists or dicts building up between the components. This means the program needs to use very little memory during the process.
+Again, the lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary lists or dicts building up between the components.
 
 ## The Generator pattern in Go
 
