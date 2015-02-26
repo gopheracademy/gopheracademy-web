@@ -217,26 +217,25 @@ The author of this post had a great deal of fun playing around with GoFlow and e
 
 ### Flow-based like concepts in pure Go?
 
-Still, for some problems it is nice to be able to rely solely on the standard-library, which lead the author to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all - that is, finding out the most flow-based programming-like pattern one can implement in pure Go.
+Still, for some problems it is nice to rely solely on the standard-library, which lead the author to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all. That is, finding out the most flow-based programming-like pattern one can implement in pure Go.
 
 By playing around, the first thing that became clear is that Go provides a lot more flexibility in how to define and wire together components than generator functions in Python.
 
-One of the patterns arising from this experimentation that the author tends to like a lot is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
+One of the author's favourite patterns arising from this experimentation is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
 
-This pattern lets us do all the wiring of the processes using the struct fields, which, by having clear names coded into the processes, and exposed to the network-defining code, can in the authors opinion make the network definition code clearer and more intuitive.
+This pattern lets us do all the wiring of the processes using the struct fields, which, by having clear names coded into the processes and being exposed to the network-defining code, can make the network definition code clearer and more intuitive.
 
-This pattern is the subject for this post, and is presented in more detail below.
-
+This pattern is the main subject for this post, and is presented in more detail below.
 
 ### Show me the code
 
 So, what does this pattern look like in practice?
 
-Code examples of this little pattern can be found in a GitHub repo that the author made for this idea, called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well:
+Code examples of the pattern can be found in an example library called [glow](https://github.com/samuell/glow), but let's have a look at the code examples here in the post as well:
 
 #### An example component
 
-First let's just have a look at how a component looks, when using this pattern. Every component has one or more "in-" and "out-ports", consisting of struct fields of type channel (of some subsequent type - `[]byte` arrays in this case).
+First let's just have a look at how a component looks when using this pattern. Every component has one or more "in-" and "out-ports", consisting of struct fields of type channel (of some subsequent type - `[]byte` arrays in this case).
 
 Then it has an `Init()` method that initializes a go-routine so that it is ready to start reading on the inport(s) and write on the outport(s) as soon as the first in-data arrive:
 
@@ -267,13 +266,13 @@ func (r *StdInReader) Init() {
 }
 ````
 
-Here, since we did have just one output, (and no input), we have simply named the outport to "Out", but we could of course give it a more descriptive name if we wish.
+Here, since we did have just one output and no input, we have simply named the outport to "Out", but we should of course give it a more descriptive name where applicable.
 
-Notice also inside the go-routine (the `go func() {...}` bit) above, how even the internal component code becomes a bit clearer by using fields of the struct, so that we know immediately where to look up the fields definition!
+Notice also inside the go-routine (the `go func() {...}` bit) above, how even the internal component code becomes a bit clearer by using the struct fields, so that we know immediately where to look up the field definitions!
 
 #### Connecting components - manual way
 
-To connect such processes together - here in the more "manual" way - we create a bunch of channels, a bunch of processes and finally stitch them together and run it:
+To connect such processes together (here in the more "manual" way) we create a bunch of channels, a bunch of processes and finally stitch them together and run them:
 
 ````go
 package main
@@ -320,11 +319,11 @@ func main() {
 
 #### Connecting components - using convenience methods
 
-The above way of connecting things might well be clear and rather "self-describing", but it perhaps looks a bit ugly to manually create all those channels, find out some name for them (which easily becomes rather synthetic) before plugging them into an outport and inport.
+The above manually creating all those channels, finding out names for them (which easily becomes rather synthetic) before plugging them into an outport and inport, does maybe get a bit ugly and low-level though.
 
 Why not create a convenience function for each outport that returns a ready-make channel of the right type?
 
-So, for our "Out" struct field / outport, let's create an accompanying `OutChan()` method, that does what we described above. The updated component would look like so:
+So, for our "Out" struct field / outport we create an accompanying `OutChan()` method, that creates a channel, assigns it to the "Out" struct field, and returns it. The updated component would look like so:
 
 ````go
 package glow
