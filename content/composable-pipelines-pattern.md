@@ -11,11 +11,11 @@ The author of this post came into the world of Go from Python, which is quite pr
 
 ## Generators in Python
 
-The generator functionality in Python basically means that you create a function that, rather than returning a single data structure once (say for example a list of items), it will return a generator object which can later be iterated over by repeatedly calling its `next()` method or by the shorthand `for item in ...` syntax.
+The generator functionality in Python basically means that you create a function that, rather than returning a single data structure once, like a list of items, it will return a generator object which can later be iterated over by repeatedly calling its `next()` method or by the shorthand `for item in ...` syntax.
 
-What is special about a generator compared to other *iterables* in Python such as lists (which also support the `for item in ...` syntax), is that the generator will start evaluating itself and yielding output one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
+What is special about a generator compared to other *iterables* in Python such as lists, is that the generator will start evaluating itself and yielding output one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
 
-To give an example, say that we have a file, chr_y.fa containing a little bit of DNA sequence data from the human [Y chromosome](http://en.wikipedia.org/wiki/Y_chromosome), in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format), where the ASCII letters A, C, G, T represent their counterparts in the four-letter "[DNA alphabet](http://en.wikipedia.org/wiki/Nucleic_acid_notation)":
+As an example, say that we have a file, `chr_y.fa`, containing a bit of DNA sequence data from the human [Y chromosome](http://en.wikipedia.org/wiki/Y_chromosome) in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format), where the ASCII letters A, C, G, T represent their counterparts in the four-letter "[DNA alphabet](http://en.wikipedia.org/wiki/Nucleic_acid_notation)":
 
 **chr_y.fa:**
 ````fasta
@@ -37,7 +37,7 @@ TGATTCATACTAGGTCAGTATTATAAAACTATGCTTTGTCCTTGTAAGGGGAGGCTTAAA
 
 *(For a real world Human Y chromosome FASTA file, see [this link](http://ftp.ensembl.org/pub/release-67/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.67.dna_rm.chromosome.Y.fa.gz) [68MB, gzipped])*
 
-Then we can read the content of the file line by line and process it in sequential steps, using chained generators:
+Then we can read the content of the file, line by line, and process it in sequential steps using chained generators:
 
 ````python
 # Create a lazy-evaluated file reader, just yielding the
@@ -88,15 +88,15 @@ for line in base_complementer(fa_reader):
 	...
 ````
 
-We here see how, rather than sending data into `base_complementer`, we instead send a generator object (`fa_reader`), that `base_complementer` will iterate over, as soon as we start iterating over the latter.
+We see here how, rather than sending data into `base_complementer`, we instead send a generator object (`fa_reader`), that `base_complementer` will iterate over as soon as we start iterating over the latter.
 
-So when executing the main loop in `main()`, it will step by step drive our little pipeline consisting of three parts; a (FASTA) reader, a base complementer generator function and a print-statement at the end.
+So when executing the main loop in `main()`, it will step by step drive our little pipeline consisting of three parts; a (FASTA) reader, a base complementer generator function, and a print-statement at the end.
 
-Again, the lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary aggregates (lists or dicts) of lines building up between the components, which means the program needs to use very little memory during the process.
+Again, the lazy evaluation means that one item at a time will be drawn through the whole pipeline for each iteration in the main loop, without any temporary lists or dicts building up between the components. This means the program needs to use very little memory during the process.
 
 ## The Generator pattern in Go
 
-Coming into Go, the author was highly intrigued by all the powerful concurrency patterns made possible in this language, elaborated in blog posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
+Coming into Go the author was intrigued by all the powerful concurrency patterns made possible in the language, elaborated in posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
 
 Even more interestingly, the simple and straight-forward generator pattern in Python was easy to implement in Go too, as shown in [Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), and also [listed on this site](http://www.golangpatterns.info/concurrency/generators).
 
@@ -191,29 +191,29 @@ func main() {
 
 As you can see, we basically replicate the behaviour of Python generator functions (although in Python it is less obvious how they work).
 
-Just like in Python, instead of returning a single value (such as a list), we return something that can be iterated over in a lazy-evaluated way.
+Just like in Python, instead of returning a single value such as a list, we return something that can be iterated over in a lazy-evaluated way.
 
-Whereas in Python this was a generator object, in Go we instead return a channel, which can similarly be iterated over using the `for item := range ...` construct to retrieve the elements lazily (like in the `main()` method above), similar to the `for item in ...` syntax in Python.
+Whereas in Python this was a generator object, in Go we instead return a channel, which can similarly be iterated over using the `for item := range ...` construct to retrieve the elements lazily (see the `main()` method above), similar to the `for item in ...` syntax in Python.
 
-But of course in Go we have the obvious benefit that this chain of "generators" will also run fully concurrently using possibly all of our CPU cores since each "generator" starts its own go-routine (see the `go func() { ...` bits in the code).
+But of course in Go we have the obvious benefit that this chain of "generators" will also run fully concurrently, using possibly all of our CPU cores, since each "generator" starts its own go-routine (see the `go func() { ...` bits in the code).
 
 ## Composability for general pipelines?
 
-The generator pattern is neat when we have simple thread-like pipelines with processing steps operating one after each other, similar to a chain of piped programs in Unix and Linux.
+The generator pattern is neat when we have simple serial pipelines with processing steps operating one after each other, similar to a chain of piped programs in Unix and Linux.
 
-But what if we want to build up more complex topologies of connected processing components, with multiple (streaming) inputs and outputs in each component (something more similar to a directed acyclic graph)?
+But what if we want to build up more complex topologies of connected processing components, with multiple streaming inputs and outputs in each component - E.g. something more similar to a directed acyclic graph?
 
 It seems that code written with the generator patterns rather quickly can get a little hard to follow when going into this direction. Most importantly because it will not be as visible what kind of data are returned (or lazily streamed) on those channels, since the returned channels don't have any name exposed from the component to the outer world.
 
-This begs the quesiton whether there is any pattern that suits this job better than the generator pattern?
+This begs the quesiton whether there are pattern that suits this job better than the generator pattern.
 
 ### Enter Flow-based programming
 
-To start with, the answer to that problem is solved already in a way that is not covered in this article: You should all definitely have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow), which solves this problem more or less at its core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
+To start with, the answer to that problem is solved already in a way that is not covered in this article: You should all definitely have a serious look at the [GoFlow library](https://github.com/trustmaster/goflow) by [Vladimir Sibirov](https://github.com/trustmaster), which solves this problem at its core, relying on the solid foundation of the principles of [Flow-based programming](www.jpaulmorrison.com/fbp/) (FBP), invented by John P Morrison at IBM back in the 60's.
 
 Flow based programming solves the complexity problem of complex processing network topologies in a very thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and network definition separated from the implementation of the processes. This last thing, separating the network definition from the actual processing components, is what seems to be crucial to arrive at truly component-oriented, modular and composable pipelines.
 
-The author of this post had a great deal of fun playing around with GoFlow, and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [GitHub](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
+The author of this post had a great deal of fun playing around with GoFlow and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [GitHub](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
 
 ### Flow-based like concepts in pure Go?
 
