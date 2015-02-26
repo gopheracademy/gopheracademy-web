@@ -7,7 +7,7 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 # Patterns for composable concurrent pipelines in Go
 
-The undersigned came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
+The undersigned came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large data sets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
 
 ## Generators in Python
 
@@ -15,7 +15,7 @@ The generator functionality in Python basically means that you create a function
 
 What is special about a generator compared to other *iterables* in Python such as lists, is that the generator will start evaluating itself and yielding output one by one only after iteration has started. Thus, minimal intermediate data is created and stored in memory.
 
-As an example, say that we have a file, `chr_y.fa`, containing a bit of DNA sequence data from the human [Y chromosome](http://en.wikipedia.org/wiki/Y_chromosome) in the ubiquotous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format), where the ASCII letters A, C, G, T represent their counterparts in the four-letter "[DNA alphabet](http://en.wikipedia.org/wiki/Nucleic_acid_notation)":
+As an example, say that we have a file, `chr_y.fa`, containing a bit of DNA sequence data from the human [Y chromosome](http://en.wikipedia.org/wiki/Y_chromosome) in the ubiquitous [FASTA file format](http://en.wikipedia.org/wiki/FASTA_format), where the ASCII letters A, C, G, T represent their counterparts in the four-letter "[DNA alphabet](http://en.wikipedia.org/wiki/Nucleic_acid_notation)":
 
 **chr_y.fa:**
 ````fasta
@@ -189,7 +189,7 @@ func main() {
 }
 ````
 
-As you can see, we basically replicate the behaviour of Python generator functions (although in Python it is less obvious how they work).
+As you can see, we basically replicate the behavior of Python generator functions (although in Python it is less obvious how they work).
 
 Just like in Python, instead of returning a single value such as a list, we return something that can be iterated over in a lazy-evaluated way.
 
@@ -221,7 +221,7 @@ Still, for some problems it is nice to rely solely on the standard-library, whic
 
 By playing around, the first thing that became clear is that Go provides a lot more flexibility in how to define and wire together components than generator functions in Python.
 
-One of the undersigned's favourite patterns arising from this experimentation is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
+One of the undersigned's favorite patterns arising from this experimentation is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
 
 This pattern lets us do all the wiring of the processes using the struct fields, which, by having clear names coded into the processes and being exposed to the network-defining code, can make the network definition code clearer and more intuitive.
 
@@ -408,7 +408,7 @@ baseComplementer.In = fileReader.OutChan()
 printer.In = baseComplementer.OutChan()
 ````
 
-Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered dataflow network", through which we can later stream data indefinitely from the network's inputs to its outputs. The undersigned thinks this is neat indeed.
+Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered data flow network", through which we can later stream data indefinitely from the network's inputs to its outputs. The undersigned thinks this is neat indeed.
 
 Finally, to compile and run the program above, just execute it by piping some FASTA file content through it, like this:
 ````bash
