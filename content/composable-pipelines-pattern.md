@@ -205,7 +205,7 @@ But what if we want to build up more complex topologies of connected processing 
 
 It seems that code written with the generator patterns rather quickly can get a little hard to follow when going into this direction. Most importantly because it will not be as visible what kind of data are returned (or lazily streamed) on those channels, since the returned channels don't have any name exposed from the component to the outer world.
 
-This begs the quesiton whether there are pattern that suits this job better than the generator pattern.
+This begs the question whether there are pattern that suits this job better than the generator pattern.
 
 ### Enter Flow-based programming
 
