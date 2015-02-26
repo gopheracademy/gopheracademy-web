@@ -408,7 +408,7 @@ baseComplementer.In = fileReader.OutChan()
 printer.In = baseComplementer.OutChan()
 ````
 
-Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered dataflow network", through which we can later stream data indefinitely from the network's input to its output. The undersigned thinks this is neat indeed.
+Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered dataflow network", through which we can later stream data indefinitely from the network's inputs to its outputs. The undersigned thinks this is neat indeed.
 
 Finally, to compile and run the program above, just execute it by piping some FASTA file content through it, like this:
 ````bash
@@ -422,16 +422,13 @@ So, what did we do above?
 
 * We encapsulated concurrently running functions (go-routines) in structs.
 * We made the function's incoming and outgoing channels into struct fields.
-* We also created convenience methods for the "out-ports", that returns ready-made channels so that we can use the familiar single-assignment syntax to plug those channels into "inport" struct fields to set up our data flow network using single-assignment syntax.
+* We also created convenience methods for the "out-ports", that returns ready-made channels plugged into the corresponding struct field, so that we can use the familiar single-assignment syntax to plug those channels into "inport" struct fields to set up our data flow network using single-assignment syntax.
 
 And, what did we achieve by that? Well, certainly in technical terms not much more than the normal Go generator pattern shown earlier.
 
-Still, undersigned things that the struct-based approach makes the network-definition code a bit clearer and more intuitive to work with, especially when the number of processes and connections grow.
+Still, the undersigned thinks that the struct-based approach makes the network-definition code a bit clearer and more intuitive to work with, especially when the number of processes and connections grow.
 
 In the above example we had a tiny workflow just consisting of three components, so that the network definition code consisted of just a small fraction of the main program's code. But imagine when we get into tens of, or even over a hundred components, which is not uncommon in bioinformatics use cases.
 Then it will certainly help to have a syntax that is as clear and self-documentary as possible.
 
-Finally, after writing the glow proof-of-concept library, undersigned realized various intermediate forms between the generator pattern and the struct based pattern above that would also accomplish the same thing.
-Those might be a topic for another post, but the two examples above should at least show two rather different ways of achieving the same thing.
-
-Finally, hopefully this post can at least spark some discussion and further exploration of patterns for truly component-oriented concurrent code in Go!
+Finally, the hope is that this post can at least spark some discussion and further exploration of patterns for truly component-oriented concurrent code in Go!
