@@ -319,9 +319,9 @@ func main() {
 
 #### Connecting components - using convenience methods
 
-The above manually creating all those channels, finding out names for them (which easily becomes rather synthetic) before plugging them into an outport and inport, does maybe get a bit ugly and low-level though.
+The above way of manually creating all those channels, finding out names for them (which easily becomes rather synthetic) before plugging them into an outport and inport, does maybe get a bit ugly and low-level though.
 
-Why not create a convenience function for each outport that returns a ready-make channel of the right type?
+Why not create a convenience function for each outport that returns a ready-made channel of the right type?
 
 So, for our "Out" struct field / outport we create an accompanying `OutChan()` method, that creates a channel, assigns it to the "Out" struct field, and returns it. The updated component would look like so:
 
