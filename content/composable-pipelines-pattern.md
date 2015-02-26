@@ -7,7 +7,7 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 # Patterns for composable concurrent pipelines in Go
 
-The author of this post came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
+Undersigned came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large datasets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
 
 ## Generators in Python
 
@@ -96,7 +96,7 @@ Again, the lazy evaluation means that one item at a time will be drawn through t
 
 ## The Generator pattern in Go
 
-Coming into Go the author was intrigued by all the powerful concurrency patterns made possible in the language, elaborated in posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
+Coming into Go, undersigned was intrigued by all the powerful concurrency patterns made possible in the language, elaborated in posts such as [the one on "concurrency patterns"](http://blog.golang.org/pipelines) and ["advanced concurrency patterns"](http://blog.golang.org/advanced-go-concurrency-patterns).
 
 Even more interestingly, the simple and straight-forward generator pattern in Python was easy to implement in Go too, as shown in [Rob Pike's Go Concurrency pattern slides](https://talks.golang.org/2012/concurrency.slide#25), and also [listed on this site](http://www.golangpatterns.info/concurrency/generators).
 
@@ -213,15 +213,15 @@ To start with, the answer to that problem is solved already in a way that is not
 
 Flow based programming solves the complexity problem of complex processing network topologies in a very thorough way by suggesting the use of named in- and out-ports, channels with bounded buffers (already proveded by Go), and network definition separated from the implementation of the processes. This last thing, separating the network definition from the actual processing components, is what seems to be crucial to arrive at truly component-oriented, modular and composable pipelines.
 
-The author of this post had a great deal of fun playing around with GoFlow and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [GitHub](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
+Undersigned had a great deal of fun playing around with GoFlow and even has published an embryonic library of proof-of-concept bioinformatics components written for use with the framework, available at [GitHub](https://github.com/samuell/blow). An example program using it can be found [here](https://gist.github.com/samuell/6164115).
 
 ### Flow-based like concepts in pure Go?
 
-Still, for some problems it is nice to rely solely on the standard-library, which lead the author to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all. That is, finding out the most flow-based programming-like pattern one can implement in pure Go.
+Still, for some problems it is nice to rely solely on the standard-library, which lead undersigned to start experimenting with how far one can go with Flow-based programming inspired ideas without using any 3rd party framework at all. That is, finding out the most flow-based programming-like pattern one can implement in pure Go.
 
 By playing around, the first thing that became clear is that Go provides a lot more flexibility in how to define and wire together components than generator functions in Python.
 
-One of the author's favourite patterns arising from this experimentation is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
+One of undersigned's favourite patterns arising from this experimentation is one where concurrent processes are encapsulated into structs, and inputs and outputs defined are struct fields of type channel (of some subsequent type).
 
 This pattern lets us do all the wiring of the processes using the struct fields, which, by having clear names coded into the processes and being exposed to the network-defining code, can make the network definition code clearer and more intuitive.
 
@@ -408,7 +408,7 @@ baseComplementer.In = fileReader.OutChan()
 printer.In = baseComplementer.OutChan()
 ````
 
-Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered dataflow network", through which we can later stream data indefinitely from the network's input to its output. The author thinks this is neat indeed.
+Do you see how the syntax now looks exactly like single-value assignments while in practice it is not sending any actual data yet, but just setting up a "channel-powered dataflow network", through which we can later stream data indefinitely from the network's input to its output. Undersigned thinks this is neat indeed.
 
 Finally, to compile and run the program above, just execute it by piping some FASTA file content through it, like this:
 ````bash
@@ -426,12 +426,12 @@ So, what did we do above?
 
 And, what did we achieve by that? Well, certainly in technical terms not much more than the normal Go generator pattern shown earlier.
 
-Still, the author things that the struct-based approach makes the network-definition code a bit clearer and more intuitive to work with, especially when the number of processes and connections grow.
+Still, undersigned things that the struct-based approach makes the network-definition code a bit clearer and more intuitive to work with, especially when the number of processes and connections grow.
 
 In the above example we had a tiny workflow just consisting of three components, so that the network definition code consisted of just a small fraction of the main program's code. But imagine when we get into tens of, or even over a hundred components, which is not uncommon in bioinformatics use cases.
 Then it will certainly help to have a syntax that is as clear and self-documentary as possible.
 
-Finally, after writing the glow proof-of-concept library, the author realized various intermediate forms between the generator pattern and the struct based pattern above that would also accomplish the same thing.
+Finally, after writing the glow proof-of-concept library, undersigned realized various intermediate forms between the generator pattern and the struct based pattern above that would also accomplish the same thing.
 Those might be a topic for another post, but the two examples above should at least show two rather different ways of achieving the same thing.
 
 Finally, hopefully this post can at least spark some discussion and further exploration of patterns for truly component-oriented concurrent code in Go!
