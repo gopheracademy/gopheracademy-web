@@ -135,6 +135,9 @@ func fileReaderGen(filename string) chan []byte {
 				// later if we don't put the content in a new one.
 				fileReadChan <- append([]byte(nil), scan.Bytes()...)
 			}
+			if scan.Err() != nil {
+				log.Fatal(scan.Err())
+			}
 			close(fileReadChan)
 			fmt.Println("Closed file reader channel")
 		}
@@ -261,6 +264,9 @@ func (r *StdInReader) Init() {
 			// accessing the same slice at the same time.
 			r.Out <- append([]byte(nil), scan.Bytes()...)
 		}
+		if scan.Err() != nil {
+			log.Fatal(scan.Err())
+		}
 		close(r.Out)
 	}()
 }
@@ -351,6 +357,9 @@ func (r *StdInReader) Init() {
 			// to avoid data races caused by multiple go-routines
 			// accessing the same slice at the same time.
 			r.Out <- append([]byte(nil), scan.Bytes()...)
+		}
+		if scan.Err() != nil {
+			log.Fatal(scan.Err())
 		}
 		close(r.Out)
 	}()
