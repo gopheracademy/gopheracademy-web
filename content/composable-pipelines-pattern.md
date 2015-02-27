@@ -141,6 +141,7 @@ func fileReaderGen(filename string) chan []byte {
 			close(fileReadChan)
 			fmt.Println("Closed file reader channel")
 		}
+		file.Close()
 	}()
 	return fileReadChan
 }
