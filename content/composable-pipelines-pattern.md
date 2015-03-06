@@ -7,7 +7,7 @@ title = "Patterns for composable concurrent pipelines in Go"
 
 # Patterns for composable concurrent pipelines in Go
 
-The undersigned came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python one can easily write composable lazy-evaluated pipelines of string processing operations using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *constant* amount of memory, which is very important when processing very large data sets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
+The undersigned came into the world of Go from Python, which is quite prevalent in the field of bioinformatics. In Python, one can easily write composable lazy-evaluated pipelines of string processing operations, using the generator syntax built into the language. The nice thing with generators is that they use less memory - but more even more importantly - *a constant* amount of memory, which is very important when processing very large data sets that might not even fit in RAM. In addition they tend to be a tad faster than their eager counterparts too.
 
 ## Generators in Python
 
