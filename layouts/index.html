@@ -1,7 +1,7 @@
 {{ partial "header.html" . }}
 
   <div id="article-body">
-      {{ range .Data.Pages }}
+      {{ range .Paginator.Pages }}
 	      <article>
 		      <p class="lead">
             <a href="{{ .Permalink }}" class="article-title">{{ .Title }}</a>
