@@ -8,7 +8,10 @@ server {
 
 
 	location / {
-				
+
+# hugo has moved the location for rss feeds, and it isn't
+# configurable so we redirect the old location.
+rewrite ^/rss.xml /index.xml permanent;
 
 rewrite ^/day-01-go-1.2 /advent-2013/day-01-go-1.2;
 rewrite ^/day-02-go-1.2-performance-improvements /advent-2013/day-02-go-1.2-performance-improvements;
