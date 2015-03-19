@@ -6,15 +6,15 @@ title = "Code Generation From the AST"
 +++
 
 [Deprehend](https://github.com/deferpanic/deprehend "Deprehend") is a tool
-that auto-generates go src to do things like wrapping goroutines with
-panic handlers and http handlers for metrics tracking.
+that auto-generates go src to wrap goroutines with
+panic handlers and wrap http handlers for metrics tracking.
 
 ![](/postimages/code-generation-from-the-ast/deprehend.png)
 
 Over at [DeferPanic](https://deferpanic.com "DeferPanic") we do a lot of
-application monitoring specifically for you, go engineers.
+application monitoring specifically for you, Go engineers.
 
-Go as a language is very opinionated and more importantly, go engineers
+Go as a language is very opinionated and more importantly, Go engineers
 are an anti-magic crowd. To this end, we have exposed most of our
 functionality as wrappers around the stdlib. What this means is that you
 have to manually add code to use the client library effectively.
@@ -24,26 +24,26 @@ automate as much as possible.
 
 As more and more companies started integrating with us we kept hearing
 more and more of - “You mean I have to wrap every single http handler
-and every single go routine?”
+and every single goroutine?”
 
-This reminded gophers of their initial reaction to error handling in go
+This reminded gophers of their initial reaction to error handling in Go
 - "You mean I have to wrap every function with error handling?” :)
 
 For smaller codebases or new projects this isn't a big deal but for
 existing codebases this can be a non-trivial amount of work and what
 happens if you forget something?
 
-We admit, this is not only a complete pain in the ass but it is hard to
-scale as you have no way of knowing new code has been handled correctly
-or not - it kinda defeats the purpose of handling un-expected
+We admit, this is not only a complete pain but it is hard to
+scale as you have no way of knowing if new code has been handled correctly
+or not - it kinda defeats the purpose of handling unexpected
 errors/panics.
 
-So we started hacking out Deprehend .
+So we started hacking out Deprehend.
 
 This tool looks at your source code via the AST and auto-generates the
 code for you.
 
-## What exactly is an AST anyways?
+## What Exactly is an AST Anyways?
 
 AST stands for 'abstract syntax tree'. This is a data structure used
 by the compiler. It performs a number of functions such as looking at
@@ -59,8 +59,8 @@ AST of which it complains and then bails out.
 
 What about the symbol table? The symbol table is another data structure
 used by the compiler where every variable you declare is complemented
-with meta-data such as it's type (int vs string). In some languages you
-might see it's scope or location in source. In go we have access to the
+with meta-data such as its type (int vs string). In some languages you
+might see its scope or location in source. In Go we have access to the
 receiver, the package name, whether or not it's visible or not, etc.
 
 In many languages the lexer will first come along and tokenize everything in your code.
@@ -91,7 +91,7 @@ With the structure of an AST we can now determine what exactly the
 expression is versus what we (humans) read it to be. This is a very important
 distinction to make.
 
-One of the main functions of deprehend is to find and auto-wrap errors
+One of the main functions of Deprehend is to find and auto-wrap errors
 so we can handle them properly. There's a difference between catching an
 error, dealing with an error and observing the (possibly unknown) error.
 Our focus is on observability.
@@ -127,7 +127,7 @@ way to understand that without context.
 
 ### Problem 3:
 
-Since our code replacement is potentially adding more lines how do we do
+Since our code replacement is potentially adding more lines, how do we do
 this without accidentally modifying things we should not be modifying?
 
 The answer:
@@ -135,41 +135,41 @@ The answer:
 ## We dump the AST.
 
 From the top we'll recursively walk the file tree specified on the
-command line via http://golang.org/pkg/path/filepath/#Walk .
+command line via [filepath.Walk](http://golang.org/pkg/path/filepath/#Walk).
 
 From there we parse the source code of each file to grab the AST via
-http://golang.org/pkg/go/parser/#ParseFile .
+[parser.ParseFile](http://golang.org/pkg/go/parser/#ParseFile).
 
 We also grab the type information for our expressions and stuff it
-into a map via  https://godoc.org/golang.org/x/tools/go/types#Info .
+into a map via [types.Info](https://godoc.org/golang.org/x/tools/go/types#Info).
 
-We walk the AST in depth first order via
-http://golang.org/pkg/go/ast/#Inspect . (remember, we are dealing
-w/trees)
+We walk the AST in depth-first order via
+[ast.Inspect](http://golang.org/pkg/go/ast/#Inspect). (remember, we are dealing
+with trees)
 
 For each node we look for a few things:
 
-  * does this node contain a go routine?
+  * does this node contain a goroutine?
 
   * does this node make an assignment? if so is the type an error?
 
 
 ## Errors
 
-  If an error is found we do a couple of things.
+If an error is found we do a couple of things.
 
-  First, we want to mark the position in the file where we found it as
+First, we want to mark the position in the file where we found it as
 we'll be modifying the source later. To do that we use
 http://golang.org/pkg/go/token/#FileSet.Position .
 
-  Then we grab the actual error name to have a reference to it.
+Then we grab the actual error name to have a reference to it.
 
-  We also check to see if a blank identifier, the underscore is being
+We also check to see if a blank identifier, the underscore is being
 used. There are lots of times when errors get thrown away because people
 don't want to deal with them. If it's a return from strconv.Atoi maybe you don't
 care but maybe you should.
 
-  For example say you are ingesting a form request. One of the fields
+For example say you are ingesting a form request. One of the fields
 has always been a whole dollar amount so your code looks like:
 
 ```go
@@ -177,7 +177,7 @@ has always been a whole dollar amount so your code looks like:
   i, _ := strconv.Atoi(s)
 ```
 
-  However, recently, unbeknownst to you, one of the front-end people
+However, recently, unbeknownst to you, one of the front-end people
 with code in a completely different repository on a completely different
 team dressed it up with the USD symbol of $.
 
@@ -188,23 +188,23 @@ team dressed it up with the USD symbol of $.
   i, _ := strconv.Atoi(s)
 ```
 
-  Your tests might still pass because your assumptions were that no one
+Your tests might still pass because your assumptions were that no one
 would ever send you anything but a whole dollar amount. However, if you
 look at the error you are throwing away you would know why this code is
 not working:
 
   <u>strconv.ParseInt: parsing "$10": invalid syntax</u>
 
-  Guess what the value of i is now? That's right - [the zero value](https://golang.org/ref/spec#The_zero_value "the zero value") of an int - 0.
+Guess what the value of i is now? That's right - [the zero value](https://golang.org/ref/spec#The_zero_value "the zero value") of an int - 0.
 
-  By discovering the places where we purposely or inadvertently throw
+By discovering the places where we purposely or inadvertently throw
 away errors we can uncover potential bugs lurking on our production
 systems and prevent a rash of angry customers wondering why the service
 was free for so long when we should have been charging them $10.
 
-## Go Routines:
+## GoRoutines:
 
-  For go routines we simply insert code to defer any potential panics that might
+For goroutines we simply insert code to defer any potential panics that might
 happen. For better or for worse not everyone has a "let it crash"
 mentality and sometimes it's simply not acceptable to kill the entire
 daemon because someone missed a divide by zero.
@@ -216,7 +216,7 @@ There's a famous [stackoverflow post](http://stackoverflow.com/questions/1732348
 where someone asks about using regexen to parse html. Similarly, if you are trying to understand source
 - don't guess - just look it up in the AST.
 
-For an example of how we re-write the source grab deprehend && the
+For an example of how we rewrite the source grab Deprehend and the
 client (to build):
 
 ```bash
@@ -227,7 +227,7 @@ go get -u github.com/deferpanic/deferclient
 Then run it via:
 
 ```bash
-deprehend myproj
+deprehend /path/to/myproj
 ```
 
 ```go
@@ -270,18 +270,18 @@ func main() {
 }
 ```
 
-This shows that we automatically detect go-routines and re-write the
-source to handle any potential panics that might occur w/in that
+This shows that we automatically detect goroutines and rewrite the
+source to handle any potential panics that might occur within that
 goroutine.
 
-This tool is new and <u>*experimental*</u> and yes, it might eat your cat - so if
+This tool is new and ***experimental*** and yes, it might eat your cat - so if
 you find any bugs or want to extend functionality please create a pull
 request.
 
-We hope this makes developing in go much easier and makes you the end
-developer more productive. You can stop guessing whether or not you are
+We hope this makes developing in Go much easier and makes you, the end
+developer, more productive. You can stop guessing whether or not you are
 covered and just pump out code instead.
 
-## Looking towards the Future
+## Looking Towards the Future
 I think in the future we might look at making this more general
 purpose and including some vim/emacs plugins.
