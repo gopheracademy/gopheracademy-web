@@ -17,21 +17,21 @@ If you've never contributed to open-source before this is a particularly great t
 Contributions to the project at these events and in the weeks following will count toward Docker’s donation to the Oceanic Society and its mission to conserve the habitat of Moby Dock and blue whales across the planet.
 
 Contributors can:
-  * Learn how to contribute to open source
-  * Learn Go
-  * Contribute regardless of their technical experience
+* Learn how to contribute to open source
+* Learn Go
+* Contribute regardless of their technical experience
 
 Contributors will:
-  * Help marine wildlife (a donation will be made for every contributor)  
-  * Have a great time
-  * Enjoy cake, food and drinks
-  * Make a difference in the world
+* Help marine wildlife (a donation will be made for every contributor)  
+* Have a great time
+* Enjoy cake, food and drinks
+* Make a difference in the world
 
 Mentors will:
-  * Help people with how to contribute to open source
-  * Help with git
-  * Mentor with code contributions
-  * Help marine wildlife (a donation will be made for every mentor)  
+* Help people with how to contribute to open source
+* Help with git
+* Mentor with code contributions
+* Help marine wildlife (a donation will be made for every mentor)  
 
 If you are interested in mentoring then please RSVP on the meetup page (see http://docker.party/events for links) and sign up to be a mentor at http://goo.gl/forms/TAFVpnh3K8
 
