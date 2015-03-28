@@ -10,9 +10,9 @@ title = "gobench - Go Benchmark Competition"
 
 Simplicity is one of the philosophies of Go. Rob Pike said that the secret of Go's success is in its simplicity at [Go Conference 2014 autumn](http://gocon.connpass.com/event/9748/) in Tokyo, Japan. Dave Cheney [emphasized the importance of simplicity in Go](http://dave.cheney.net/2015/03/08/simplicity-and-collaboration) at [GopherCon India 2015](http://www.gophercon.in/). There are plenty of online documents which explain the ways of writing code effectively in Go including [the official website of Go](http://golang.org/) and we can learn how to write code simply and effectively in Go by reading them.
 
-However, how about performance? How can we learn the ways of writing fast code in Go and improving its performance? The skill of writing fast code is as important as the one of writing simple code but the former is more difficult to master than the latter because it's necessary to gain practical experience to master the former.
+However, what about performance? How can we learn the ways of writing fast code in Go and improve its performance? The skill of writing fast code is as important as the one of writing simple code but the former is more difficult to master than the latter because it's necessary to gain practical experience to master the former.
 
-So, I started [Go Benchmark Competition](http://gobench.org/), an environment in which we can gain practical experience of writing fast code in Go and exchange knowledge and know-how relating performance with one another. Now it's warmly welcomed by some of Go programmers and called by a nickname of *gobench* among them with affection.
+So, I started [Go Benchmark Competition](http://gobench.org/), an environment in which we can gain practical experience of writing fast code in Go and exchange knowledge and know-how relating performance with one another. Now it's warmly welcomed by some of Go programmers and known affectionately as *gobench*.
 
 ![gobench](/postimages/gobench/gobench.png)
 
