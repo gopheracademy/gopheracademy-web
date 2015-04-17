@@ -15,7 +15,7 @@ title = "GopherCon 2015 - Speakers Round 2"
 * <a href="http://gophercon.com/speakers/richard-fliam">Richard Fliam</a>
 * <a href="http://gophercon.com/speakers/rick-hudson">Rick Hudson</a>
 * <a href="http://gophercon.com/speakers/sarah-adams">Sarah Adams</a>
-* <a href="http://gophercon.com/speakers/tomas-senart">Tomás Parker</a>
+* <a href="http://gophercon.com/speakers/tomas-senart">Tomás Senart</a>
 
 You can read more about our speakers and their talks on the <a href="http://gophercon.com">GopherCon</a> website.
 
