@@ -44,7 +44,7 @@ To help speakers prepare for their presentations we will be offering the skills 
 
 GopherCon does not have a quota for minority speakers. Each speaker chosen for this year's programme was done so on the merit of his or her proposal. But to be clear, when considering proposals of equal merit it was my policy that women, people of colour, and other underrepresented minorities, were given priority over white men.
 
-Additionally the conference has created a Diversity Scholarship Support Fund, managed by a group chosen from the Go community. Monies collected by this fund will be available for scholarships to attend the conference. For further details on how to apply for a scholarship, please write to [diversity@gophercon.com](mailto:diversity@gophercon.com).
+Additionally the conference has created a Diversity Scholarship Support Fund, managed by a group chosen from the Go community. Monies collected by this fund will be available for scholarships to attend the conference. For further details on how to apply for a scholarship, please write to [diversity@gopheracademy.com](mailto:diversity@gophercon.com).
 
 If you would like to contribute to this fund, you can do so by [donating via this link](https://ti.to/gophercon/gophercon-2015/with/bmhktj3apgi).
 
