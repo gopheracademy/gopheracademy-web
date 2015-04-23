@@ -56,7 +56,7 @@ Based on the process this year, for next year we plan to improve the following a
 - It is very likely that GopherCon next year will be a multiple track conference catering to several streams of talks concurrently.
 - We will be clearer in our policy about permitting multiple speakers per talk.
 - We will give clearer guidelines to potential speakers about the level of detail we expect from proposals, including suggested minimum and maximum word counts for each of the sections.
-- We will better communicate the review process and its timeline, following the excellent example of [[GolangUK][http://www.golanguk.com/speakers/].
+- We will better communicate the review process and its timeline, following the excellent example of [GolangUK](http://www.golanguk.com/speakers/).
 
 ### If you haven't <a href="https://ti.to/gophercon/gophercon-2015">purchased a ticket</a> we're already well past the half way mark for ticket sales and hotel discounts, so don't miss out!
 
