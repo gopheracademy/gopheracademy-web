@@ -6,7 +6,7 @@ title = "GopherCon 2015 - Speakers Round 1"
 
 +++
 ## Call for Papers
-The <a href="http://gophercon.com">GopherCon 2015</a> Call for Papers was an incredible success. We received over 164 submissions from people all over the world. Our panel of 12 Go community members worked tirelessly to review and rate each proposal. It was a challenge to limit the talks to just 22, we only wish we had more speaking slots to fill.
+The <a href="http://gophercon.com">GopherCon 2015</a> Call for Papers was an incredible success. We received over 164 submissions from people all over the world. Our panel of 12 community members worked tirelessly to review and rate each proposal. It was a challenge to limit the talks to just 22, we only wish we had more speaking slots to fill.
 
 We'd like to thank everyone who took the time to submit a proposal and especially our review committee and our Program Coordinator, Dave Cheney.
 
@@ -21,7 +21,7 @@ We will have 2 keynote speakers and 2 invited speakers from the Go team.
 * <a href="http://gophercon.com/speakers/robert-griesemer">Robert Griesemer</a>
 * <a href="http://gophercon.com/speakers/dmitry-vyukov">Dmitry Vyukov</a>
 
-We have also accepted proposal from 5 additional speakers.
+We have also accepted proposals from 5 additional speakers.
 
 * <a href="http://gophercon.com/speakers/baishampayan-ghose">Baishampayan Ghose</a>
 * <a href="http://gophercon.com/speakers/ben-johnson">Ben Johnson</a>
