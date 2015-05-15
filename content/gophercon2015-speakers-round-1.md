@@ -3,7 +3,7 @@ author = ["Erik St. Martin"]
 date = "2015-04-10T12:37:00-04:00"
 linktitle = "GopherCon 2015 - Speakers Round 1"
 title = "GopherCon 2015 - Speakers Round 1"
-
+series = ["GopherCon 2015"]
 +++
 ## Call for Papers
 The <a href="http://gophercon.com">GopherCon 2015</a> Call for Papers was an incredible success. We received over 164 submissions from people all over the world. Our panel of 12 community members worked tirelessly to review and rate each proposal. It was a challenge to limit the talks to just 22, we only wish we had more speaking slots to fill.
