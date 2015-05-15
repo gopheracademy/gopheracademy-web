@@ -21,7 +21,7 @@ And that still isn't all! In addition to the lightning talks and general Go hack
 
 And there is even more! Many of our sponsors are also planning events around the conference, more details will be available on the GopherCon website as they become available.
 
-You can read more on the [GopherCon 2015 website](http://gophercon.com website.
+[Click here to purchase a ticket for GopherCon 2015](https://ti.to/gophercon/gophercon-2015).
 
 ----
 We'll see you at GopherCon!
