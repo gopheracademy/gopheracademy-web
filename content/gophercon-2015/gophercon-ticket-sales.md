@@ -6,7 +6,7 @@ title = "GopherCon 2015 - Tickets selling fast"
 +++
 ## GopherCon 2015 tickets selling fast
 
-We're delighted to announce that this week GopherCon 2015 ticket sales have passed the 1,000 mark! This means that there are now less than a third of all tickets remaining.
+We're delighted to announce that this week GopherCon 2015 ticket sales have passed the 1,000 mark! This means that there are less than a third of all tickets remaining.
 
 As a reminder of what you'll be missing out on if you don't get a ticket this year:
 
@@ -17,7 +17,7 @@ As a reminder of what you'll be missing out on if you don't get a ticket this ye
 
 And that's not all. Our friends from the [Denver Gophers user's group](http://www.meetup.com/Denver-Go-Language-User-Group/) are hosting a pre GopherCon kick off party on the night before the conference, so head over to their [registration page and RSVP](http://www.meetup.com/Denver-Go-Language-User-Group/events/222335594/) if you will be in Denver on the Tuesday evening.
 
-And that still isn't all! In addition to the lightning talks and general Go hacking, there will be a small number of themed rooms run by members of the Go community. Stay tuned for more details.
+And that still isn't all! In addition to the lightning talks and general Go hacking on Friday, there will be a small number of themed rooms run by members of the Go community. Stay tuned for more details.
 
 You can read more on the [GopherCon 2015 website](http://gophercon.com website.
 
