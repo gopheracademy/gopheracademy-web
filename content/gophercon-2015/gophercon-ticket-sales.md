@@ -1,6 +1,6 @@
 +++
 author = ["Brian Ketelsen", "Erik St Martin"]
-date = "2015-05-10"
+date = "2015-05-14"
 linktitle = "GopherCon 2015 - Tickets selling fast"
 title = "GopherCon 2015 - Tickets selling fast"
 +++
