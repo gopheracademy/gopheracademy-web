@@ -20,17 +20,17 @@ With the call for papers closed and the speakers chosen, I want to take the oppo
 
 # Thanks
 
-This year I approached eight reviewers (not including Brian, Erik, and myself) chosen from a variety of fields intersecting the Go community to assist the organisers in selecting an engaging programme of talks. Reviewing is an extremely time consuming effort, especially considering the huge number of applications we received (more on that in a bit). Please join with me in thanking our reviewers for their hard work and dedication.
+This year I approached eight reviewers (not including Brian, Erik, and myself) chosen from a variety of fields intersecting the Go community to assist the organisers in selecting an engaging programme of talks. Reviewing is an extremely time consuming effort, especially considering the huge number of applications we received. Please join with me in thanking our reviewers for their hard work and dedication.
 
 In the end we had a total of 164 proposals, far more than anyone imagined, and far more than any Go conference to date. Thank you to everyone who took the time to propose a talk for GopherCon.
 
 # The process
 
-This year GopherCon retained its single track format. Given the other changes we are making to the event; the larger venue, double the ticket sales, multiple hotel reservations, some things had to remain unchanged, and one of those was the single track format. This meant we would be fielding roughly the same number of talks as last year. From the feedback we received last year it was clear that with the larger audience we would have allocate significantly more time for breaks, and so ended up offering the same number of speaking slots as last year; 22.
+This year GopherCon retained its single track format. Given the other changes we are making to the event; the larger venue, double the ticket sales, multiple hotel reservations, some things had to remain unchanged, and one of those was the single track format. This meant we would be fielding roughly the same number of talks as last year. From the feedback we received last year, it was clear that with the larger audience we would need to allocate significantly more time for breaks, and so ended up offering the same number of speaking slots as last year; 22.
 
-After subtracting the slots allocated to keynote and invited speakers, we were left with 18 thirty minute speaking slots for which we received 164 proposals. Proposals were reviewed anonymously without reveling the author of the proposal and given a numeric score between 1 and 5. Each proposal received between 9 and 11 votes. After all the reviews were completed, roughly the top third of the proposals were short listed, de-anonymised, and considered for the programme by Erik, Brian and myself.
+After subtracting the slots allocated to keynote and invited speakers, we were left with 18 thirty minute speaking slots for which we received 164 proposals. Proposals were reviewed anonymously without revealing the author of the proposal and given a numeric score between 1 and 5. Each proposal received between 9 and 11 votes. After all the reviews were completed, roughly the top third of the proposals were short listed, de-anonymised, and considered for the programme by Erik, Brian and myself.
 
-When choosing papers from the shortlist, the reviewer's score, as well as their comments were given strong weighting, but other factors such the topic of the talk and how it would interact with other shortlisted proposal were considered.
+When choosing papers from the shortlist, the reviewer's score, as well as their comments were given strong weighting, but other factors such the topic of the talk and how it would interact with other shortlisted proposals were considered.
 
 With an over subscription of 9:1, not only did we choose the very best proposals, but amongst those we considered to be the best, we had to turn down many that were excellent. Please, if your talk was not accepted for GopherCon this year, do not take this to heart, and I strongly recommend that you consider submitting a proposal for one of the many other conferences on this year's calendar.
 
@@ -52,7 +52,7 @@ If you would like to contribute to this fund, you can do so by [donating via thi
 
 Based on the process this year, for next year we plan to improve the following areas:
 
-- This year the 90 day CFP window meant speakers who were chosen will have barely 90 days to prepare their talks. In future a month to six weeks will be adequate.
+- This year the 90 day CFP window meant speakers who were chosen will have barely 90 days to prepare their talks. In the future, a month to six weeks will be adequate for the CFP window.
 - It is very likely that GopherCon next year will be a multiple track conference catering to several streams of talks concurrently.
 - We will be clearer in our policy about permitting multiple speakers per talk.
 - We will give clearer guidelines to potential speakers about the level of detail we expect from proposals, including suggested minimum and maximum word counts for each of the sections.

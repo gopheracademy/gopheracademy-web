@@ -5,7 +5,7 @@ linktitle = "GopherCon 2015 - Speakers Round 2"
 title = "GopherCon 2015 - Speakers Round 2"
 +++
 
-<a href="http://gophercon.com">GopherCon 2015</a> is on track to be the most amazing Go conference ever held. Our tradition of bringing you the best speakers and most interesting topics continues with our release today of the second round of speakers. We're hardly able to contain our excitement about the program that is shaping up this year. Look out for more details regarding activities happening around the conference and more details about Hack Day.
+<a href="http://gophercon.com">GopherCon 2015</a> is on track to be the most amazing Go conference ever held. Our tradition of bringing you the best speakers and most interesting topics continues with today's release of the second round of speakers. We're hardly able to contain our excitement for how the program is shaping up this year. Lookout for more details regarding activities happening around the conference and more details about Hack Day.
 
 
 * <a href="http://gophercon.com/speakers/barak-michener">Barak Michener</a>
