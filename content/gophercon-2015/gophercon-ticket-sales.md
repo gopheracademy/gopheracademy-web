@@ -12,12 +12,14 @@ As a reminder of what you'll be missing out on if you don't get a ticket this ye
 
 - Two days of talks from the [brightest minds](http://gophercon.com/speakers/) in the Go community include keynotes from [Russ Cox and Robert Griesemer](http://gophercon.com/#keynotes).
 - Friday hack day, including a whole day of lightning talks on the main stage.
-- A fantastic [after party on the Wednesday evening](http://gophercon.com/events/after-party/) courtesy of CoreOS and Google.
+- A fantastic [after party on the Wednesday evening](http://gophercon.com/events/after-party/) courtesy of Diamond sponsors [Google and Twitch](http://gophercon.com/sponsors/).
 - An optional day of [training and workshops](http://gophercon.com/#workshop-schedule) on the Tuesday before the conference. Tickets sold separately.
 
 And that's not all. Our friends from the [Denver Gophers user's group](http://www.meetup.com/Denver-Go-Language-User-Group/) are hosting a pre GopherCon kick off party on the night before the conference, so head over to their [registration page and RSVP](http://www.meetup.com/Denver-Go-Language-User-Group/events/222335594/) if you will be in Denver on the Tuesday evening.
 
 And that still isn't all! In addition to the lightning talks and general Go hacking on Friday, there will be a small number of themed rooms run by members of the Go community. Stay tuned for more details.
+
+And there is even more! Many of our sponsors are also planning events around the conference, more details will be available on the GopherCon website as they become available.
 
 You can read more on the [GopherCon 2015 website](http://gophercon.com website.
 
