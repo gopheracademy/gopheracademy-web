@@ -10,7 +10,7 @@ We're delighted to announce that this week GopherCon 2015 ticket sales have pass
 
 As a reminder of what you'll be missing out on if you don't get a ticket this year:
 
-- Two days of talks from the [brightest minds](http://gophercon.com/speakers/) in the Go community include keynotes from [Russ Cox and Robert Griesemer](http://gophercon.com/#keynotes).
+- Two days of talks from the [brightest minds](http://gophercon.com/speakers/) in the Go community including keynotes from [Russ Cox and Robert Griesemer](http://gophercon.com/#keynotes).
 - Friday hack day, including a whole day of lightning talks on the main stage.
 - A fantastic [after party on the Wednesday evening](http://gophercon.com/events/after-party/) courtesy of Diamond sponsors [Google and Twitch](http://gophercon.com/sponsors/).
 - An optional day of [training and workshops](http://gophercon.com/#workshop-schedule) on the Tuesday before the conference. Tickets sold separately.
