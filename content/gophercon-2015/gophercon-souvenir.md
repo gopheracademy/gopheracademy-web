@@ -8,7 +8,7 @@ title = "A unique Gophercon 2015 souvenir"
 
 We're excited to announce something that we've been working on behind the scenes for quite a while.
 
-As a gift to GopherCon 2015 attendees who book hotel accommodation using one of our hotel partners on check in you will receive, as your room key, one of these:
+As a gift to GopherCon 2015 attendees who book hotel accommodation through one of our [hotel partners](http://gophercon.com/#hotels), on check in, you will receive one of these as the key to your room:
 
 ![GopherCon 2015 souvenir key card. This is a mock up -- the real thing will be even more awesome!](/postimages/gophercon-2015/keycard.png "GopherCon 2015 souvenir key card. This is a mock up -- the real thing will be even more awesome!")
 
