@@ -43,7 +43,8 @@
         function titleize(slug) {
             var words = slug.split("-");
             return words.map(function(word) {
-                return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+                var series = word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+		return series.replace("Gophercon", "GopherCon");
             }).join(' ');
         }
         var str = "{{$name}}";
@@ -99,7 +100,8 @@
         function titleize(slug) {
             var words = slug.split("-");
             return words.map(function(word) {
-                return word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+                var series = word.charAt(0).toUpperCase() + word.substring(1).toLowerCase();
+		return series.replace("Gophercon", "GopherCon");
             }).join(' ');
         }
         var str = "{{$name}}";
@@ -117,6 +119,9 @@
 			<a class="icon-social slack" href="http://bit.ly/go-slack-signup" target="_blank"></a>
 			<a class="icon-social rss" href="/index.xml" target="_blank"></a>
 		</div> 
+    <div class="gophercon-banner">
+      <a href="http://gophercon.com"><img src="/images/160x200-tall-ad.jpg" /></a>
+    </div>
 		<!-- BOTTOM CREDITS -->
 		<div class="newCredit">
 			<p class="text-muted ">{{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{.Now.Format "2006"}} Gopher Academy, LLC 2013
