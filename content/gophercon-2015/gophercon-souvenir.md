@@ -1,6 +1,6 @@
 +++
 author = ["Erik St Martin"]
-date = "2015-05-23"
+date = "2015-05-26"
 linktitle = "A unique Gophercon 2015 souvenir"
 title = "A unique Gophercon 2015 souvenir"
 +++
