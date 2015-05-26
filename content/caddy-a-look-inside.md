@@ -1,6 +1,6 @@
 +++
 author = ["Matt Holt"]
-date = "2015-05-26T00:00:00-08:00"
+date = "2015-05-26"
 title = "A Look Inside Caddy, a Web Server Written in Go"
 +++
 
