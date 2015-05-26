@@ -129,11 +129,11 @@ After the Caddyfile is prepared, we just run `caddy` in the same directory as th
 
 ## Next Steps
 
-We're working on an API that can change the server's configuration while it's running. With that, an API client that will allow you to log in to your server and make changes and see requests in real-time.
+We're working on an API that can change the server's configuration while it's running. And with that, an API client that will allow you to log in to your server and make changes and see requests in real-time.
 
 
 ## Conclusion
 
 **Thank you** to all [contributors](https://github.com/mholt/caddy/graphs/contributors) so far.
 
-I hope this was interesting to you! [Give Caddy a try](https://caddyserver.com/download) and let us know what you think! You can also reach out to me directly on Twitter [@mholt6](https://twitter.com/mholt6).
+I hope this was interesting to you! [Give Caddy a try](https://caddyserver.com/download) and let us know what you think. You can also reach out to me directly on Twitter [@mholt6](https://twitter.com/mholt6).
