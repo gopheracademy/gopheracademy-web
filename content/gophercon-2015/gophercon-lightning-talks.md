@@ -17,7 +17,7 @@ Time          | Event
 13:30 - 15:00 | Call to Action
 15:00 - 16:30 | Go Tips and Tricks
 
-[Registrations are now open](https://gophercon.typeform.com/to/c6GOUe). Registrations will close on midnight the 30th of June. We'll post the list of speakers on the GopherCon website before the conference so you know when to be in the theatre.
+[Registrations are now open](https://gophercon.typeform.com/to/c6GOUe). Registrations will close on midnight the 20th of June. We'll post the list of speakers on the GopherCon website by the end of the month.
 
 We are also happy to announce that this year the lightning talks will be recorded. 
 
