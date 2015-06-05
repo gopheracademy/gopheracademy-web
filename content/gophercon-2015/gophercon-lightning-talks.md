@@ -40,7 +40,7 @@ Maybe you're nervous and you're afraid you'll mess up. It's a lot easier to plan
 
 Maybe you don't have much to say. Maybe you just want to ask a question, or invite people to help you with your project, or boast about something you did, or tell a short cautionary story. These things are all interesting and worth talking about, but there might not be enough to say about them to fill up thirty minutes.
 
-On the other side, people might want to come to a lightning talk when they wouldn't come to a long talk on the same subject. The risk for the attendees is smaller: If the talk turns out to be dull, or if the person giving the talk turns out to be a really bad speaker, well, at least it's over in seven minutes (or less). With lightning talks, you're never stuck in some boring lecture for forty-five minutes.
+Here are some suggestions for awesome lightning talks that I'd like to see at GopherCon this year, and of course this list isn't exclusive, it's your seven minutes of fame.
 
 1. Why my favorite library is X.
 2. I want to do cool project X. Does anyone want to help?
