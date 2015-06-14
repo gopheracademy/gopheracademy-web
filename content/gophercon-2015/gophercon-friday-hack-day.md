@@ -10,11 +10,11 @@ We're providing the space and the wifi, you bring your favorite project and work
 
 After the brisk start of the two previous days, Friday will arrive at a more leisurely pace with most activities starting at 10 am.
 
-Kicking off in the Mile High Ballroom theatre we will feature a presentation “Investment 101 for Startups” by Robin Vason, managing director a Mayfield, one of the most prestigious investment firms in the country. Robin will be joined for a question and answer session by the CEO's from two of Mayfield's investments. Paul Dix from InfluxDB and Mitchell Hashimoto from HashiCorp who will share their experiences as founders going through the investment process.
+Kicking off in the Mile High Ballroom theatre we will feature a presentation “Investment 101 for Startups” by Robin Vasan, managing director a Mayfield, one of the most prestigious investment firms in the country. Robin will be joined for a question and answer session by the CEO's from two of Mayfield's investments. Paul Dix from InfluxDB and Mitchell Hashimoto from HashiCorp who will share their experiences as founders going through the investment process.
 
 After Robin’s presentation we’re turning the theatre over to you. This is your chance to step on the main stage and tell the world something about Go.
 
-This year we have three lightning talk categories, Hack and Tell, Call to Action, and Go Tips and Tricks. Registrations for lightning talks are close on the 20th of June so head over to the [registration page and sign up](https://gophercon.typeform.com/to/c6GOUe).
+This year we have three lightning talk categories, Hack and Tell, Call to Action, and Go Tips and Tricks. Registrations for lightning talks will close on the 20th of June so head over to the [registration page and sign up](https://gophercon.typeform.com/to/c6GOUe).
 
 We will post the list of lightning talks on the GopherCon website by the end of June.
 
@@ -40,7 +40,7 @@ TODO(dfc) talk to melissa.smolensky@coreos.com
 
 ### Gobot room
 
-Who doesn’t love robots? What could be better than robots controlled with Go ?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking.
+Who doesn’t love robots? What could be better than robots controlled with Go ?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking. Gobot will also provide loaner robots, Intel Edison boards and more for you to hack on. In Go, of course.
 
 ### Google room
 
