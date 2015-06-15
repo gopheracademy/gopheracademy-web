@@ -32,21 +32,23 @@ In no particular order, we have:
 
 Denver is a great city for Go, and not just because they love to host GopherCon. Denver is home to many companies who have chosen to build their businesses on Go. 
 
-The Denver Gopher’s room will feature workshops from members of the Denver Gophers user group and local Denver companies like InfluxDB, BItly and SendGrid.
+The Denver Gopher’s room will feature workshops from members of the Denver Gophers user group and local Denver companies like InfluxDB, Bitly and SendGrid.
 
 ### CoreOS room
 
-CoreOS is celebrating their second birthday during the GopherCon hack day, so join them for a special birthday hack day projects and educational talks and workshops from your favorite CoreOS team members. In addition, they will have lighting talks from the Go community on CoreOS tips and tricks. Join in on CoreOS birthday fun, learn how to contribute and leave with more knowledge on CoreOS overall. 
+CoreOS is celebrating its second birthday during the CoreOS GopherCon hack day, so join them for a special birthday hack day project, educational talks and workshops from some of your favorite CoreOS team members. In addition, CoreOS will have lightning talks from the Go community on CoreOS tips and tricks. Join in on CoreOS birthday fun, learn how to contribute and leave with more knowledge on CoreOS overall.
 
 ### Gobot room
 
 Who doesn’t love robots? What could be better than robots controlled with Go?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking. Gobot will also provide loaner robots, Intel Edison boards and more for you to hack on. In Go, of course.
 
+### Google room
+
+Google's Francesc Campoy Flores will be giving tutorials on using Go on the Google Cloud Platform. If you're keen to learn how to get started building a simple app with App Engine and Compute Engine, this is the room for you.
+
 ### Docker room
 
 Docker will be holding a one day, hands-on class for beginners who want to learn to use and contribute to Docker. Members of the Docker Team will get you up to speed on the basics and coach you from setup to integrating Docker into your working environment. You’ll also learn your way around the Docker Project and leave with the resources to make your first contribution.
-
-We'll have more rooms to announce shortly.
 
 [Click here to purchase a ticket for GopherCon 2015](https://ti.to/gophercon/gophercon-2015).
 
