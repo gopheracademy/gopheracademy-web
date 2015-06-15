@@ -36,15 +36,11 @@ The Denver Gopher’s room will feature workshops from members of the Denver Gop
 
 ### CoreOS room
 
-TODO(dfc) talk to melissa.smolensky@coreos.com
+CoreOS is celebrating their second birthday during the GopherCon hack day, so join them for a special birthday hack day projects and educational talks and workshops from your favorite CoreOS team members. In addition, they will have lighting talks from the Go community on CoreOS tips and tricks. Join in on CoreOS birthday fun, learn how to contribute and leave with more knowledge on CoreOS overall. 
 
 ### Gobot room
 
 Who doesn’t love robots? What could be better than robots controlled with Go ?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking. Gobot will also provide loaner robots, Intel Edison boards and more for you to hack on. In Go, of course.
-
-### Google room
-
-TODO(dfc) doing workshops ?
 
 ### Docker room
 
