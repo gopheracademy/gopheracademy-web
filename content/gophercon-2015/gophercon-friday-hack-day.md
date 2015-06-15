@@ -40,7 +40,7 @@ CoreOS is celebrating their second birthday during the GopherCon hack day, so jo
 
 ### Gobot room
 
-Who doesn’t love robots? What could be better than robots controlled with Go ?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking. Gobot will also provide loaner robots, Intel Edison boards and more for you to hack on. In Go, of course.
+Who doesn’t love robots? What could be better than robots controlled with Go?!? Join last year's speakers, [Ron Evans](https://twitter.com/deadprogram) and [Adrian Zankich](https://twitter.com/adzankich) for all day hardware hacking. Gobot will also provide loaner robots, Intel Edison boards and more for you to hack on. In Go, of course.
 
 ### Docker room
 
