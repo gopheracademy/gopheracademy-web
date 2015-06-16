@@ -1,6 +1,6 @@
 +++
 author = ["Dave Cheney"]
-date = "2015-06-14"
+date = "2015-06-15"
 linktitle = "GopherCon Friday Hack Day details"
 title = "GopherCon Friday Hack Day details"
 +++
