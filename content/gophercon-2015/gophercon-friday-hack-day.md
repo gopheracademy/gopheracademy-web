@@ -10,7 +10,7 @@ We're providing the space and the wifi, you bring your favorite project and work
 
 After the brisk start of the two previous days, Friday will arrive at a more leisurely pace with most activities starting at 10 am.
 
-Kicking off in the Mile High Ballroom theatre we will feature a presentation “Investment 101 for Startups” by Robin Vasan, managing director a Mayfield, one of the most prestigious investment firms in the country. Robin will be joined for a question and answer session by the CEO's from two of Mayfield's investments. Paul Dix from InfluxDB and Mitchell Hashimoto from HashiCorp who will share their experiences as founders going through the investment process.
+Kicking off in the Mile High Ballroom theatre we will feature a presentation “Investment 101 for Startups” by Robin Vasan, managing director at Mayfield, one of the most prestigious investment firms in the country. Robin will be joined for a question and answer session by the CEO's from two of Mayfield's investments. Paul Dix from InfluxDB and Mitchell Hashimoto from HashiCorp who will share their experiences as founders going through the investment process.
 
 After Robin’s presentation we’re turning the theatre over to you. This is your chance to step on the main stage and tell the world something about Go.
 
