@@ -20,7 +20,7 @@ We will post the list of lightning talks on the GopherCon website by the end of 
 
 Next up is the general area directly adjacent to the theatre, which will be open all day. This is your space to work on anything Go related that takes your fancy. Don’t forget to tweet your creations and tag them with [#gophercon](https://twitter.com/hashtag/gophercon?src=hash).
 
-![Colorado Convention Center](/postimages/gophercon-2015/gophercon-friday.pkg)
+![Colorado Convention Center](/postimages/gophercon-2015/gophercon-friday.png)
 
 Finally, we’re very pleased to announce details of something we’ve been working on for a while now. In addition to the theatre and the general spaces, we have negotiated with the conference center for a series of smaller rooms suitable for workshops and focused activities.
 
