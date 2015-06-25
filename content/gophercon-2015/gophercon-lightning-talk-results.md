@@ -29,12 +29,12 @@ Larry Clapp | Never Type "ls" Again: A web-based Unix/Linux/MacOS shell & editor
 Ian Eyberg | Compile-Time Code Weaving with Go
 Joey Geiger | Connection Manager in Go or, dealing with a self created zombie horde
 Kevin Gillette | Sets and The Universal Type
-Nathan Davies | Pgbouncer pain, a true story *or* Reduce the moving parts
+Nathan Davies | Pgbouncer pain, a true story, *or* Reduce the moving parts
 Alan Shreve | Lessons scaling ngrok: microservice architecture without the pain
 Sergey Ignatov | Go IDE Done Right
 Marty Schoch | Bleve - Full text indexing and search in Go
 Karan Misra | embd.go
-Guillaume J. Charmes | Dynamic reverse proxy in Go. *or* Safe privilege de-escalation in Go
+Guillaume J. Charmes | Dynamic reverse proxy in Go, *or* Safe privilege de-escalation in Go
 Lev Kravinsky | *One of* Contributing to Congo, *or* Go for Rubyists,  *or* When did hating on Go become cool?
 
 Break for lunch
@@ -42,7 +42,7 @@ Break for lunch
 ### Session Two
 13:30 - 15:00
 
-Name | Title (please pick one)
+Name | Title 
 --------------|-------------------
 James Bardin | Go Executing Tracing via Source Annotation
 Zac Shenker | Config Management in S3
@@ -61,7 +61,7 @@ Break for refreshments
 ### Session Three
 15:30 - til close
 
-Name | Title (please pick one)
+Name | Title
 --------------|-------------------
 Gabriel Aszalos | Scaling Sourcegraph with Go
 Jeremy Schlatter | How I built a Go debugger using source rewriting
