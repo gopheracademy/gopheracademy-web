@@ -54,7 +54,7 @@ case we're going to use the
 It's built to the spec, supports the optional `v` prefix, provides sorting, and
 has the ability to test if a semantic version is within a range or other
 constraint. The constraint handling is similar or the same as you'll find in
-libraries for other languages including Node.js, Rust, and others.
+libraries for other languages including JavaScript, Rust, and others.
 
 The following example parses a semantic version and displays an error if it could
 not be parsed or prints out the major version if there were no issues.
