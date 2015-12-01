@@ -15,5 +15,5 @@ Last year we had 25 articles from some of the best authors in the Go community, 
 
 Here's a [link](https://blog.gopheracademy.com/series/advent-2014/) to last year's posts.  And [2013](https://blog.gopheracademy.com/series/advent-2013/) has some great articles too.
 
-We can't wait to share these posts with the community, and we're glad you're here.
+We can't wait to share these posts with the community, and we're glad you're here.  There are still a few slots open, so if you're itching to share something with the Go community [pick a day and sign up here](https://docs.google.com/spreadsheets/d/1H0rj7TJo0t8GWyNdGwEc6bGcDj6UgJUN42JtAtbPMrk/edit#gid=0&vpid=A2)  If English isn't your primary language, we have a team of editors on standby to help you write your best article ever. 
 
