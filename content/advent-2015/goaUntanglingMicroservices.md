@@ -54,10 +54,9 @@ in a way that a given cluster does not overload another for example.
 
 As we worked through these issues it became clear that the *interface*
 of services becomes a critical piece in the microservice model: adopting
-consistent patterns when developing the interfaces help at many
+consistent patterns when developing the interfaces helps at many
 different levels: development, deployment, production support all
-benefit from adopting good interface standards. To take just a few
-examples:
+benefit from good interface standards. To take just a few examples:
 
 * Versioning interfaces makes it possible to remain agile and update
   services to accommodate new product needs without impacting existing
@@ -104,7 +103,7 @@ experiment but after many iterations of various degrees of ugliness
 I’m finally quite happy with the end result. Credits go to [Gomega](https://onsi.github.io/gomega/)
 for showing how using anonymous functions can help produce a clean and
 terse DSL. The goa DSL abstractions are taken directly from Praxis with
-a few tweaks to make them more amenable to the static nature and
+a few tweaks to make them more amenable to the static typing nature and
 philosophy of the Go language.
 
 Here is what the DSL looks like for defining a type that can be used
@@ -144,12 +143,13 @@ var _ = Resource("bottle", func() {
 ```
 As you can see the DSL is fairly self-descriptive. This last example
 also shows an interesting property which is that types can be referred
-to in different contexts and each context can add specific validations.
+to in different contexts. Each context can add specific validations.
 Here the `create` action specifies that the `name` and `vineyard`
 fields of the `BottlePayload` data structure are required when the type
-is used in the payload (request body) of the `create` action for example.
+is used in the payload (request body) of the `create` action for
+example.
 
-Obviously the DSL contains many more keywords, the point here was just
+Obviously the DSL contains many more keywords, the point here is just
 to give you a sense of what it looks like. Should you want to know more
 consult the `dsl` package [GoDoc](https://godoc.org/github.com/raphael/goa/design/dsl).
 
@@ -198,22 +198,22 @@ the response payload so that in this case the `OK` method accepts a
 slice of `app.Bottle`. The [cellar](https://github.com/raphael/goa/blob/master/examples/cellar)
 example contains implementations for many more actions.
 
-Moving on to the next topic, `goagen` generates documentation from the
-design in the form of [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
+Moving on to the next topic, `goagen` also generates documentation from
+the design in the form of [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
 or [swagger](http://swagger.io). This makes it possible to review the
 documentation of the API prior to writing a single line of
-implementation, a very valuable tool for validating the API with all the
+implementation, a very valuable tool for reviewing the API with all the
 stakeholders. The [swagger.goa.design](http://swagger.goa.design)
 service can inspect the design package of goa applications hosted in
-public GitHub repositories and dynamically generate and load their
-swagger representation in swagger UI.
+public GitHub repositories and dynamically load their swagger
+specification in [swagger UI](https://github.com/swagger-api/swagger-ui).
 
-Another interesting generation target are API clients: Go package,
+Another interesting generation target is API clients: Go package,
 command line tool and JavaScript clients. Going back to the problem
 statement: how to deal with an exponentially growing number of
 interconnected microservices - this is huge. It means that the team in
-charge of developing a given microservice can also deliver the clients.
-This in turn means that the same client is being reused throughout
+charge of developing a given microservice can easily deliver the clients.
+This in turn means that the same clients are reused throughout
 which helps with consistency, troubleshooting etc. Things like
 enforcing the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id)
 header, CSRF or CORS which would otherwise be a tedious manual endeavor
