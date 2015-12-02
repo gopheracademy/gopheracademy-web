@@ -107,6 +107,52 @@ terse DSL. The goa DSL abstractions are taken directly from Praxis with
 a few tweaks to make them more amenable to the static nature and
 philosophy of the Go language.
 
+Here is what the DSL looks like for defining a type that can be used
+in the definition of request payloads or response media types:
+```go
+var BottlePayload = Type("BottlePayload", func() {
+	Attribute("name", func() {
+		MinLength(2)
+	})
+	Attribute("vineyard", func() {
+		MinLength(2)
+	})
+	Attribute("vintage", Integer, func() {
+		Minimum(1900)
+		Maximum(2020)
+	})
+	Attribute("color", func() {
+		Enum("red", "white", "rose", "yellow", "sparkling")
+	})
+})
+```
+This type can then be used when defining resource actions:
+```go
+var _ = Resource("bottle", func() {
+	DefaultMedia(Bottle)
+	BasePath("bottles")
+	Parent("account")
+	Action("create", func() {
+		Routing(POST(""))
+		Description("Record new bottle")
+		Payload(BottlePayload, func() {
+			Required("name", "vineyard")
+		})
+		Response(Created)
+	})
+})
+```
+As you can see the DSL is fairly self-descriptive. This last example
+also shows an interesting property which is that types can be referred
+to in different contexts and each context can add specific validations.
+Here the `create` action specifies that the `name` and `vineyard`
+fields of the `BottlePayload` data structure are required when the type
+is used in the payload (request body) of the `create` action for example.
+
+Obviously the DSL contains many more keywords, the point here was just
+to give you a sense of what it looks like. Should you want to know more
+consult the `dsl` package [GoDoc](https://godoc.org/github.com/raphael/goa/design/dsl).
+
 ## The Magic: Code Generation
 
 goa comes with the `goagen` tool that runs the DSL which ends up
