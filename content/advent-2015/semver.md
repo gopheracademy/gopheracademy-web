@@ -3,7 +3,6 @@ author = ["Matt Farina"]
 date = "2015-12-02T08:00:00+00:00"
 title = "Working with Semantic Versions"
 series = ["Advent 2015"]
-draft = true
 +++
 
 [Semantic Versioning](http://semver.org/) (a.k.a SemVer) has become a popular way
