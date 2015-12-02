@@ -167,11 +167,46 @@ irrelevant to goa - goa is not an opinionated framework by design.
 `goagen` uses these data structures to generate many different outputs.
 The generated code takes care of validating the incoming requests and
 coercing the types to the ones described in the design, user code then
-only has to worry about the business logic. `goagen` generates
-documentation from the design in the form of [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html) or
-[swagger](http://swagger.io). This makes it possible to review the documentation of
-the API prior to writing a single line of implementation, a very
-valuable tool for validating the API with all the stakeholders.
+only has to worry about the business logic.
+
+Here is a code snippet to illustrate the above, this code implements
+the `list` action of a `Bottle` resource:
+```go
+// List lists all the bottles in the account optionally filtering by year.
+func (b *BottleController) List(ctx *app.ListBottleContext) error {
+	var bottles []*app.Bottle
+	var err error
+	if ctx.HasYears {
+		bottles, err = b.db.GetBottlesByYears(ctx.AccountID, ctx.Years)
+	} else {
+		bottles, err = b.db.GetBottles(ctx.AccountID)
+	}
+	if err != nil {
+		return ctx.NotFound()
+	}
+	return ctx.OK(bottles, "default")
+}
+```
+As you can see the code has access to the request state (`AccountID` and
+`Years` here) via fields exposed by the context. The values of the
+fields have been validated by goa and their types match the types used
+in the design (here `AccountID` is a int and `Years` a slice of int).
+The context also exposes the `NotFound` and `OK` methods used to send
+the response. Again these methods exist because the design specified
+that these were the responses of this action. The design also defines
+the response payload so that in this case the `OK` method accepts a
+slice of `app.Bottle`. The [cellar](https://github.com/raphael/goa/blob/master/examples/cellar)
+example contains implementations for many more actions.
+
+Moving on to the next topic, `goagen` generates documentation from the
+design in the form of [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
+or [swagger](http://swagger.io). This makes it possible to review the
+documentation of the API prior to writing a single line of
+implementation, a very valuable tool for validating the API with all the
+stakeholders. The [swagger.goa.design](http://swagger.goa.design)
+service can inspect the design package of goa applications hosted in
+public GitHub repositories and dynamically generate and load their
+swagger representation in swagger UI.
 
 Another interesting generation target are API clients: Go package,
 command line tool and JavaScript clients. Going back to the problem
@@ -180,30 +215,110 @@ interconnected microservices - this is huge. It means that the team in
 charge of developing a given microservice can also deliver the clients.
 This in turn means that the same client is being reused throughout
 which helps with consistency, troubleshooting etc. Things like
-enforcing the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id) header, CSRF or CORS
-which would otherwise be a tedious manual endeavor now become easily
-achievable.
+enforcing the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id)
+header, CSRF or CORS which would otherwise be a tedious manual endeavor
+now become easily achievable. Here is an example of the command line
+help of a generated client:
+```
+./cellar-cli --help-long
+usage: cellar-cli [<flags>] <command> [<args> ...]
 
-The diagram below shows all the various outputs of the `goagen` tool:
+CLI client for the cellar service (http://goa.design/getting-started.html)
+
+Flags:
+     --help           Show context-sensitive help (also try --help-long and
+		      --help-man).
+ -s, --scheme="http"  Set the requests scheme
+ -h, --host="cellar.goa.design"  
+		      API hostname
+ -t, --timeout=20s    Set the request timeout, defaults to 20s
+     --dump           Dump HTTP request and response.
+     --pp             Pretty print response body
+
+Commands:
+ help [<command>...]
+   Show help.
+
+
+ create bottle [<flags>] <path>
+   Record new bottle
+
+   --payload=PAYLOAD  Request JSON body
+
+ delete bottle <path>
+
+ list bottle [<flags>] <path>
+   List all bottles in account optionally filtering by year
+
+   --years=YEARS  Filter by years
+
+ show bottle <path>
+   Retrieve bottle with given id
+```
+The tool also provides contextual help for each action:
+```
+./cellar-cli show bottle --help
+usage: cellar-cli show bottle <path>
+
+Retrieve bottle with given id
+
+Flags:
+      --help           Show context-sensitive help (also try --help-long and
+                       --help-man).
+  -s, --scheme="http"  Set the requests scheme
+  -h, --host="cellar.goa.design"  
+                       API hostname
+  -t, --timeout=20s    Set the request timeout, defaults to 20s
+      --dump           Dump HTTP request and response.
+      --pp             Pretty print response body
+
+Args:
+  <path>  Request path, format is /cellar/accounts/:accountID/bottles/:bottleID
+```
+The implementation of the client tool relies on the generated client
+Go package to make the actual requests. The package exposes a function
+for each action exposed by the API, see the files generated for the
+cellar example [clients](https://github.com/raphael/goa/blob/master/examples/cellar/client)
+for more details.
+
+The other client `goagen` can produce is the JavaScript module. The
+module can be used by both client and server side JavaScript.
+Similarly to the Go package the JavaScript module exposes one function
+per API action. It uses the [axios](https://github.com/mzabriskie/axios)
+library to make the actual requests. Again the cellar example contains
+the [generated JavaScript](https://github.com/raphael/goa/blob/master/examples/cellar/js/client.js)
+together with [an example](https://github.com/raphael/goa/blob/master/examples/cellar/js/index.html)
+on how to use it if you are curious.
+
+Summing it all up, the diagram below shows all the various outputs of
+the `goagen` tool:
 ![goagen diagram](https://cdn.rawgit.com/raphael/goa/master/images/goagenv4.svg "goagen")
 
 ## The Engine: Runtime
 
 goa is not just about code generation though. The package also provides
 a powerful *context* object that makes it possible to carry deadlines
-and cancellation signals to all the request handlers. The context
+and cancellation signals to all the request handlers. The
+[Timeout middleware](https://godoc.org/github.com/raphael/goa#Timeout)
+takes advantage of that to send a cancelation signal to the request
+handler after a given amount of time. As we've seen before, the context
 object also exposes the request and response states wrapping them in
 convenient methods that are specific to each action as described in the
 design.
 
-From an operational standpoint, goa supports structured logging, the
-ability to insert middleware globally to the service or only on certain
-controllers, a clean error handling model and graceful shutdown. All
-these features have one goal in common: to provide a production ready
-runtime environment that helps dealing with the challenges of running
-services in a microservice environment. As another example goa comes
-with a [`X-Request-ID`](https://devcenter.heroku.com/articles/http-request-id) middleware built-in
-to help track requests as they travel through the various services.
+From an operational standpoint, goa supports structured logging via the
+[log15](https://godoc.org/gopkg.in/inconshreveable/log15.v2) package, the
+ability to insert middleware [globally](https://godoc.org/github.com/raphael/goa#Application.Use)
+to the service or only on certain [controllers](https://godoc.org/github.com/raphael/goa#Controller.Use),
+a clean error [handling model](https://godoc.org/github.com/raphael/goa#hdr-Error_Handling)
+and [graceful shutdown](https://godoc.org/github.com/raphael/goa#GracefulApplication).
+
+All these features have one goal in common: to provide a production
+ready runtime environment that helps dealing with the challenges of
+running services in a microservice environment. As another example goa
+comes with a [`X-Request-ID`](https://devcenter.heroku.com/articles/http-request-id)
+middleware built-in to help track requests as they travel through the
+various services.
 
 ## What's Next?
 
