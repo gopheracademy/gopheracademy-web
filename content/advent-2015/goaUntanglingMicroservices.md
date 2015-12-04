@@ -9,218 +9,312 @@ title = "goa: Untangling Microservices"
 
 # goa: Untangling microservices
 
-## The Downfall of Monolithic Software
+## The Raise of Microservice Architectures and APIs
 
-When I started working at [RightScale](https://www.rightscale.com),
-about 7 years ago, Ruby on Rails was all the rage. Ruby was such a
-refreshing language coming from a "classic" C++ background. You could
-develop new features at the speed of light, “monkey patch” your way
-around bugs, look at the source code of all the dependencies, debug live
-production systems, heck even run `dbg` to debug ruby itself. Rails
-provided a nice framework taking care of all the plumbing and letting us
-focus on what matters: our special sauce.
-
-Life was good... for a while. About 3 to 4 years and half a million
-lines of code later the picture started to change: new features were
-becoming increasingly difficult to implement as the web of software
-interdependencies became harder and harder to untangle - even for those
-of us that had been there "from the beginning". At that point it made
-sense to start breaking down our systems into smaller, more modular
-services that would communicate with each other over HTTP.
-
-## Go to The Rescue
-
-About 2 years ago we started using Go to develop some of these new
-systems. Go offered an order of magnitude (or two) performance
-improvements making real concurrency something that is actually easy to
-accomplish. Go producing statically linked binaries also simplified the
-deployment model: no more worrying about which version of
-the ruby runtime a given service requires.
-
-## The Challenge of Microservice Style Architecture
-
-I’m sure this platform evolution story will sound familiar to many. The
-move to a microservice style architecture is reinforced with the quick
-adoption of container based technologies. Nothing is for free though and
-some of the complexity that existed in the initial monolithic system
-can now be found when looking at the interdependencies between the many
-services. Figuring out what is affected when changing a service can
-sometimes be as or even more challenging than understanding the
-ramification of a change in a software module in the initial system.
-There is also a host of new operational challenges that comes along with
-having to manage a fleet of interconnected services. Finding the root
-cause of failures can be quite challenging, so is scaling the services
-in a way that a given cluster does not overload another for example.
-
-As we worked through these issues it became clear that the *interface*
-of services becomes a critical piece in the microservice model: adopting
-consistent patterns when developing the interfaces helps at many
-different levels: development, deployment, production support all
-benefit from good interface standards. To take just a few examples:
-
-* Versioning interfaces makes it possible to remain agile and update
-  services to accommodate new product needs without impacting existing
-  systems.
-* Adding a "bulk" version of operations exposed by the service
-  interfaces can help improve performance drastically.
-* Writing consistent interfaces with common patterns allows for shared
-  modules between the various clients (be it JavaScript modules for UIs,
-  Go packages or Rubygems).
-* Properly classifying error codes help simplify error handling.
-* Publishing documentation for the APIs in a consistent format helps
-  speed up development and adoption.
-
-etc. the list goes on.
-
-## Interfaces, interfaces, interfaces
-
-The end result is that a lot of focus is now put on designing the REST
-API for the services that make up the platform. The API is not just a
-means for transporting data from a client to a server: it is part of the
-*semantic* of the service. Making the right choices when designing an
-API can have drastic effects down the line both in terms of ease of
-development but also - and more importantly - in terms of user
-experience for both internal and external users. Performance, security,
-flexibility are all dependent on having good APIs.
-
-As the importance of designing good APIs became clear **so did the lack
-of tools to support it**. This lead RightScale to develop [Praxis](http://praxis-framework.io/),
-a ruby web application framework that makes it possible to describe the
-*design* of a REST API explicitly and leverage that design during
-implementation.
+After suffering through a monolithic Rails application for a number of
+years, we (the RightScale Engineering team) shifted our focus to
+microservice architectures. As many others, we have encountered some of
+their pitfalls as well. One of them is that building good APIs is
+difficult. Changing APIs is even more difficult. And any APIs that get
+exposed to customers are almost impossible to ever change, it seems. For
+this reason we have focused on tools that help us design, review, and
+implement the APIs of our microservices.
 
 ## Introducing **goa**
 
-What about Go? I hear you asking. Wouldn’t it be great to mix the
-awesome performance, concurrency support, ease of deployment, and
-statically typed language benefits with a design-first approach to API
-development? My thoughts exactly and the reasons behind [goa](http://goa.design).
+There are already numerous good web application packages out there.
+In fact we have been using [goji](https://goji.io/) at RightScale
+successfully in production for some time. These packages focus on
+providing modular and composable web application stacks which is great
+for building independent services. However none of them help with the
+critical task consisting of designing an API.
+<div style="float: right;
+    height: 0;
+    padding-top: 25%;
+    width: 40%;
+    background-image: url(https://rawgit.com/raphael/goa/gh-pages/images/DRII.svg);
+    background-repeat: no-repeat;
+    background-size: contain;">
+</div>
+
+Building an API is a multi-step process. The API first gets designed,
+resources and associated actions are identified, the request endpoints,
+payloads and parameters all get defined. Once that's done the design
+goes trough a review process: will the UI have all the information it
+requires? will dependent service X be able to list the resources it
+needs efficiently? will dependent service Y be able to update the fields
+of this other resource? After a few back and forth it's time to
+actually implement the API. And after a while it's back to square 1 with
+new requirements for APIv2.
+
+The review process is especially hard to do with no special tooling.
+Who is going to write a [Swagger](http://swagger.io) specification from
+scratch just to throw it away as soon as implementation starts? However
+it's also a critical step for the overall success of the service.
+Without a clear and complete description of the API there's a good
+change that something will end up not quite right or missing entirely.
+
+That's where [goa](http://goa.design) comes in. goa lets you write the
+specification of your API in code. It then uses that code to produce
+a number of outputs including HTTP handlers that take care of validating
+the incoming requests. This means that the specification is translated
+*automatically* into the implementation, what got reviewed is what is
+implemented.
+
+The final result ends up looking quite similar to what you would get
+with any web framework: HTTP requests gets accepted by the net/http
+Server, routed by a router (goa uses [httprouter](https://github.com/julienschmidt/httprouter))
+and handled by the application code. The only difference being that
+the application code is composed of two parts: the generated handler
+which validates the request and creates the context object (more on
+that later) and the user code that provides the business logic.
+<div style="height: 0;
+ padding-top: 25%;
+ width: 100%;
+ background-image: url(https://rawgit.com/raphael/goa/gh-pages/images/Routing.svg);
+ background-repeat: no-repeat;
+ background-size: contain;">
+</div>
+
+## The goa Design Language
 
 At first I wasn’t sure whether creating a DSL to describe an API design
-in Go would even be possible or yield something that is usable (that’s
-an area where dynamic languages definitely shine). goa started as an
-experiment but after many iterations of various degrees of ugliness
-I’m finally quite happy with the end result. Credits go to [Gomega](https://onsi.github.io/gomega/)
-for showing how using anonymous functions can help produce a clean and
-terse DSL. The goa DSL abstractions are taken directly from Praxis with
-a few tweaks to make them more amenable to the static typing nature and
-philosophy of the Go language.
+in Go would even be possible or yield something that is usable. goa
+started as an experiment but after many iterations of various degrees
+of ugliness the end result is actually quite nice. Credits go to
+[Gomega](https://onsi.github.io/gomega/) for showing how using anonymous
+functions can help produce a clean and terse DSL.
 
-Here is what the DSL looks like for defining a type that can be used
-in the definition of request payloads or response media types:
+Let's go through a simple example to illustrate how it works. Imagine
+an API service that manages bottles of wine, let's call it `winecellar`.
+This service exposes one endpoint that makes it possible to retrieve
+information on a wine bottle given its ID. First we define the API
+itself using the `API` global DSL function. This function accepts a name
+and an anonymous function that can define additional properties such as
+the base path for all requests, the supported URL schemes, the host as
+well as metadata like information (description, contact, license etc.):
 ```go
-var BottlePayload = Type("BottlePayload", func() {
-	Attribute("name", func() {
-		MinLength(2)
-	})
-	Attribute("vineyard", func() {
-		MinLength(2)
-	})
-	Attribute("vintage", Integer, func() {
-		Minimum(1900)
-		Maximum(2020)
-	})
-	Attribute("color", func() {
-		Enum("red", "white", "rose", "yellow", "sparkling")
-	})
+package design
+
+import (
+	. "github.com/raphael/goa/design" // "dot" imports make the DSL easier to read.
+	. "github.com/raphael/goa/design/dsl"
+)
+
+var _ = API("winecellar", func() { // The API function defines an API given its name.
+        Description("The winecellar service API")
+	BasePath("/cellar")        // Base path to all requests.
+                                   // Can be overridden in action definitions using an absolute path
+                                   // starting with //.
+        Host("cellar.goa.design")  // Default API host
+        Scheme("http")             // Supported API URL scheme
+        Scheme("https")            // Scheme("http", "https") works too
 })
 ```
-This type can then be used when defining resource actions:
+Note that the name of the package is irrelevant, we use `design` as a
+convention.
+
+Now that we have defined our API we need to define the `show bottle`
+request endpoint. To do that we first need to define a resource
+(`Bottle`) and in the definition of the resource add the `show` action
+that exposes that one endpoint:
 ```go
-var _ = Resource("bottle", func() {
-	DefaultMedia(Bottle)
-	BasePath("bottles")
-	Parent("account")
-	Action("create", func() {
-		Routing(POST(""))
-		Description("Record new bottle")
-		Payload(BottlePayload, func() {
-			Required("name", "vineyard")
+var _ = Resource("Bottle", func() { // Resources are defined using the Resource function
+	DefaultMedia(BottleMedia)   // Default media type used to render the bottle resources
+	BasePath("/bottles")        // Gets appended to the API base path
+
+	Action("show", func() {              // Actions are defined using the Action function.
+		Routing(GET("/:bottleName")) // The relative path to the show endpoint. The full path is
+                                             // built concatenating the API and resource base paths with it.
+                                             // Uses a wildcard to capture the requested bottle name.
+                                             // Wildcards can start with : to capture a single path segment
+                                             // or with * to capture the rest of the path.
+		Description("Retrieve bottle with given ID")
+		Params(func() {              // Params defines the endpoint parameters
+                                             // Both parameters captured through wildcards and query strings
+			Param(               // Param describes a single parameter
+                                "bottleID",  // Here it corresponds to the path segment captured by :bottleID
+                                Integer,     // The JSON type of the parameter
+                                "The name of the bottle to retrieve", // An optional description
+                        )
 		})
-		Response(Created)
+		Response(OK)       // Response defines a potential response sent by the action.
+		Response(NotFound) // An action may define any number of responses.
+                                   // Their content is defined through ResponseTemplates (not shown in
+                                   // this simplistic example). Here we use the default response templates
+                                   // defined in goa.
+	})
+```
+A resource may specify a default media type used to render `OK`
+responses. In goa the media type describes the data structure
+rendered in the response body.  In the example the `Bottle` resource
+refers to the `BottleMedia` media type. Here is the definition for it:
+```go
+var BottleMedia = MediaType("application/vnd.goa.example.bottle+json", func() {
+	Description("A bottle of wine")
+	Attributes(func() {
+		Attribute("id", Integer, "ID of bottle") // Attribute defines a single field in
+                                                         // the media type data structure given its
+                                                         // name, type and description.
+		Attribute("href", "API href of bottle")  // The default type for attributes is String.
+		Attribute("name", "The bottle  name", func() { // Like with API, Resource and Action an attribute
+                                                         // definition may use an anonymous function as
+                                                         // last argument to define additional properties.
+			MinLength(1)                     // Here we define validation rules specifying a
+			MaxLength(255)                   // minimum and maximum number of characters in a bottle
+                                                         // name.
+		})
+                Attribute("color", func() {              // Descriptions are optional.
+                        Enum("red", "white", "rose", "yellow", "sparkling") // Possible field values
+                })
+                Attribute("sweetness", Integer, func() {
+                        Minimum(1)                       // Minimum and maximum int field values.
+                        Maximum(5)
+                })
+
+		View("default", func() {                 // Views are used to render a media type.
+			Attribute("id")                  // A media type can have one or more views
+			Attribute("href")                // and must define the "default" view.
+			Attribute("name")                // The view simply lists the fields to render.
+			Attribute("color")               // It can also specify the view to use to render
+			Attribute("sweetness")           // fields that are media types themselves
+                                                         // (the "default" view by default). Not used here.
+		})
 	})
 })
 ```
-As you can see the DSL is fairly self-descriptive. This last example
-also shows an interesting property which is that types can be referred
-to in different contexts. Each context can add specific validations.
-Here the `create` action specifies that the `name` and `vineyard`
-fields of the `BottlePayload` data structure are required when the type
-is used in the payload (request body) of the `create` action for
-example.
-
-Obviously the DSL contains many more keywords, the point here is just
-to give you a sense of what it looks like. Should you want to know more
-consult the `dsl` package [GoDoc](https://godoc.org/github.com/raphael/goa/design/dsl).
+We now have a complete description of our API together with its
+endpoint, the accepted request parameters and the details on the
+response content. In case you are wondering request payloads (for
+request that have bodies) are defined using the same DSL used to
+define media types (minus views). There are a few more advanced
+constructs supported by the DSL such as the ability to link to other
+media types or reuse types in multiple definitions. The dsl package
+[GoDoc](https://godoc.org/github.com/raphael/goa/design/dsl) lists all
+the supported keywords with additional examples.
 
 ## The Magic: Code Generation
 
-goa comes with the [goagen](http://goa.design/goagen.html) tool that
-runs the DSL which produces [simple data structures](https://godoc.org/github.com/raphael/goa/design)
-that represent the API design. These data structures describe the
-resources that make up the API and for each resource the actions
-complete with a description of their parameters, payload and responses.
-Note that the term *resource* here is very loosely defined. They merely
-provide a convenient way to group API endpoints (called *actions* in the
-DSL) together. The actual semantic is irrelevant to goa - goa is not an
-opinionated framework by design.
+The purpose of specifying the API using a DSL is to make it executable.
+In Go the preferred method for this is to generate code and this is the
+path goa takes. goa comes with the [goagen](http://goa.design/goagen.html)
+tool which is the goa code generator. The processing of the design
+occurs in three stages:
 
-`goagen` uses these data structures to generate many different outputs.
-The generated code takes care of validating the incoming requests and
-coercing the types to the ones described in the design, user code then
-only has to worry about the business logic. `goagen` can also create
-the scaffolding for a new service including a `main` and empty
-implementations for all the controller actions.
+1. `goagen` parses the command line and invokes the appropriate
+   generator package. The generator package writes the generator source
+   code to a temporary Go workspace.
+2. The DSL is compiled together with the generator code in the temporary
+   workspace.
+3. The resulting tool runs running and validating the DSL. The result
+   of executing the DSL are simple data structures that describe the
+   API. The generated tool traverses these data structures to generate
+   the output.
+
+`goagen` supports many different outputs. Each output maps to a tool
+command. The following commands are currently supported:
+
+* `app`: generates the service boilerplate code including controllers,
+  contexts, media types and user types.
+* `main`: generates a skeleton file for each resource controller as well
+  as a default `main` implementation.
+* `client`: generates an API client Go package and tool.
+* `js`: generates a JavaScript API client based on [axios](https://github.com/mzabriskie/axios).
+* `swagger`: generates the API [Swagger](http://swagger.io) specification.
+* `schema`: generates the API [Hyper-schema](http://json-schema.org/latest/json-schema-hypermedia.html) JSON.
+* `gen`: invokes a third party generator package.
+* `bootstrap`: invokes the `app`, `main`, `client` and `swagger`
+   commands.
+
+The data structures produced in step 3 above from executing the DSL
+describe the resources that make up the API and for each resource the
+actions complete with a description of their parameters, payload and
+responses. Note that the term *resource* here is very loosely defined.
+Resources in goa merely provide a convenient way to group API endpoints
+(called *actions* in the DSL) together. The actual semantic is
+irrelevant to goa - in other words goa is not an opinionated framework
+by design.
+
+The `app` output deserves special attention as it generates the glue
+code between the underlying HTTP server and the controller (your) code.
+The code takes care of validating the incoming requests and coercing the
+types to the ones described in the design. This in turns means that the
+controller code does not have to worry about deserializing and "binding"
+the request body for example. It also means that all the validation
+rules specified in the design have already been executed so that the
+value of parameters for example don't need to be validated by your
+code. The end result is controller code that is terse and only deals
+with what matters: your special sauce.
 
 Here is a code snippet to illustrate the above, this code implements
-the `list` action of a `Bottle` resource. The function signature was
-generated by `goagen` and the default implementation (which simply
-writes an empty response) replaced with actual code:
+the `show` action of a the `Bottle` resource defined in the previous
+example. The function signature was generated by `goagen` and the
+default implementation (which simply writes an empty response) replaced
+with actual code:
 ```go
-// List lists all the bottles in the account optionally filtering by year.
-func (b *BottleController) List(ctx *app.ListBottleContext) error {
-	var bottles []*app.Bottle
-	var err error
-	if ctx.HasYears {
-		bottles, err = b.db.GetBottlesByYears(ctx.AccountID, ctx.Years)
-	} else {
-		bottles, err = b.db.GetBottles(ctx.AccountID)
-	}
-	if err != nil {
-		return ctx.NotFound()
-	}
-	return ctx.OK(bottles, "default")
-}
+// Retrieve bottle with given ID.
+func (b *BottleController) Show(ctx *app.ShowBottleContext) error { // The signature was generated by `goagen main`.
+	bottle := b.db.GetBottle(ctx.BottleID) // This example stores the database driver in a controller field.
+	if bottle == nil {                     // (the same controller instance handles all requests)
+		return ctx.NotFound()          // NotFound has been generated from the corresponding Response
+	}                                      // definition in the DSL.
+	return ctx.OK(bottle)                  // So was OK. The default OK response template that comes with goa
+                                               // defines the media type of the response payload using the resource
+                                               // default media type.
 ```
-As you can see the code has access to the request state (`AccountID` and
-`Years` here) via fields exposed by the context. The values of the
-fields have been validated by goa and their types match the types used
-in the design (here `AccountID` is a int and `Years` a slice of int).
-The context also exposes the `NotFound` and `OK` methods used to send
-the response. Again these methods exist because the design specified
-that these were the responses of this action. The design also defines
-the response payload so that in this case the `OK` method accepts a
-slice of `app.Bottle`. The [cellar](https://github.com/raphael/goa/blob/master/examples/cellar)
+As you can see the code has access to the request state (`BottleID` here)
+via fields exposed by the context. The values of the fields have been
+validated by goa and their types match the types used in the design
+(here `BottleID` is an int). The context also exposes the `NotFound` and
+`OK` methods used to write the response. Again these methods exist
+because the design specified that these were the responses of this
+action. The design also defines the response payload so that in this
+case the `OK` method accepts an instance of `app.Bottle` which is a
+type that was generated from the `BottleMedia` definition.
+The [cellar](https://github.com/raphael/goa/blob/master/examples/cellar)
 example contains implementations for many more actions.
 
-Moving on to the next topic, `goagen` also generates documentation from
-the design in the form of [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
-or [swagger](http://swagger.io). This makes it possible to review the
-documentation of the API prior to writing a single line of
-implementation, a very valuable tool for reviewing the API with all the
-stakeholders. The [swagger.goa.design](http://swagger.goa.design)
-service can inspect the design package of goa applications hosted in
-public GitHub repositories and dynamically load their swagger
-specification in [swagger UI](https://github.com/swagger-api/swagger-ui).
+Another very valuable output is documentation in the form of
+[JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
+or [swagger](http://swagger.io). Being able to look at the documentation
+makes it a lot easier and more efficient to vet the API design without
+having to write a single line of actual implementation code.
 
-Another interesting generation target is API clients: Go package,
-command line tool and JavaScript clients. Going back to the problem
-statement: how to deal with an exponentially growing number of
-interconnected microservices - this is huge. It means that the team in
-charge of developing a given microservice can easily deliver the clients.
-This in turn means that the same clients are reused throughout
-which helps with consistency, troubleshooting etc. Things like
-enforcing the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id)
+<div style="float: right;
+ height: 0;
+ padding-top: 45%;
+ width: 60%;
+ background-image: url(https://rawgit.com/raphael/goa/gh-pages/images/goa-swagger.png);
+ background-repeat: no-repeat;
+ background-size: contain;">
+</div>
+
+This screen shot shows documentation that was produced automatically via
+the free [swagger.goa.design](http://swagger.goa.design) service: I
+placed my design in a public github repository and then pointed
+swagger.goa.design at it. It then downloaded the repo from github,
+produced the swagger specification and loaded it in
+[swagger UI](https://github.com/swagger-api/swagger-ui).
+
+<div style="clear: both;">
+</div>
+
+One of the nice side-effects of having a complete spec of the API is
+that goa can produce not only server-side code to implement the API but
+also client-side code to make it easier to invoke the API. In its
+current form, the `goagen` tool can generate three types of clients:
+
+1. a Go package for clients written in Go
+2. a Javascript package for clients running in node.js or the browser
+3. a command-line tool to invoke the API from the linux or windows
+   command line
+
+Going back to the problem statement: how to deal with an exponentially
+growing number of interconnected microservices - this is huge. It means
+that the team in charge of developing a given microservice can also
+easily deliver the clients. This in turn means that the same clients are
+reused throughout which helps with consistency, troubleshooting etc.
+Things like enforcing the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id)
 header, CSRF or CORS which would otherwise be a tedious manual endeavor
 now become easily achievable. Here is an example of the command line
 help of a generated client:
@@ -286,8 +380,7 @@ for each action exposed by the API, see the files generated for the
 cellar example [clients](https://github.com/raphael/goa/blob/master/examples/cellar/client)
 for more details.
 
-The other client `goagen` can produce is the JavaScript module. The
-module can be used by both client and server side JavaScript.
+The other client `goagen` can produce is a JavaScript module.
 Similarly to the Go package the JavaScript module exposes one function
 per API action. It uses the [axios](https://github.com/mzabriskie/axios)
 library to make the actual requests. Again the cellar example contains
@@ -301,17 +394,21 @@ the `goagen` tool:
 
 ## The Engine: Runtime
 
-goa is not just about code generation though. The package also provides
-a powerful *context* object that makes it possible to carry deadlines
-and cancellation signals to all the request handlers. The
-[Timeout middleware](https://godoc.org/github.com/raphael/goa#Timeout)
-takes advantage of that to send a cancelation signal to the request
-handler after a given amount of time. As we've seen before, the context
-object also exposes the request and response states wrapping them in
-convenient methods that are specific to each action as described in the
-design.
+goa is not just about code generation though. It also includes a set
+of functionality to support the execution of the web application. The
+goal is to provide a production ready runtime environment that helps
+dealing with the challenges of running services in a microservice
+environment. This includes structured logging, X-Request-ID header
+support, proper panic recovery and many other features described below.
 
-The goa context implements the [golang context.Context](https://godoc.org/golang.org/x/net/context)
+### The Request Context
+
+goa provides a powerful [Context](https://godoc.org/github.com/raphael/goa#Context)
+object to all request handlers. This object makes it possible to carry
+deadlines and cancellation signals, gives access to the request and
+response state and allows writing log entries.
+
+The goa Context interface implements the [golang context.Context](https://godoc.org/golang.org/x/net/context)
 interface which provides a concurrency safe way of storing and
 retrieving values on top of the deadline and cancelation support
 described above. The idea is that the context can be passed around to
@@ -327,19 +424,118 @@ triggers. Having access to the context in all the sub-systems also
 means that the entire request state is available to them. This can be
 very handy and helps with decoupling the application layers.
 
-From an operational standpoint, goa supports structured logging via the
-[log15](https://godoc.org/gopkg.in/inconshreveable/log15.v2) package, the
-ability to insert middleware [globally](https://godoc.org/github.com/raphael/goa#Application.Use)
-to the service or only on certain [controllers](https://godoc.org/github.com/raphael/goa#Controller.Use),
-a clean error [handling model](https://godoc.org/github.com/raphael/goa#hdr-Error_Handling)
-and [graceful shutdown](https://godoc.org/github.com/raphael/goa#GracefulApplication).
+### Logging
 
-All these features have one goal in common: to provide a production
-ready runtime environment that helps dealing with the challenges of
-running services in a microservice environment. As another example goa
-comes with a [`X-Request-ID`](https://devcenter.heroku.com/articles/http-request-id)
-middleware built-in to help track requests as they travel through the
-various services.
+goa supports structured logging via the excellent
+[log15](https://godoc.org/gopkg.in/inconshreveable/log15.v2) package.
+The context object is also a logger and exposes logger methods (`Info`
+`Warn`, `Err` and `Crit`). Each log entry has a message and a series of
+name/value pairs. goa pre-populates the key/value pairs with the name
+of the service, controller and action as well as a request specific ID
+so that any call to one of the logger methods will tag the log entry
+with these values. Obviously additional values can be stored in the
+logger context. Sub-systems may also instantiate their own logger
+inheriting the parent logger context (and handler see below).
+
+The logger is backed by handlers which do the actual writing. `log15`
+comes with a bunch of handlers that can write to syslog, loggly etc.
+The default goa handler writes to `Stdout` which is handy for dev or for
+services running in containers (depending on your logging strategy). The
+service logger handler can be initialized prior to starting it via the
+[Logger](https://godoc.org/github.com/raphael/goa#pkg-variables)
+package variable:
+```go
+func main() {
+	// Create goa service
+	service := goa.New("cellar")
+
+        // Initialize logger to use syslog.
+        syslogHandler := log15.SyslogHandler("cellar", log15.LogfmtFormat())
+        goa.Logger.SetHandler(syslogHandler)
+
+        // ...
+```
+
+### Middleware
+
+goa supports both "classic" `net/http` [middleware](https://justinas.org/writing-http-middleware-in-go/)
+as well as goa specific middleware that can leverage the context object.
+As a simple example here is the source for the `RequestID` middleware
+that handles the [X-Request-ID](https://devcenter.heroku.com/articles/http-request-id)
+header:
+```go
+// RequestID is a middleware that injects a request ID into the context of each request.
+// Retrieve it using ctx.Value(ReqIDKey). If the incoming request has a RequestIDHeader header then
+// that value is used else a random value is generated.
+func RequestID() Middleware {
+	return func(h Handler) Handler {
+		return func(ctx *Context) error {
+			id := ctx.Request().Header.Get(RequestIDHeader)
+			if id == "" {
+				id = fmt.Sprintf("%s-%d", reqPrefix, atomic.AddInt64(&reqID, 1))
+			}
+			ctx.SetValue(ReqIDKey, id)
+
+			return h(ctx)
+		}
+	}
+}
+```
+The middleware takes and returns a request handler, it uses closure to
+wrap the handler passed as argument and add its own logic.
+
+goa currently includes the following middleware:
+
+* A `LogRequest` middleware that logs the request and responses.
+* The RequestID middleware shown above.
+* A `Recover` middleware that recovers and logs panics.
+* a `Timeout` middleware that sends a cancelation signal throught the
+  context after a given amount of time.
+* a `RequireHeader` middleware that checks that a given header has a
+  given value (useful to implement shared secret auth).
+* a `CORS` middleware which provides a simple DSL for configuring [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS).
+
+Obviously you can mount your own middleware through the `Use` method.
+This method is implemented by both the [Service](https://godoc.org/github.com/raphael/goa#Service)
+and the [Controller](https://godoc.org/github.com/raphael/goa#Controller)
+interfaces. This means that middleware can be applied to all requests sent
+to the service or only to the endpoints exposed by specific controllers.
+
+### Error Handling
+
+In goa request handlers can return errors (instances of `error`). When
+they do goa checks whether the controller has a error handler and if it
+does invokes it. If the controller does not have a error handler then
+goa invokes the service-wide error handler.
+
+The [default](https://godoc.org/github.com/raphael/goa#DefaultErrorHandler)
+service-wide error handler simply logs the error and returns a response
+with status code `400` if the error is an instance of
+`goa.BadRequestError` - `500` otherwise. The default error handler also
+writes the message of the error to the response body. goa also comes
+with a [terse](https://godoc.org/github.com/raphael/goa#TerseErrorHandler)
+error handler which won't write the error message to the body for
+internal errors (useful for production).
+
+As with middleware error handlers can be mounted on a specific controller
+or service-wide via the `SetErrorHandler` method exposed by both the
+[Service](https://godoc.org/github.com/raphael/goa#Service)
+and the [Controller](https://godoc.org/github.com/raphael/goa#Controller)
+interfaces.
+
+### Graceful Shutdown
+
+A goa service can be instantiated calling either the [New](https://godoc.org/github.com/raphael/goa#New)
+or [NewGraceful](https://godoc.org/github.com/raphael/goa#NewGraceful) package
+functions. Calling `NewGraceful` returns a server backed by the
+[graceful](https://godoc.org/github.com/tylerb/graceful) package Server
+type. When sending any of the signals listed in the goa
+[InterruptSignals](https://godoc.org/github.com/raphael/goa#pkg-variables)
+package variable to the process the graceful server:
+
+* disables keepalive connections.
+* closes the listening socket, allowing another process to listen on that port immediately.
+* sends a cancellation signal through the context.
 
 ## What's Next?
 
