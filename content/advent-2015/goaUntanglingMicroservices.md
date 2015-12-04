@@ -322,13 +322,13 @@ case the `OK` method accepts an instance of `app.Bottle` which is a
 type that was generated from the `BottleMedia` definition.
 
 Because goa uses code generation it does not have to use reflection
-(at runtime, the DSL does use reflection in a few places just to make
-the code more terse). One of the design goal of goa was for the
-generated code to mimic what you would write if you were to implement
-the code yourself. The generated code is thus fairly simple to follow.
-And while validation code can look a bit funky just because of the
-number of cases that have to be considered it does reflect what you
-would do in a "standard" Go program (minus nice refactoring).
+(the DSL does use reflection in a few places just to make the code more
+terse). One of the design goal of goa was for the generated code to
+mimic what you would write if you were to implement the code yourself.
+The generated code is thus fairly simple to follow. And while
+validation code can look a bit funky just because of the number of cases
+that have to be considered it does reflect what you would do in a
+"standard" Go program (minus nice refactoring).
 
 As an example here is the generated code that assigns the BottleID field
 of the ShowBottleContext data structure show above:
