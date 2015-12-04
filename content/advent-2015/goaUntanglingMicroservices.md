@@ -18,7 +18,9 @@ their pitfalls as well. One of them is that building good APIs is
 difficult. Changing APIs is even more difficult. And any APIs that get
 exposed to customers are almost impossible to ever change, it seems. For
 this reason we have focused on tools that help us design, review, and
-implement the APIs of our microservices.
+implement the APIs of our microservices. One of the results of this
+focus is [goa](http://goa.design), which we're just starting to use as
+our HTTP microservice framework of choice.
 
 ## Introducing **goa**
 
@@ -40,34 +42,35 @@ critical task consisting of designing an API.
 Building an API is a multi-step process. The API first gets designed,
 resources and associated actions are identified, the request endpoints,
 payloads and parameters all get defined. Once that's done the design
-goes trough a review process: will the UI have all the information it
-requires? will dependent service X be able to list the resources it
-needs efficiently? will dependent service Y be able to update the fields
-of this other resource? After a few back and forth it's time to
-actually implement the API. And after a while it's back to square 1 with
-new requirements for APIv2.
+goes trough a review process: will the UI another team has to build on
+top have all the information it requires? will dependent service X be
+able to list the resources it needs efficiently? will dependent service
+Y be able to update the fields of this other resource? After a few back
+and forth it's time to actually implement the API. And after a while
+it's back to square 1 with new requirements for APIv2.
 
 The review process is especially hard to do with no special tooling.
 Who is going to write a [Swagger](http://swagger.io) specification from
 scratch just to throw it away as soon as implementation starts? However
 it's also a critical step for the overall success of the service.
 Without a clear and complete description of the API there's a good
-change that something will end up not quite right or missing entirely.
+chance that something will end up not quite right or missing entirely.
 
 That's where [goa](http://goa.design) comes in. goa lets you write the
 specification of your API in code. It then uses that code to produce
 a number of outputs including HTTP handlers that take care of validating
-the incoming requests. This means that the specification is translated
-*automatically* into the implementation, what got reviewed is what is
-implemented.
+the incoming requests. This means that **the specification is translated
+automatically into the implementation, what got reviewed is what is
+implemented**.
 
-The final result ends up looking quite similar to what you would get
-with any web framework: HTTP requests gets accepted by the net/http
-Server, routed by a router (goa uses [httprouter](https://github.com/julienschmidt/httprouter))
-and handled by the application code. The only difference being that
-the application code is composed of two parts: the generated handler
-which validates the request and creates the context object (more on
-that later) and the user code that provides the business logic.
+The final implementation, however, is very familiar looking and can
+plug-in to many existing HTTP processing packages. HTTP requests are
+accepted by the `net/http` server, routed by a router (goa uses
+[httprouter](https://github.com/julienschmidt/httprouter)) and handled
+by the application code. The only difference being that the application
+code is composed of two parts: the generated handler which validates the
+request and creates the context object (more on that later) and the user
+code that provides the business logic.
 <div style="height: 0;
  padding-top: 25%;
  width: 100%;
@@ -97,17 +100,17 @@ well as metadata like information (description, contact, license etc.):
 package design
 
 import (
-	. "github.com/raphael/goa/design" // "dot" imports make the DSL easier to read.
-	. "github.com/raphael/goa/design/dsl"
+        . "github.com/raphael/goa/design" // "dot" imports make the DSL easier to read.
+        . "github.com/raphael/goa/design/dsl"
 )
 
 var _ = API("winecellar", func() { // The API function defines an API given its name.
         Description("The winecellar service API")
-	BasePath("/cellar")        // Base path to all requests.
-                                   // Can be overridden in action definitions using an absolute path
-                                   // starting with //.
-        Host("cellar.goa.design")  // Default API host
-        Scheme("http")             // Supported API URL scheme
+        BasePath("/cellar")        // Base path or prefix to all requests.
+                                   // Can be overridden in action definitions using an
+                                   // absolute path starting with //.
+        Host("cellar.goa.design")  // Default API host used by clients and Swagger.
+        Scheme("http")             // Supported API URL scheme used by clients and Swagger.
         Scheme("https")            // Scheme("http", "https") works too
 })
 ```
@@ -119,31 +122,31 @@ request endpoint. To do that we first need to define a resource
 (`Bottle`) and in the definition of the resource add the `show` action
 that exposes that one endpoint:
 ```go
-var _ = Resource("Bottle", func() { // Resources are defined using the Resource function
-	DefaultMedia(BottleMedia)   // Default media type used to render the bottle resources
-	BasePath("/bottles")        // Gets appended to the API base path
+var _ = Resource("Bottle", func() { // Define the Bottle resource
+        DefaultMedia(BottleMedia)   // Default media type used to render the bottle resources
+        BasePath("/bottles")        // Gets appended to the API base path
 
-	Action("show", func() {              // Actions are defined using the Action function.
-		Routing(GET("/:bottleName")) // The relative path to the show endpoint. The full path is
+        Action("show", func() {              // Define the show action on the Bottle resource
+                Routing(GET("/:bottleID"))   // The relative path to the show endpoint. The full path is
                                              // built concatenating the API and resource base paths with it.
-                                             // Uses a wildcard to capture the requested bottle name.
+                                             // Uses a wildcard to capture the requested bottle ID.
                                              // Wildcards can start with : to capture a single path segment
                                              // or with * to capture the rest of the path.
-		Description("Retrieve bottle with given ID")
-		Params(func() {              // Params defines the endpoint parameters
-                                             // Both parameters captured through wildcards and query strings
-			Param(               // Param describes a single parameter
+                Description("Retrieve bottle with given ID")
+                Params(func() {              // Define the request parameters found in the URI (wildcards)
+                                             // and the query string.
+                        Param(               // Define a single parameter
                                 "bottleID",  // Here it corresponds to the path segment captured by :bottleID
                                 Integer,     // The JSON type of the parameter
                                 "The name of the bottle to retrieve", // An optional description
                         )
-		})
-		Response(OK)       // Response defines a potential response sent by the action.
-		Response(NotFound) // An action may define any number of responses.
-                                   // Their content is defined through ResponseTemplates (not shown in
-                                   // this simplistic example). Here we use the default response templates
-                                   // defined in goa.
-	})
+                })
+                Response(OK)                 // Define a potential response
+                Response(NotFound)           // An action may define any number of responses.
+                                             // Their content is defined through ResponseTemplates (not shown
+                                             // in this simplistic example). Here we use the default response
+                                             // templates defined in goa.
+        })
 ```
 A resource may specify a default media type used to render `OK`
 responses. In goa the media type describes the data structure
@@ -151,19 +154,19 @@ rendered in the response body.  In the example the `Bottle` resource
 refers to the `BottleMedia` media type. Here is the definition for it:
 ```go
 var BottleMedia = MediaType("application/vnd.goa.example.bottle+json", func() {
-	Description("A bottle of wine")
-	Attributes(func() {
-		Attribute("id", Integer, "ID of bottle") // Attribute defines a single field in
+        Description("A bottle of wine")
+        Attributes(func() {
+                Attribute("id", Integer, "ID of bottle") // Attribute defines a single field in
                                                          // the media type data structure given its
                                                          // name, type and description.
-		Attribute("href", "API href of bottle")  // The default type for attributes is String.
-		Attribute("name", "The bottle  name", func() { // Like with API, Resource and Action an attribute
+                Attribute("href", "API href of bottle")  // The default type for attributes is String.
+                Attribute("name", "The bottle  name", func() { // Like with API, Resource and Action an attribute
                                                          // definition may use an anonymous function as
                                                          // last argument to define additional properties.
-			MinLength(1)                     // Here we define validation rules specifying a
-			MaxLength(255)                   // minimum and maximum number of characters in a bottle
-                                                         // name.
-		})
+                        MinLength(1)                     // Here we define validation rules specifying a
+                        MaxLength(255)                   // minimum and maximum number of characters in a bottle
+                        // name.
+                })
                 Attribute("color", func() {              // Descriptions are optional.
                         Enum("red", "white", "rose", "yellow", "sparkling") // Possible field values
                 })
@@ -172,15 +175,15 @@ var BottleMedia = MediaType("application/vnd.goa.example.bottle+json", func() {
                         Maximum(5)
                 })
 
-		View("default", func() {                 // Views are used to render a media type.
-			Attribute("id")                  // A media type can have one or more views
-			Attribute("href")                // and must define the "default" view.
-			Attribute("name")                // The view simply lists the fields to render.
-			Attribute("color")               // It can also specify the view to use to render
-			Attribute("sweetness")           // fields that are media types themselves
+                View("default", func() {                 // Views are used to render a media type.
+                        Attribute("id")                  // A media type can have one or more views
+                        Attribute("href")                // and must define the "default" view.
+                        Attribute("name")                // The view simply lists the fields to render.
+                        Attribute("color")               // It can also specify the view to use to render
+                        Attribute("sweetness")           // fields whose type is itself a media type
                                                          // (the "default" view by default). Not used here.
-		})
-	})
+                })
+        })
 })
 ```
 We now have a complete description of our API together with its
@@ -193,23 +196,31 @@ media types or reuse types in multiple definitions. The dsl package
 [GoDoc](https://godoc.org/github.com/raphael/goa/design/dsl) lists all
 the supported keywords with additional examples.
 
+Now that we have written down the design of our API it can be reviewed.
+While reviewers may be able to read the DSL spec straight we can make
+their task more attractive by automatically generating browsable
+documentation. As explained further down, goa can generate the
+[Swagger](http://swagger.io) specification and the standard Swagger UI
+can be used to view them.
+
 ## The Magic: Code Generation
 
 The purpose of specifying the API using a DSL is to make it executable.
 In Go the preferred method for this is to generate code and this is the
 path goa takes. goa comes with the [goagen](http://goa.design/goagen.html)
 tool which is the goa code generator. The processing of the design
-occurs in three stages:
+occurs in the following stages:
 
-1. `goagen` parses the command line and invokes the appropriate
-   generator package. The generator package writes the generator source
-   code to a temporary Go workspace.
-2. The DSL is compiled together with the generator code in the temporary
-   workspace.
-3. The resulting tool runs running and validating the DSL. The result
-   of executing the DSL are simple data structures that describe the
-   API. The generated tool traverses these data structures to generate
-   the output.
+1. `goagen` parses the command line to determine the type of output
+   desired and invokes the appropriate generator.
+2. The generator writes the code that will produce the final output
+   to a temporary Go workspace.
+3. The DSL is compiled together with the output producing code in the
+   temporary workspace.
+4. The resulting tool executes evaluating and validating the DSL.
+   The result of evaluating the DSL are simple data structures that
+   describe the API. The output producing code traverses these data
+   structures in memory and writes the corresponding output.
 
 `goagen` supports many different outputs. Each output maps to a tool
 command. The following commands are currently supported:
@@ -234,6 +245,8 @@ Resources in goa merely provide a convenient way to group API endpoints
 (called *actions* in the DSL) together. The actual semantic is
 irrelevant to goa - in other words goa is not an opinionated framework
 by design.
+
+### Glue Code
 
 The `app` output deserves special attention as it generates the glue
 code between the underlying HTTP server and the controller (your) code.
@@ -274,6 +287,8 @@ type that was generated from the `BottleMedia` definition.
 The [cellar](https://github.com/raphael/goa/blob/master/examples/cellar)
 example contains implementations for many more actions.
 
+### Documentation
+
 Another very valuable output is documentation in the form of
 [JSON schema](http://json-schema.org/latest/json-schema-hypermedia.html)
 or [swagger](http://swagger.io). Being able to look at the documentation
@@ -298,6 +313,8 @@ produced the swagger specification and loaded it in
 
 <div style="clear: both;">
 </div>
+
+### Clients
 
 One of the nice side-effects of having a complete spec of the API is
 that goa can produce not only server-side code to implement the API but
@@ -388,9 +405,30 @@ the [generated JavaScript](https://github.com/raphael/goa/blob/master/examples/c
 together with [an example](https://github.com/raphael/goa/blob/master/examples/cellar/js/index.html)
 on how to use it if you are curious.
 
+### Plugins
+
+Last but not least `goagen` makes it very easy to implement
+custom generators through *goagen plugins*. A plugin is merely a Go
+package which exposes a `Generate` function with the following signature:
+```go
+func Generate(api *design.APIDefinition) ([]string, error)
+```
+where `api` is the API definition computed from the DSL. On success
+`Generate` should return the path to the generated files. On failure the
+error message gets displayed to the user (and `goagen` exits with status 1).
+
+Any package exposing this function can then be used by goagen simply by
+providing its path on the command line, for example:
+```
+goagen gen -d github.com/raphael/goa/examples/cellar/design --pkg-path=github.com/bketelsen/gorma
+```
+would use @bketelsen `gorma` plugin over the goa `cellar` example.
+
+### Final Overview
+
 Summing it all up, the diagram below shows all the various outputs of
 the `goagen` tool:
-![goagen diagram](https://cdn.rawgit.com/raphael/goa/master/images/goagenv4.svg "goagen")
+![goagen diagram](https://cdn.rawgit.com/raphael/goa/gh-pages/images/goagen.svg "goagen")
 
 ## The Engine: Runtime
 
