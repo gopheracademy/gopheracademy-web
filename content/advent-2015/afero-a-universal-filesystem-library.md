@@ -1,6 +1,6 @@
 +++
 author = ["Steve Francia"]
-date = "2015-11-30T10:17:26-05:00"
+date = "2015-12-04T08:17:26-05:00"
 linktitle = "afero: A Universal Filesystem Library"
 series = ["Advent 2015"]
 title = "afero: A Universal Filesystem Library"
