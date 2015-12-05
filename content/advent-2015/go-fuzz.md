@@ -1,6 +1,6 @@
 +++
 author = ["Damian Gryski"]
-date = "2015-12-06T08:00:00+00:00"
+date = "2015-12-05T08:00:00+00:00"
 title = "Go Fuzz"
 series = ["Advent 2015"]
 +++
