@@ -6,11 +6,11 @@ series = ["Advent 2015"]
 +++
 
 Go is an awesome language. It's simple, powerful, has great tooling and
-many of really enjoy using it every day. However, as it's common with
-strongly typed languages, we write a good deal of boilerplate to
-connect things around.
+many of us really enjoy using it every day. However, as it usually
+happens with strongly typed languages, we write a good deal of
+boilerplate to connect things around.
 
-In this post we'll have cover mostly three points:
+In this post we'll cover mostly three points:
 
 1. Why can we build tools with Go that will help reduce boilerplate using code generation.
 2. What are the building blocks for code generation in Go.
@@ -20,13 +20,13 @@ In this post we'll have cover mostly three points:
 
 Sometimes we try to reduce boilerplate by using reflection and filling
 our projects with methods accepting `interface{}`. However, whenever a
-method takes an `interface{}` we are throwing our type safety out of the
-window. When using type assertions and reflection the compiler is unable
-to check we are passing the right types and we are more open runtime
-panics.
+method takes an `interface{}`, we are throwing our type safety out of
+the window. When using type assertions and reflection, the compiler is
+unable to check we are passing the right types and we are more exposed
+to runtime panics.
 
 Some of the boilerplate code we've got can be mostly inferred from the
-code we alerady have in our project. For that, we can write tools that
+code we already have in our project. For that, we can write tools that
 will read our project's source code and generate the relevant code.
 
 # The building blocks to code generation
@@ -37,26 +37,26 @@ The standard library has a wonderful set of packages ready to do most of
 the heavy lifting when it comes to reading and parsing code.
 
 * `go/build`: gathers information about a go package. Given a package
-  name, it'll return information such as what's the directory containing
-the source code for the package, what are the code and test files in the
-directory, what other packages it's dependent on, etc.
+  name, it will return information such as what's the directory
+  containing the source code for the package, what are the code and test
+  files in the directory, what other packages it depends on, etc.
 * `go/scanner` and `go/parser`: read source code and parse it to
   generate an [Abstract Syntax Tree][ast] (AST).
 * `go/ast`: declares the types used to represent the AST and includes
   some methods to help walking and modifying the tree.
 * `go/types`: declares the data types and implements the algorithms used
   for type-checking Go packages. While `go/ast` contains the raw tree,
-  this package does all the heavy lifting to process the AST so you can
-  get information about types directly.
+  this package does all the work to process the AST so you can get
+  information about types directly.
 
 ## Generating code
 
-When generating code, most projecst just rely on the good old
+When generating code, most projects just rely on the good old
 `text/template` to generate the code.
 
-I recommend starting generated files with a comment clarifying the code
-is automatically generated, which program generated it and mentioning it
-should not be editign by hand.
+I recommend starting generated files with a comment indicating that the
+code is automatically generated, which tool generated it and mentioning
+that it should not be edited by hand.
 
 ```go
 /*
@@ -70,14 +70,13 @@ writing it. This package contains the logic used by `go fmt`.
 
 ## go generate
 
-Once we start writing tools that generate source code for our programs
-two questions appear quickly: at what point in our development process do we
-generate the code? how do we keep the generated code up to date?
-
+Once we start writing tools that generate source code for our programs,
+two questions appear quickly: At what point in our development process
+do we generate the code? How do we keep the generated code up to date?
 
 Since 1.4, the go tool comes with the `generate` command. It allows us
 to run the tools we use for code generation with the go tool itself. We
-can specify what commands need to be run using special comments within
+can specify which commands need to be run using special comments within
 our source code and `go generate` will do the work for us.
 
 We just need to add a comment with the following format:
@@ -89,12 +88,12 @@ We just need to add a comment with the following format:
 Once you have that, `go generate` will automatically call `command`
 whenever it's run.
 
-There's two points that are important to remember:
+There are two points that are important to remember:
 
 * `go generate` is meant to be run by the developer authoring the
   program or package. It's never called automatically by `go get`
 * You need to have all the tools invoked by `go generate` already
-  installed and setup in your system. Make sure you document what tools
+  installed and setup in your system. Make sure you document which tools
   you are going to use and where those tools can be downloaded.
 
 Also, if your code generation tool is within the same repository, I
@@ -105,8 +104,8 @@ you change the tool.
 # How do you start building your own tools?
 
 The stdlib packages to parse and generate code are great, but their
-documentation is huge and it can be quite daunting to make a sense of
-how to use the packages just from the docs.
+documentation is huge and making sense of how to use the packages just
+from the docs can be quite daunting.
 
 The best thing I did when I got into code generation was to learn about
 some of the existing tools. It serves three purposes:
@@ -122,7 +121,7 @@ some of the existing tools. It serves three purposes:
 Have you ever found yourself copying and pasting the list of methods
 defined in an interface you've got to implement?
 
-You can use [`impl`][impl] to generate the stubs automatically. It'll
+You can use [`impl`][impl] to generate the stubs automatically. It will
 use the packages in the stdlib to look for the interface and output
 methods you must implement.
 
@@ -143,9 +142,14 @@ func (f *File) Close() error {
 
 ## Generating mocks automatically with mockery
 
-[testify][testify] has a nice [mock][testify-mock] package to
+[testify][testify] has a nice [mock][testify-mock] package to easily
+mock your dependencies when you are doing unit testing. Because
+interfaces are satisfied implicitly, we can specify our dependencies
+using interfaces and use a mock during unit testing rather than the
+external dependency.
 
-Here's a very simplified example about how to mock a service:
+Here's a very simplified example about how to mock a theoretical
+downcaser interface:
 
 ```go
 package main
@@ -181,7 +185,7 @@ func (m *mockDowncaser) Downcase(a0 string) (string, error) {
 }
 ```
 
-However, as we can see from the implementation, it's so straightforward
+Actually, as we can see from the implementation, it's so straightforward
 that the interface definition itself has all the information we need to
 generate a mock automatically.
 
@@ -238,9 +242,9 @@ generate` and the corresponding mock will be updated.
 
 [`mockery`][mockery] is the main reason I started contributing to
 [`testify/mock`][testify-mock] and became a maintainer for `testify`.
-However, since it was developed before `go/types` was part of the
-standard library in 1.5, it's implemented usding the lower level
-`go/ast` which makes the code harder to follow and also introduces some
+However, because it was developed before `go/types` was part of the
+standard library in 1.5, it's implemented using the lower level
+`go/ast`, which makes the code harder to follow and also introduces some
 bugs like [failing to generate mocks from interfaces using
 composition][mockery-issue].
 
@@ -252,11 +256,11 @@ more about code generation in my [`gogen`][gogen] package.
 It includes three tools right now:
 
 * [goautomock][goautomock]: is similar to mockery but implemented using
-  `go/types` rather than `go/ast`, so it worsk with composed interfaces
+  `go/types` rather than `go/ast`, so it works with composed interfaces
   too. It's also easier to mock interfaces from the standard library.
-* [gounmarshalmap][gounmarshalmap]: takes an struct and generates a
+* [gounmarshalmap][gounmarshalmap]: takes a struct and generates a
   `UnmarshalMap(map[string]interface{})` function for the struct that
-  decodes a map into the struct. It's thought as an alternative to
+  decodes a map into the struct. It's built to work as an alternative to
   [`mapstructure`][mapstructure] using code generation rather than
   reflection.
 * [gospecific][gospecific]: is a tiny experiment to generate specific
@@ -266,7 +270,7 @@ It includes three tools right now:
 
 # Wrappping up
 
-Code generation is great, it can save us from writing tons of
+Code generation is great, it can spare us from writing tons of
 repetitive code while keeping our programs type safe. We use it
 extensively when working on [Slackline][slackline] and we'll probably
 use it soon in [testify][testify-codegen] too.
@@ -274,7 +278,7 @@ use it soon in [testify][testify-codegen] too.
 However, remember to ask yourself: is writing this tool
 worth the time?
 
-[xkcd][xkcd] wants to help us answering that question:
+[xkcd][xkcd] wants to help us by answering that question:
 [![](http://imgs.xkcd.com/comics/is_it_worth_the_time.png)][xkcd]
 
 [go-generate-post]: https://blog.golang.org/generate
