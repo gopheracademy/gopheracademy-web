@@ -1,6 +1,6 @@
 +++
 author = ["Ernesto Jiménez"]
-date = "2015-12-08T08:00:00+00:00"
+date = "2015-12-10T08:00:00+00:00"
 title = "Reducing boilerplate with go generate"
 series = ["Advent 2015"]
 +++
