@@ -1,6 +1,6 @@
 +++
 author = ["Matt Layher"]
-date = "2015-12-10T08:00:00+00:00"
+date = "2015-12-08T08:00:00+00:00"
 title = "Go in a Monorepo"
 series = ["Advent 2015"]
 +++
