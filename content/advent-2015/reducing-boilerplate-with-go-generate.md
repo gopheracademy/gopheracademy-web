@@ -66,11 +66,11 @@ should not be editign by hand.
 ```
 
 We can also use the `go/format` package to format our code before
-writting it. This package contains the logic used by `go fmt`.
+writing it. This package contains the logic used by `go fmt`.
 
 ## go generate
 
-Once we start writting tools that generate source code for our programs
+Once we start writing tools that generate source code for our programs
 two questions appear quickly: at what point in our development process do we
 generate the code? how do we keep the generated code up to date?
 
@@ -244,9 +244,6 @@ standard library in 1.5, it's implemented usding the lower level
 bugs like [failing to generate mocks from interfaces using
 composition][mockery-issue].
 
-`mockery` uses the `go/ast` package directly to collect information
-about the
-
 ## gogen experiments
 
 I've open sourced the code generation tools I've been building to learn
@@ -269,12 +266,12 @@ It includes three tools right now:
 
 # Wrappping up
 
-Code generation is great, it can save us from writting tons of
+Code generation is great, it can save us from writing tons of
 repetitive code while keeping our programs type safe. We use it
 extensively when working on [Slackline][slackline] and we'll probably
 use it soon in [testify][testify-codegen] too.
 
-However, remember to ask yourself: is writting this tool
+However, remember to ask yourself: is writing this tool
 worth the time?
 
 [xkcd][xkcd] wants to help us answering that question:
