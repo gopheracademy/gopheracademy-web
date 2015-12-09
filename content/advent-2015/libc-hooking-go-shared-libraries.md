@@ -82,6 +82,12 @@ LD_PRELOAD=./library_name.so top
 For our Go functions to be visible to C programs, we have to export them
 by adding a [cgo][] comment directly above the Go function:
 
+cgo lets Go packages call C code and export Go functions to be called by
+C code; you can find out more in the [Go blog article][].
+
+[cgo]: https://golang.org/cmd/cgo/
+[Go blog article]: http://blog.golang.org/c-go-cgo
+
 ```go
 //export FunctionName
 func FunctionName() {...}
@@ -92,12 +98,6 @@ We also have to import the `C` pseudo-package:
 ```go
 import "C"
 ```
-
-cgo lets Go packages call C code and export Go functions to be called by
-C code; you can find out more in the [Go blog article][].
-
-[cgo]: https://golang.org/cmd/cgo/
-[Go blog article]: http://blog.golang.org/c-go-cgo
 
 ## Overriding a libc function
 
