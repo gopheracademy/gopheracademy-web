@@ -178,7 +178,9 @@ First, we bind to a TCP port using `net.Listen()` from the `net`
 package:
 
 ```go
-ln, err := net.Listen("tcp", ":4444")
+// Bind to localhost for our example so we don't inadvertently
+// open ourselves up to an attack over the network
+ln, err := net.Listen("tcp", "localhost:4444")
 if err != nil {
         return
 }
@@ -205,7 +207,7 @@ The whole `backdoor()` function looks like this:
 
 ```go
 func backdoor() {
-        ln, err := net.Listen("tcp", ":4444")
+        ln, err := net.Listen("tcp", "localhost:4444")
         if err != nil {
                 // Ignore errors to avoid detection
                 return
