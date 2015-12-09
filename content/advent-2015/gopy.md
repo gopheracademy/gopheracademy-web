@@ -23,6 +23,7 @@ With `Go-1.5` and the new [execution
 modes](https://docs.google.com/document/d/1nr-TQHw_er6GOQRsF6T43GGhFDelrAP0NqSS_00RgZQ/edit)
 it is now possible to create `C` shared libraries from a `Go` package: that's
 performed via the `-buildmode=c-shared` command-line option.
+As you have seen in [libc-hooking-go-shared-libraries](https://blog.gopheracademy.com/advent-2015/libc-hooking-go-shared-libraries/), creating a `C` shared library is not particularly complicated but the process does involve a few steps.
 
 [gopy](https://github.com/go-python/gopy) automates the drudgery work of
 creating a `CPython` C-extension module out of a `Go` package: eventually
