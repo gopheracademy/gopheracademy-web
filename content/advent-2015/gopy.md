@@ -26,15 +26,15 @@ performed via the `-buildmode=c-shared` command-line option.
 As you have seen in [libc-hooking-go-shared-libraries](https://blog.gopheracademy.com/advent-2015/libc-hooking-go-shared-libraries/), creating a `C` shared library is not particularly complicated but the process does involve a few steps.
 
 [gopy](https://github.com/go-python/gopy) automates the drudgery work of
-creating a `CPython` C-extension module out of a `Go` package: eventually
+creating a `CPython-2` C-extension module out of a `Go` package: eventually
 allowing you to write nice concurrent libraries in `Go` and share them with your
 `CPython` friends.
 Given a `Go` package, `gopy` will:
 
 - inspects the `Go` package
 - extracts the exported `types`, `funcs`, `vars` and `consts`
-- creates a `Go` package that `cgo` exports the exported entities
-- creates a `C` extension module, using the `CPython` API, calling these `cgo` exported entities
+- creates a `cgo` package that exports these entities to `C`
+- creates a `C` extension module, using the `CPython-2` API, calling these `cgo` exported entities
 - compiles everything together into a `.so` shared object
 
 ## Installation
@@ -51,7 +51,7 @@ extension module, it will need:
 - the `python-dev` package (which contains the `CPython` development headers and
   `libpython.so.2.X`)
 - `pkg-config` and the corresponding `python2.pc` configuration file which hold
-  and describe the correct `C` incantations commands (`-I`, `-L` and `-l`)
+  and describe the correct `C` incantation commands (`-I`, `-L` and `-l`)
 - and, finally, a `C` compiler.
 
 ## Example
@@ -265,25 +265,25 @@ what could be achieved with `Go-1.5`.
 
 `gopy` is currently able to wrap `struct` types, named types, slice types and array
 types, as well as the methods which are attached to it.
-`gopy` is also clever enough to translate the [comma-ok idiom](https://golang.org/doc/effective_go.html) into its `python` equivalent (_ie:_ raising an `Exception`.)
+`gopy` is also clever enough to translate functions using the [comma-error idiom](https://golang.org/doc/effective_go.html) into their `python` equivalent (_ie:_ a function raising an `Exception`.)
 Exported `var`s and `const`s are also handled: `gopy` generates "getters" and
 "setters" for the former and only "getters" for the latter, to preserve the
-semantics of the original `Go` package.
+semantics of the original Go package.
 For slices and arrays, `gopy` generates code that implements the sequence and
 buffer protocols.
-Hence, `gopy` strives to generate types that look like idiomatic `python` classes.
+Hence, `gopy` strives to generate types that look like idiomatic python classes.
 
 ## Limitations
 
 `gopy` is still a very young project and many features are still missing.
-It is currently not supported to:
+It currently does not support:
 
-- expose `map[T]U` types
-- expose `chan T` types
-- expose `interfaces` (except `error`)
-- implement a `Go` interface from `python`
-- expose functions or methods taking pointers to values
-- wrap a package which exposes as part of its API types from another package.
+- exposing `map[T]U` types
+- exposing `chan T` types
+- exposing `interfaces` (except `error`)
+- implementing a `Go` interface from `python`
+- exposing functions or methods taking pointers to values
+- wrapping a package which exposes as part of its API types from another package.
 
 Also, currently, `gopy` generates code only for the `CPython-2` API, even if
 there are no known showstoppers to support `CPython-3` or other `python` VMs.
@@ -328,7 +328,7 @@ programmatically:
 
 It is not unreasonnable to imagine `Go` to become the perfect low-level
 companion language for `python`, thanks to its quick development cycle and its
-runtime performances, especially in the concurrent programming space.
+runtime performance, especially in the concurrent programming space.
 `gopy` is a young project, recently made possible thanks to `Go-1.5` and there
 is still a lot of work to support the whole `Go` language. 
 `gopy` is released under the BSD-3 license and welcomes bug reports,
