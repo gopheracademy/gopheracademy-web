@@ -50,8 +50,8 @@ extension module, it will need:
 
 - the `python-dev` package (which contains the `CPython` development headers and
   `libpython.so.2.X`)
-- `pkg-config` and the corresponding `python2.pc` configuration file which hold
-  and describe the correct `C` incantation commands (`-I`, `-L` and `-l`)
+- `pkg-config` and the corresponding `python2.pc` configuration file which holds
+  and describes the correct `C` incantation commands (`-I`, `-L` and `-l`)
 - and, finally, a `C` compiler.
 
 ## Example
