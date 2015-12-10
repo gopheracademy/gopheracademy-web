@@ -67,9 +67,8 @@ func TestGetWidget(t *testing.T) {
 ```
 
 Test2doc will automatically generate markdown documentation for this 
-endpoint in the [API 
-Blueprint](https://github.com/apiaryio/api-blueprint/blob/master/API%20B
-lueprint%20Specification.md) format as your tests run, like so:
+endpoint in the [API Blueprint](https://github.com/apiaryio/api-blueprint/blob/master/API%20Blueprint%20Specification.md) 
+format as your tests run, like so:
 
 ```
 # Group widgets
@@ -108,7 +107,7 @@ Requirements:
 1. You must have a `TestMain` for each of the packages you wish to 
 document.
 2. All of the tests in your package must share a single `test.Server` 
-instance (from test2doc/test package)
+instance (from [test2doc/test](https://godoc.org/github.com/adams-sarah/test2doc/test) package)
 
 
 ### 3 Code Additions
@@ -150,7 +149,7 @@ func TestMain(m *testing.M) {
 
 
 	// 3. Finally, you must tell the wrapped server when you are done testing
-	//    so that the buffer can be flushed to an apib doc file
+	//    so that the buffer can be flushed to an API Blueprint doc file
 	server.Finish()
 
 	// note that os.Exit does not respect defers.
@@ -248,9 +247,9 @@ type ResponseWriter struct {
 }
 ```
 
-The test2doc `ResponseWriter`'s implementations of the `Header` and 
-`WriteHeader` methods just use those of its embedded 
-`httptest.ResponseRecorder`:
+Test2doc's `ResponseWriter` implements the `Header` and 
+`WriteHeader` methods by just falling back those of its 
+embedded `httptest.ResponseRecorder`:
 
 ```go
 func (rw *ResponseWriter) Header() http.Header {
@@ -285,10 +284,10 @@ using the `go/doc` package.
 
 ## Thoughts for the future
 I'd like to convert the main types to interfaces, allowing support for 
-formats other than the API Blueprint format (eg, Google's discovery js).
+formats other than the API Blueprint format.
 
 I'd also like to improve upon the "handler-finding" algorithm (above), 
 to make it more reliably accurate.
 
 ## Contributions welcome!
-Drop me a line at sadams.codes@gmail.com, or adams-sarah on github.
+Drop me a line at sadams.codes@gmail.com, or [adams-sarah](https://github.com/adams-sarah) on github.
