@@ -8,7 +8,7 @@ series = ["Advent 2015", "GopherCon 2016"]
 <img src="/postimages/advent-2015/gophercon2016.svg" alt="GopherCon 2015" style="width: 300px;margin: 0 auto;"/>
 </div>
 
-GopherCon 2016 will take place at the Denver Convention Center in Denver, Colorado on July 11th through July 13th, 2016. 
+GopherCon 2016 will take place at the Colorado Convention Center in Denver, Colorado on July 11th through July 13th, 2016. 
 
 We’ve listened to the feedback you gave us from GopherCon 2015 and want to explain the changes we’re putting in place for GopherCon 2016.
 
@@ -40,7 +40,7 @@ In fact, many speakers have told us that the most stressful part of giving a pre
 We’re going to try something different for GopherCon 2016.
 Instead of a few minutes of question time at the end of each plenary session, we will be asking everyone to hold questions until after lunch, when we will invite speakers from the day to join an extended panel discussion.
 
-For the afternoon tutorial sessions, we expect the smaller rooms size to be more conducive to questions from the floor and encourage speakers plan their talks accordingly.
+For the afternoon tutorial sessions, we expect the smaller rooms size to be more conducive to questions from the floor and encourage speakers to plan their talks accordingly.
 
 # Workshop training
 In addition to the conference proper we will be holding a workshop training day on Sunday, July 10th.
@@ -64,7 +64,7 @@ GopherCon is proud to announce we have adopted the [Go Community Code of Conduct
 GopherCon, and its organising body, Gopher Academy, is dedicated to providing a harassment-free conference for everyone, regardless of age, disability, gender, nationality, race, religion, sexuality, or similar personal characteristic.
 
 We do not tolerate harassment of conference participants in any form.
-Conference participants violating these rules may be sanctioned or expelled from the conference without refund at the discretion of the conference organizers.
+Conference participants violating these rules may be sanctioned or expelled from the conference without refund at the discretion of the conference organisers.
 
 Full details will be available on the GopherCon website on January 1st, 2016.
 
