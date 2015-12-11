@@ -28,7 +28,7 @@ In 2015, we offered speakers an opportunity to be paired with an experienced spe
 Extending and improving on this tradition of mentorship, every speaker whose talk is accepted at GopherCon 2016 will be paired with a mentor to help them prepare and practice their talk.
 
 The call for proposals for both plenary and tutorial sessions opens on January 1st, 2016.
-You can find out more details by visiting the call for proposals website, [cfp.gophercon.com](http://cfp.gopercon.com/).
+You can find out more details by visiting the call for proposals website, [cfp.gophercon.com](http://cfp.gophercon.com/).
 
 # No questions during plenary sessions
 Questions at tech conferences have a poor reputation.
