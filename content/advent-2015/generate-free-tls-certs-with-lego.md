@@ -9,7 +9,7 @@ If your Go program uses the transport layer of the network at all&mdash;whether 
 
 Because TLS (formerly "SSL") certificates cost money and require manual labor to obtain, install, and maintain. Besides, there's no reason to encrypt unless you collect or send sensitive data, right? **Wrong.** Encryption not only prevents eavesdropping and surveillance, it also protects packets from being modified in flight&mdash;modifications that could break your API or track your users. Essentially, TLS adds a layer of privacy and integrity to your application.
 
-This post will guide you through a free, easy way to obtain real, trusted TLS certificates using Go. Thanks to the efforts of the ISRG and, in particular, [Let's Encrypt](https://letsencrypt.org), the ACME protocol makes it possible to do this. Sebastian Erhart has done an excellent job building an ACME client in Go called [lego](https://github.com/xenolf/lego) that we can use to get free, valid TLS certificates in seconds. The technique shown here is very similar to what [Caddy](https://caddyserver.com) does to serve your sites over HTTPS by default.
+This post will guide you through a free, easy way to obtain real, trusted TLS certificates using Go. Thanks to the efforts of the Internet Security Research Group (ISRG) and, in particular, [Let's Encrypt](https://letsencrypt.org), the ACME protocol makes it possible to do this. Sebastian Erhart has done an excellent job building an ACME client in Go called [lego](https://github.com/xenolf/lego) that we can use to get free, valid TLS certificates in seconds. The technique shown here is very similar to what [Caddy](https://caddyserver.com) does to serve your sites over HTTPS by default.
 
 (Note that lego can be used as a stand-alone CLI tool as well.)
 
@@ -20,7 +20,7 @@ There's been a lot of confusion about ACME, Let's Encrypt, and this whole "free 
 
 - **ACME** is the protocol that facilitates the automatic issuance, renewal, and revocation of x.509 certificates between certificate authorities and applicants. At time of writing, the spec is still a [working draft](https://github.com/ietf-wg-acme/acme/) at the IETF.
 
-- **ISRG** ([Internet Security Research Group](https://letsencrypt.org/isrg/)) is the non-profit organization behind Let's Encrypt.
+- **ISRG** is [the non-profit organization](https://letsencrypt.org/isrg/) behind Let's Encrypt.
 
 - **Let's Encrypt** is the first certificate authority (CA) to implement the ACME protocol.
 
