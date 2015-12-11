@@ -247,8 +247,8 @@ type ResponseWriter struct {
 }
 ```
 
-Test2doc's `ResponseWriter` implements the `Header` and 
-`WriteHeader` methods by just falling back those of its 
+test2doc's `ResponseWriter` implements the `Header` and 
+`WriteHeader` methods by just falling back to those of its 
 embedded `httptest.ResponseRecorder`:
 
 ```go
