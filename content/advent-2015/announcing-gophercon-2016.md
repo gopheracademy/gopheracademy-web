@@ -16,7 +16,7 @@ We’ve listened to the feedback you gave us from GopherCon 2015 and want to exp
 The big change for 2016 is the introduction of multiple tracks during the afternoon sessions.
 On Day 1 and Day 2 we will feature 30-minute plenary talks in the main theatre until lunch time.
 After lunch, we have secured additional space for two tracks of 50-minute tutorial sessions in the afternoon.
-The tutorial sessions will run in parallel with other talks and panels that will continue in the main theatre.
+The tutorial sessions will run in parallel with other talks and panels in the main theatre.
 Everything will be recorded and available after the conference, so while it’s impossible to be in three places at once, you won’t miss out.
 
 The final day of the conference remains the same hack day free-for-all, but we’ll have more breakout rooms and will be introducing birds-of-a-feather sessions for sprinting on your favorite Open Source Go project.
