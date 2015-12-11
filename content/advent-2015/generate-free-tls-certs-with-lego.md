@@ -149,7 +149,7 @@ The **http-01** challenge requires the client to provide a special token value a
 
 The **tls-sni-01** challenge requires the client to add a special token hostname to the TLS handshake. This exchange must occur on port 443.
 
-The **dns-01** challenge requires a DNS record to be provisioned with a special token value. Thanks to [an awesome PR](https://github.com/xenolf/lego/pull/38), lego will soon be able to do this for you for AWS, CloudFlare, and RFC2136-compliant DNS providers. The benefit of this challenge is no need to connect to your machine directly.
+The **dns-01** challenge requires a DNS record to be provisioned with a special token value. Thanks to [an awesome PR](https://github.com/xenolf/lego/pull/38), lego will soon be able to do this for you for AWS, CloudFlare, and RFC2136-compliant DNS providers. The benefit of this challenge is that there is no need to connect to your machine directly.
 
 The **proofOfPosession-01** challenge requires you to prove ownership of a private key used in association with a public key already known to the server. This will be available in the future.
 
