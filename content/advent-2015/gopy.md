@@ -1,6 +1,6 @@
 +++
 author = ["Sebastien Binet"]
-date = "2015-12-06T16:41:54+01:00"
+date = "2015-12-16T00:00:00+01:00"
 linktitle = "Gopy"
 series = ["Advent 2015"]
 title = "gopy: extending CPython with Go"
