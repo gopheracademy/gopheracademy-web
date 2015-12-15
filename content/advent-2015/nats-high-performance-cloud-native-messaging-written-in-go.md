@@ -94,3 +94,5 @@ If you like to get involved with NATS, there are many ways to do so! We'd love t
 NATS Twitter: [@nats_io](http://www.twitter.com/nats_io)
 <br>
 NATS Github: [github.com/nats-io](https://github.com/nats-io)
+<br>
+Request to join the NATS [Slack Community](https://docs.google.com/a/apcera.com/forms/d/104yA7oqq7SPoMDG_J9MnVE74gVwBnTmVHKP5ABHoM5k/viewform?embedded=true)
