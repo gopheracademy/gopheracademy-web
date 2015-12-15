@@ -1,6 +1,6 @@
 +++
 author = ["Mat Ryer"]
-date = "2015-12-14T00:00:00-08:00"
+date = "2015-12-12T00:00:00-08:00"
 title = "Composable command-line tools"
 series = ["Advent 2015"]
 draft = true
