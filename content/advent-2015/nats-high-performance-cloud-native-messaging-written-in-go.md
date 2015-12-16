@@ -1,6 +1,6 @@
 +++
 author = ["NATS.io team"]
-date = "2015-12-11T13:45:04-05:00"
+date = "2015-12-16T13:45:04-05:00"
 linktitle = "NATS: High Performance Messaging"
 series = ["Advent 2015"]
 title = "NATS: High Performance Cloud Native Messaging Written in Go"
