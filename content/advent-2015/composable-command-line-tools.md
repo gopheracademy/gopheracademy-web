@@ -3,7 +3,6 @@ author = ["Mat Ryer"]
 date = "2015-12-12T00:00:00-08:00"
 title = "Composable command-line tools"
 series = ["Advent 2015"]
-draft = true
 +++
 
 Go's simplicity and exhaustive standard library means writing command-line tools is easy and enjoyable. Following the Go philosophy, if you write programs that are small and focussed, you can end up with a pretty powerful little toolbelt of utilities.
