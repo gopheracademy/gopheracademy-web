@@ -40,44 +40,32 @@ Lazy Listeners - To support scaling, NATS provides for auto-pruning of client co
 
 One Go idiom that NATS has implemented is the use of networked channels.  This makes writing a go NATS application simple and straightforward.
 
-Here is simple code to connect to a NATS server, create a networked channel, and write ten integers:
-
+Here is sample NATS client code demonstrating the use of networked channels:
 ```go
-
-nc, nil := nats.Connect(nats.DefaultURL)
-ec, nil := nats.NewEncodedConn(nc, nats.DEFAULT_ENCODER)
+nc, _ := nats.Connect(nats.DefaultURL)
+ec, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 defer ec.Close()
 
-ch := make(chan int, 1024)
-if err := ec.BindSendChan("foo", ch); err != nil {
-  log.Fatalf("Failed to bind to a send channel: %v\n", err)
+type person struct {
+     Name     string
+     Address  string
+     Age      int
 }
 
-// send 10 integers
-for i := 0; i < 10; i++ {
-  ch <- i
-}
+recvCh := make(chan *person)
+ec.BindRecvChan("hello", recvCh)
 
-ec.Flush()
+sendCh := make(chan *person)
+ec.BindSendChan("hello", sendCh)
 
-And the corresponding NATS code to receive:
+me := &person{Name: "derek", Age: 22, Address: "140 New Montgomery"}
 
-nc, nil := nats.Connect(nats.DefaultURL)
-ec, nil := nats.NewEncodedConn(nc, nats.DEFAULT_ENCODER)
-defer ec.Close()
+// Send via Go channels
+sendCh <- me
 
-ch := make(chan int, 1024)
-if _, err := ec.BindRecvChan("foo", ch); err != nil {
-  log.Fatalf("Failed to bind to a recv channel: %v\n", err)
-}
-
-// receive 10 integers
-for i := 0; i < 10; i++ {
-  val := <- ch
-  fmt.Printf("received: %v\n", val)
-}
+// Receive via Go channels
+who := <- recvCh
 ```
-Sending complex data types can be accomplished through further encoding, such as the JSON encoder.
 
 ### Recent Updates:
 
