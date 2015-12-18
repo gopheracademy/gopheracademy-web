@@ -1,3 +1,10 @@
++++
+author = ["Samuel Lampa"]
+date = "2015-12-18T00:00:00-08:00"
+title = "Composable Pipelines Improved"
+series = ["Advent 2015"]
++++
+
 I wrote a [post here on GopherAcademy](https://blog.gopheracademy.com/composable-pipelines-pattern) earlier this year,
 about an idea for a "framework-less" pattern for [Flow-Based Programming](http://www.jpaulmorrison.com/fbp/) style programs in Go,
 or let's just call it "composable concurrent pipelines". During the year, I have experimented more, and added some minor modifications to this pattern, which
