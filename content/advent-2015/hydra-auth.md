@@ -6,18 +6,18 @@ series = ["Advent 2015"]
 title = "Hydra: Run your own Identity and Access Management service in <5 Minutes"
 +++
 
-Let me introduce you to [Hydra](https://github.com/ory-am/hydra),
-the open source alternative to proprietary authorization solutions in the age of micro services.
-It will take you less than five minutes to start up your very own OAuth2 provider and gain access to a rich features set,
+This article introduces [Hydra](https://github.com/ory-am/hydra),
+the open source micro service alternative to proprietary authorization solutions.
+It will take you less than five minutes to start up a OAuth2 provider and gain access to a rich features set,
 including access control and identity management.
 
 [![Hydra](/postimages/advent-2015/hydra.png)](https://github.com/ory-am/hydra)
 
-Hydra was primarily written because we at Ory needed a scalable 12factor OAuth2 consumer / provider with enterprise grade
+Hydra was primarily written in response to our team's need for a scalable 12factor OAuth2 consumer / provider with enterprise grade
 authorization and interoperability without a ton of dependencies or crazy features. While we where at it, we added
-policy, account and client management and other cool features.
-Because we can't stand maintaining 5 different databases (or paying someone to maintain them)
-and dealing with unpredictable dependency trees, Hydra only requires Go and PostgreSQL (or any SQL speaking database).
+policy, account and client management and some other features.
+In order to avoid maintaining five different databases, or even paying someone to maintain them,
+and dealing with unpredictable dependency trees, Hydra only requires Go and PostgreSQL or any other SQL speaking database.
 
 Hydra's core features in a nutshell:
 
@@ -28,12 +28,12 @@ Hydra's core features in a nutshell:
   * Hydra uses self-contained Acccess Tokens as suggessted in [rfc6794#section-1.4](http://tools.ietf.org/html/rfc6749#section-1.4) by issuing JSON Web Tokens as specified at
    [https://tools.ietf.org/html/rfc7519](https://tools.ietf.org/html/rfc7519) with [RSASSA-PKCS1-v1_5 SHA-256](https://tools.ietf.org/html/rfc7519#section-8) hashing algorithm.
   * Hydra implements **OAuth2 Introspection** ([rfc7662](https://tools.ietf.org/html/rfc7662)) and **OAuth2 Revokation** ([rfc7009](https://tools.ietf.org/html/rfc7009)).
-  * Hydra is able to sign users up and in through OAuth2 providers like Dropbox, LinkedIn, Google, you name it.
-* Hydra speaks **no HTML**. We believe that the design decision to keep templates out of Hydra is a core feature. *Hydra is backend, not frontend.*
+  * Hydra is able to sign users up and in through OAuth2 providers such Dropbox, LinkedIn, Google, etc.
+* Hydra speaks **no HTML**. We believe that the design decision to keep templates out of Hydra is a core feature. *Hydra is a service, a backend, not frontend.*
 * **Easy command line tools** like `hydra-host jwt` for generating jwt signing key pairs or `hydra-host client create`.
-* Hydra works both with **HTTP/2 and TLS** and HTTP (insecure - use only in development).
+* Hydra works both with **HTTP/2 and TLS** and HTTP (Warning: This feature is not yet secure - use only in development).
 * Hydra provides many **unit and integration tests**, making sure that everything is as secure as it gets!
-We use [github.com/ory-am/dockertest](https://github.com/ory-am/dockertest) for spinning up a postgres (or any other) image on the fly and running integration tests against them.
+We use [github.com/ory-am/dockertest](https://github.com/ory-am/dockertest) for spinning up a postgres, or any other, image on the fly and then running integration tests against them.
 Give it a try if you want to speed up your integration test development.
 
 Hydra was written by me ([GitHub](https://github.com/arekkas) / [LinkedIn](https://de.linkedin.com/in/aeneasr)) as part of a business application which has not been revealed yet.
@@ -47,8 +47,8 @@ Additionally, a user can authenticate through another OAuth2 Provider, for examp
 
 ## I want some action, man!
 
-Cool, me too! :) Let me show you how to set up Hydra and get a token for a client app,
-also known as the [OAuth2 Client Grant](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others) (read section "Application Access"). Most of you should be familiar with the console commands. If you're not, feel free to ask if you run into issues in our [GitHub Issue Tracker](https://github.com/ory-am/hydra/issues).
+Cool, me too! :) Let's see how to set up Hydra and get a token for a client app,
+also known as the [OAuth2 Client Grant](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others) (read section "Application Access"). If you are not familiar with the console commands, or if you run into issues, please consult our [GitHub Issue Tracker](https://github.com/ory-am/hydra/issues).
 
 *Please note: Hydra is going to be shipped through a Docker container in the future. For now, you'll need
 [Vagrant](https://www.vagrantup.com/), [VirtualBox](https://www.virtualbox.org/) and [Git](https://git-scm.com/).*
@@ -67,7 +67,7 @@ HTTP certificate because it is self-signed, but after that you should see a 404 
 Vagrant sets up a test client app (id: app, secret: secret) with super user rights. To do so,
 Vagrant runs `hydra-host client create -i app -s secret -r http://localhost:3000/authenticate/callback --as-superuser`.
 
-*hydra-host* offers different capabilities for managing your Hydra instance. Check the [docs](https://github.com/ory-am/hydra#cli-usage) if you want to find out more.
+*hydra-host* offers different capabilities for managing your Hydra instance. Check the [docs](https://github.com/ory-am/hydra#cli-usage) for additional information.
 You can also always access hydra-host through vagrant.
 
 ```
@@ -76,8 +76,8 @@ vagrant ssh
 hydra-host help
 ```
 
-*Note: Vagrant sometimes fails to boot due to network issues, if you don't see the 404 error simply run `vagrant destroy -f && vagrant up`. This will take a minute or two,
-but Hydra should be running fine after that.*
+*Note: Vagrant sometimes fails to boot due to network issues, if you don't see the 404 error simply run `vagrant destroy -f && vagrant up`. After a minute or two delay,
+Hydra should be running fine after that.*
 
 ## OAuth2 Token Client grant
 
@@ -95,29 +95,29 @@ curl --insecure -X POST --user app:secret "https://localhost:9000/oauth2/token?g
 }
 ```
 
-*Note: It is currently under discussion, if Hydra should issue only self containing JWT tokens or support other token types as well.
+*Note: It is currently under discussion, whether Hydra should issue only self containing JWT tokens or support other token types as well.
 Feel free to join the discussion our [GitHub Issue Tracker](https://github.com/ory-am/hydra/issues/22).*
 
 ## OAuth2 Token Password grant
 
 That was quick, right? Let's try this with a user account!
-*Please write the ID you are given done. We will need it later! You should also take note, that this user account does not have super user rights.**
+*Please make a note of the allocated ID. We will need it later! This user account does not have super user rights.**
 
 ```
-# Assuming, that your current working directory is /where/you/cloned/hydra
+# Assuming that the current working directory is:  /where/you/cloned/hydra
 vagrant ssh
 hydra-host account create foo@bar.com --password secret
 #
-# You'll see something like this. Please write this ID down, we'll need it later!!
+# Something as follows will appear. Make note of this ID for later use!!
 #
 Created account as "e152f029-424f-4d4d-9d69-643225113ee5".
 ```
 
-Let's authenticate the user account through the [OAuth2 Password Credentials Workflow](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others)!
+Authenticate the user account through the [OAuth2 Password Credentials Workflow](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others)!
 
 ```
 curl --insecure --data "grant_type=password&username=foo@bar.com&password=secret" --user app:secret "https://localhost:9000/oauth2/token"
-# You should see something like
+# Something such as follows should appear:
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNzAwODAsImlhdCI6MTQ1MDM2NjQ4MCwiaXNzIjoiIiwiamlkIjoiYTdjZDFmYWQtZTg5MS00ZDJmLWIwZmEtMzE2Zjg3MTI5ZGIyIiwibmJmIjoxNDUwMzY2NDgwLCJzdWIiOiJiY2U5M2QzMy05YjVhLTQ5MzMtOTQ3Mi1jYWRhMDE4ZGFmNjAifQ.dqUHiAJ0uoUYtV4hqhgVqYqA6PSy1cmNZQruyTpmRaCBh2RHzkijFj4F-T8xTbrFBnysTQG3LxxeXkDNq6PZBsZ4WzvUXSy1R18MayT5FWkgAi-ROQ2lHn9Isw1IgN3XWO-YOaQt9rO0gG4w_hRQ-DprMMKcUkNVC1zK_pdUpaB7cEurYF3sd7krPQjIhucPVhJqDjkAIZGG54kd28_uLqKi3eTaDrViwGLbYzmLenfTb79Hxjfd8qFd_KBQW-f1maLy0BwQNP1pVu2I_P7CBjIwEm898wTPye42CFUfVzyvB6ob4sAZM60YVwzxN_zaw_SO1160HbDI4oO-HwwPig",
   "expires_in": 3600,
@@ -128,14 +128,14 @@ curl --insecure --data "grant_type=password&username=foo@bar.com&password=secret
 
 ## OAuth2 Authorize Workflow
 
-Ok, let's try the OAuth2 Authorize workflow!
-To do this, you'll need the account ID from above. Because Hydra is only backend, I have written
-some exemplary sign up and sign in endpoints.
+Now try the OAuth2 Authorize workflow!
+To do this, use the account ID from above. Because Hydra is only backend, use the following
+exemplary sign up and sign in endpoints.
 Take a look at them [hydra-signin](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/main.go)
 and [hydra-signup](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/main.go) to see some very basic example code.
 
 ```
-# Assuming, that your current working directory is /where/you/cloned/hydra
+# Assuming that the current working directory is:  /where/you/cloned/hydra
 vagrant ssh
 #
 # Use the account ID from above
@@ -144,18 +144,18 @@ vagrant ssh
 ACCOUNT_ID=e152f029-424f-4d4d-9d69-643225113ee5 hydra-signin &
 ```
 
-Now, point your web browser to [https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo](https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo).
+Now, point the web browser to: [https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo](https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo).
 
 ![Sign in page](/postimages/advent-2015/sign-in.png)
 
-Click where it says "Press this link to sign in". You should now be redirected to another page.
+Click the text "Press this link to sign in" to be redirected to another page.
 
 ![Sign in callback page](/postimages/advent-2015/sign-in-cb.png)
 
-This location of the sign up and sign in locations are defined the env variables `SIGNUP_URL` and `SIGNUP_URL`.
-Obviously, these endpoints are just mock ups. Find more details on environment variables in the [docs](https://github.com/ory-am/hydra/blob/master/README.md#available-environment-variables).
+This location of the sign up and sign in locations are defined the environment variables `SIGNUP_URL` and `SIGNUP_URL`.
+Obviously, these endpoints are just mock ups. There are more details on environment variables in the [docs](https://github.com/ory-am/hydra/blob/master/README.md#available-environment-variables).
 
-For the next step, you'll need the code you were given. Let's call curl again:
+For the next step, use the allocated code and call curl again:
 
 ```
 # curl --insecure --data "grant_type=authorization_code&code=<code_crom_above>" --user app:secret "https://localhost:9000/oauth2/token"
@@ -172,12 +172,12 @@ Cool, you just accomplished the authorize workflow! Let's move on to the next to
 
 ## Policies
 
-Policies are something very powerful. I have to admit that I am a huge fan of how AWS handles policies and adopted their architecture for Hydra. Please find a more in depth documentation
+Policies are something very powerful. Modelled on how AWS handles policies, we adopted the AWS architecture for Hydra. The in depth documentation is
 at the [Ladon GitHub Repository](https://github.com/ory-am/ladon).
 
 ```
 {
-    // This should be a unique ID. This ID is required for database retrieval.
+    // This should be a unique ID. The ID database requires this ID for retrieval.
     id: "68819e5a-738b-41ec-b03c-b58a1b19d043",
 
     // A human readable description. Not required
@@ -190,17 +190,17 @@ at the [Ladon GitHub Repository](https://github.com/ory-am/ladon).
     // Should the policy allow or deny access?
     effect: "allow",
 
-    // Which resources this policy affects.
-    // Again, you can put regular expressions in inside < >.
+    // Which resources does this policy affect?
+    // Again, put regular expressions inside < >.
     resources: ["urn:something:resource_a", "urn:something:resource_b", "urn:something:foo:<.+>"],
 
-    // Which permissions this policy affects. Supports RegExp
-    // Again, you can put regular expressions in inside < >.
+    // Which permissions does this policy affect. Supports RegExp
+    // Again, regular expressions inside < >.
     permissions: ["<create|delete>", "get"],
 
     // Under which conditions this policy is active.
     conditions: [
-        // Currently, only an exemplary SubjectIsOwner condition is available.
+        // Currently, there is only an exemplary SubjectIsOwner condition available.
         {
             "op": "SubjectIsOwner"
         }
@@ -208,18 +208,18 @@ at the [Ladon GitHub Repository](https://github.com/ory-am/ladon).
 }
 ```
 
-This is what a policy looks like. As you can see, we have various attributes:
+This is what a policy looks like. As you can see, there are various attributes:
 
 * A **Subject** could be an account or an client app
 * A **Resource** could be an online article or a file in a cloud drive
-* A **Permission** can also be referred to as "Action" ("create" something, "delete" something, ...)
-* A **Condition** can be an intelligent assertion *(e.g. is the Subject requesting access also the Resource Owner?)*. Right now, only the SubjectIsOwner Condition is defined. In the future, many more (e.g. IPAddressMatches or UserAgentMatches) will be added.
+* A **Permission** can also be referred to as "Action" such as "create" something, "delete" something, etc.
+* A **Condition** can be an intelligent assertion *(e.g. is the Subject requesting access also the Resource Owner?)*. Right now, only the SubjectIsOwner Condition is defined. In the future, many more conditions e.g. IPAddressMatches or UserAgentMatches will be added.
 * The **Effect**, which can only be **allow** or **deny** (deny *always* overrides).
 
 Do you remember that the test client app (*app*) was created with super-user rights and our test user without super-user rights? Let's
 see what this means in real life!
 
-Let's see if our test client app has the rights to do "create" on resource "fileA.png". First, we need an access token for our client.
+Let's see if the test client app has the rights to do "create" on resource "fileA.png". First, we need an access token for our client.
 
 ```
 curl --insecure --data "grant_type=client_credentials&username=foo@bar.com&password=secret" --user app:secret "https://localhost:9000/oauth2/token"
@@ -231,14 +231,14 @@ curl --insecure --data "grant_type=client_credentials&username=foo@bar.com&passw
 }
 ```
 
-Hydra needs the following information to decide if a access request is allowed:
-* Resource: Which resource is affected
-* Permission: Which permission is requested
-* Token: What access token is trying to perform this action
+Hydra needs the following information to allow an access request:
+* Resource: Which resource is affected?
+* Permission: Which permission is requested?
+* Token: What access token is trying to perform this action?
 * Context: The context, for example the user ID.
 * Header `Authorization: Bearer <token>` with a valid access token, so this endpoint can't be scanned by malicious anonymous users.
 
-As we have said before, let's start checking if our client app *app* has the right to *create* the resource *filA.png*. The following curl request is long, you need to copy
+To check if the client app *app* has the right to *create* the resource *filA.png*, use the following curl request, and copy
 the access token from above into both the POST body (--data "...token=...") and the Authorization header (-H "Bearer ..."):
 
 ```
@@ -253,7 +253,7 @@ curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\",
 
 We could now check if our test user *foo@bar.com* has the rights to do "create" on resource "fileA.png".
 *Spoiler alert:* he does not because he is not a superuser and we did not define any additional permissions.
-First, we need an access token for our client and then an access token for our user:
+First, make an access token for the client and then an access token for the user:
 
 ```
 # Fetch User Token
@@ -275,8 +275,8 @@ curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\",
 {"allowed": false}
 ```
 
-Wow that was a lot of copy pasting, but you made it! You have used the primary features of Hydra. Obviously, this introduction did only scratch the surface and Hydra has many things to explore!
-We at Ory hope that you enjoyed this tutorial and that you're going to give Hydra a try.
-Hydra is not stable yet but we're working hard on getting it there. If you encounter bugs, feel free to contact us on [GitHub](https://github.com/ory-am/hydra)!
+Wow! That was a lot of copy pasting, but you made it! You have used the primary features of Hydra. Obviously, this introduction only scratches the surface and Hydra has many more things to explore!
+The team at Ory hopes that you enjoyed this tutorial and that you're will give Hydra a try.
+Hydra is not stable yet and we're working hard to make it stable. If you encounter bugs, feel free to contact us on [GitHub](https://github.com/ory-am/hydra)!
 
 *I would like to thank [pathfinderlinden](https://www.flickr.com/photos/pathfinderlinden/7161293044/) for providing the original logo image as cc-by.*
