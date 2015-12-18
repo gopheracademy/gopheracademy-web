@@ -1,17 +1,23 @@
 +++
 author = ["arekkas"]
 date = "2015-12-17T16:05:49+01:00"
-linktitle = "Hydra Authentication"
+linktitle = "Hydra: Run your own IAM service in <5 Minutes"
 series = ["Advent 2015"]
-title = "Hydra: A Micro Service Authentication and Authorization Approach"
+title = "Hydra: Run your own Identity and Access Management service in <5 Minutes"
 +++
 
-Let me introduce [Hydra](https://github.com/ory-am/hydra), the open source alternative to proprietary authorization solutions in the age of micro services.
+Let me introduce you to [Hydra](https://github.com/ory-am/hydra),
+the open source alternative to proprietary authorization solutions in the age of micro services.
+It will take you less than five minutes to start up your very own OAuth2 provider and gain access to a rich features set,
+including access control and identity management.
 
-Hydra was written because we at Ory needed a scalable 12factor OAuth2 consumer / provider with enterprise grade
+[![Hydra](/postimages/advent-2015/hydra.png)](https://github.com/ory-am/hydra)
+
+Hydra was primarily written because we at Ory needed a scalable 12factor OAuth2 consumer / provider with enterprise grade
 authorization and interoperability without a ton of dependencies or crazy features. While we where at it, we added
-Policy, Account and Client management and other cool features. Because we hate maintaining 5 different databases (or paying someone to maintain them)
-and dealing with crazy and unpredictable dependency trees, Hydra only requires Go and PostgreSQL (or any SQL speaking database).
+policy, account and client management and other cool features.
+Because we can't stand maintaining 5 different databases (or paying someone to maintain them)
+and dealing with unpredictable dependency trees, Hydra only requires Go and PostgreSQL (or any SQL speaking database).
 
 Hydra's core features in a nutshell:
 
@@ -21,13 +27,13 @@ Hydra's core features in a nutshell:
   * Hydra implements OAuth2 as specified at [rfc6749](http://tools.ietf.org/html/rfc6749) and [draft-ietf-oauth-v2-10](http://tools.ietf.org/html/draft-ietf-oauth-v2-10) using [osin](https://github.com/RangelReale/osin) and [osin-storage](https://github.com/ory-am/osin-storage)
   * Hydra uses self-contained Acccess Tokens as suggessted in [rfc6794#section-1.4](http://tools.ietf.org/html/rfc6749#section-1.4) by issuing JSON Web Tokens as specified at
    [https://tools.ietf.org/html/rfc7519](https://tools.ietf.org/html/rfc7519) with [RSASSA-PKCS1-v1_5 SHA-256](https://tools.ietf.org/html/rfc7519#section-8) hashing algorithm.
-  * Hydra implements **OAuth2 Introspection** as specified in [rfc7662](https://tools.ietf.org/html/rfc7662).
+  * Hydra implements **OAuth2 Introspection** ([rfc7662](https://tools.ietf.org/html/rfc7662)) and **OAuth2 Revokation** ([rfc7009](https://tools.ietf.org/html/rfc7009)).
   * Hydra is able to sign users up and in through OAuth2 providers like Dropbox, LinkedIn, Google, you name it.
-* Hydra does not speak HTML. We believe that the design decision to keep templates out of Hydra is a core feature. *Hydra is backend, not frontend.*
-* Easy command line tools like `hydra-host jwt` for generating jwt signing key pairs or `hydra-host client create`.
-* Hydra works both over HTTP (use only in development) and HTTP/2 with TLS (use in production).
-* Hydra is unit and integration tested. We use [dockertest](https://github.com/ory-am/dockertest)
-for spinning up a postgres (or any other) image on the fly and running integration tests against them.
+* Hydra speaks **no HTML**. We believe that the design decision to keep templates out of Hydra is a core feature. *Hydra is backend, not frontend.*
+* **Easy command line tools** like `hydra-host jwt` for generating jwt signing key pairs or `hydra-host client create`.
+* Hydra works both with **HTTP/2 and TLS** and HTTP (insecure - use only in development).
+* Hydra provides many **unit and integration tests**, making sure that everything is as secure as it gets!
+We use [github.com/ory-am/dockertest](https://github.com/ory-am/dockertest) for spinning up a postgres (or any other) image on the fly and running integration tests against them.
 Give it a try if you want to speed up your integration test development.
 
 Hydra was written by me ([GitHub](https://github.com/arekkas) / [LinkedIn](https://de.linkedin.com/in/aeneasr)) as part of a business application which has not been revealed yet.
@@ -41,12 +47,10 @@ Additionally, a user can authenticate through another OAuth2 Provider, for examp
 
 ## I want some action, man!
 
-Cool, me too! :) Let me show you how to set up hydra and get a token for a client app,
+Cool, me too! :) Let me show you how to set up Hydra and get a token for a client app,
 also known as the [OAuth2 Client Grant](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others) (read section "Application Access"). Most of you should be familiar with the console commands. If you're not, feel free to ask if you run into issues in our [GitHub Issue Tracker](https://github.com/ory-am/hydra/issues).
 
-
-
-*Please note: Hydra is going to be shipped through a docker container in the future. For now, you'll need
+*Please note: Hydra is going to be shipped through a Docker container in the future. For now, you'll need
 [Vagrant](https://www.vagrantup.com/), [VirtualBox](https://www.virtualbox.org/) and [Git](https://git-scm.com/).*
 
 ```
@@ -97,7 +101,7 @@ Feel free to join the discussion our [GitHub Issue Tracker](https://github.com/o
 ## OAuth2 Token Password grant
 
 That was quick, right? Let's try this with a user account!
-*Please write the id you are given done. We will need it later! You should also take note, that this user account does not have super user rights.**
+*Please write the ID you are given done. We will need it later! You should also take note, that this user account does not have super user rights.**
 
 ```
 # Assuming, that your current working directory is /where/you/cloned/hydra
@@ -124,8 +128,8 @@ curl --insecure --data "grant_type=password&username=foo@bar.com&password=secret
 
 ## OAuth2 Authorize Workflow
 
-Ok, let's try the OAuth2 Authorize Workflow!
-To do this, you'll need the account id from above. Because Hydra is only backend, I have written
+Ok, let's try the OAuth2 Authorize workflow!
+To do this, you'll need the account ID from above. Because Hydra is only backend, I have written
 some exemplary sign up and sign in endpoints.
 Take a look at them [hydra-signin](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/main.go)
 and [hydra-signup](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/main.go) to see some very basic example code.
@@ -134,7 +138,7 @@ and [hydra-signup](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/
 # Assuming, that your current working directory is /where/you/cloned/hydra
 vagrant ssh
 #
-# Use the account id from above
+# Use the account ID from above
 # ACCOUNT_ID=<account_id_from_above> hydra-signin
 # for example:
 ACCOUNT_ID=e152f029-424f-4d4d-9d69-643225113ee5 hydra-signin &
@@ -164,7 +168,7 @@ curl --insecure --data "grant_type=authorization_code&code=fEat4PS3TVeyWrwKgLxIC
 }
 ```
 
-Cool, you just accomplished the authorize workflow! Let's move on to the next topic, Policies!
+Cool, you just accomplished the authorize workflow! Let's move on to the next topic, policies!
 
 ## Policies
 
@@ -231,7 +235,7 @@ Hydra needs the following information to decide if a access request is allowed:
 * Resource: Which resource is affected
 * Permission: Which permission is requested
 * Token: What access token is trying to perform this action
-* Context: The context, for example the user id.
+* Context: The context, for example the user ID.
 * Header `Authorization: Bearer <token>` with a valid access token, so this endpoint can't be scanned by malicious anonymous users.
 
 As we have said before, let's start checking if our client app *app* has the right to *create* the resource *filA.png*. The following curl request is long, you need to copy
@@ -272,8 +276,7 @@ curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\",
 ```
 
 Wow that was a lot of copy pasting, but you made it! You have used the primary features of Hydra. Obviously, this introduction did only scratch the surface and Hydra has many things to explore!
-We at Ory hope that you enjoyed this tutorial and that you're going to give Hydra a try. Hydra is not stable yet but we're working hard on getting it there.
-If you encounter bugs, feel free to contact us on [GitHub](https://github.com/ory-am/hydra)!
+We at Ory hope that you enjoyed this tutorial and that you're going to give Hydra a try.
+Hydra is not stable yet but we're working hard on getting it there. If you encounter bugs, feel free to contact us on [GitHub](https://github.com/ory-am/hydra)!
 
-If you like what you see, show your love and give the repository a star :)
-It is always nice to know that people use and enjoy the software you wrote.
+*I would like to thank [pathfinderlinden](https://www.flickr.com/photos/pathfinderlinden/7161293044/) for providing the original logo image as cc-by.*
