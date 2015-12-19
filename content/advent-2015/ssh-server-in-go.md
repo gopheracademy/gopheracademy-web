@@ -38,7 +38,7 @@ func Listen(port int) {
 		PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 			pkey, err := models.SearchPublicKeyByContent(strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key))))
 			if err != nil {
-                // handle error
+				// handle error
 				return nil, err
 			}
 			return &ssh.Permissions{Extensions: map[string]string{"key-id": com.ToStr(pkey.ID)}}, nil
@@ -105,13 +105,13 @@ func listen(config *ssh.ServerConfig, port int) {
 		// Once a ServerConfig has been configured, connections can be accepted.
 		conn, err := listener.Accept()
 		if err != nil {
-            // handle error
+			// handle error
 			continue
 		}
 		// Before use, a handshake must be performed on the incoming net.Conn.
 		sConn, chans, reqs, err := ssh.NewServerConn(conn, config)
 		if err != nil {
-            // handle error
+			// handle error
 			continue
 		}
 
@@ -143,7 +143,7 @@ func handleServerConn(keyID string, chans <-chan ssh.NewChannel) {
 
 		ch, reqs, err := newChan.Accept()
 		if err != nil {
-            // handle error
+			// handle error
 			continue
 		}
 
