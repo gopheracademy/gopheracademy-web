@@ -1,17 +1,17 @@
 +++
 author = ["Jiahua Chen"]
-date = "2015-12-18T04:07:33-05:00"
-title = "Writing SSH server in Go"
+date = "2015-12-19T00:00:00-00:00"
+title = "Writing an SSH server in Go"
 series = ["Advent 2015"]
 +++
 
-When I'm working on [Gogs](https://gogs.io) project, there is a need of builtin
+When I'm working on the [Gogs](https://gogs.io) project, there is a need of builtin
 SSH server, which allows users to preform Git-only operations through key-based
 authentication.
 
-All available resources on the web are all minimal examples and does not fit this
+The available resources on the web are all minimal examples and do not fit this
 specific requirement. Therefore, I think it's worth sharing my experiences to make
-your life easier in case you just ran into same problem as mine.
+your life easier in case you just run into same problem as mine.
 
 The code structure is pretty much same to the examples you can find on the web.
 
@@ -20,8 +20,8 @@ The code structure is pretty much same to the examples you can find on the web.
 3. Preform Git operations.
 4. The most important part, return a status if no error occurs.
 
-OK, before we get started, just note that code are not supposed to be copy-paste
-and just work. It will make this post too long if involves all the details.
+OK, before we get started, just note that the code examples are not supposed to
+be copy-paste and just work. It will make this post too long if involves all the details.
 
 ### Prepare to start a SSH server
 
@@ -122,7 +122,7 @@ func listen(config *ssh.ServerConfig, port int) {
 }
 ```
 
-1. Accept requests inside a infinite `for` loop.
+1. Accept requests inside an infinite `for` loop.
 2. Preform handshakes for new SSH connections.
 3. Discard all irrelevant incoming request but serve the one you really need to care.
 
@@ -214,7 +214,7 @@ of them.
 2. The payload comes from request somehow is not always in a clean format, so we
 have to preform a clean operation to remove unless characters:
 
-    ```go
+```go
 func cleanCommand(cmd string) string {
 	i := strings.Index(cmd, "git")
 	if i == -1 {
@@ -222,7 +222,7 @@ func cleanCommand(cmd string) string {
 	}
 	return cmd[i:]
 }
-    ```
+```
 
 3. Check the type of request, the `exec` type is what we're looking for.
 4. Clean payload again for strange characters, and call a specific command that
