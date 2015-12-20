@@ -232,27 +232,3 @@ in the [SciPipe README](https://github.com/samuell/scipipe/blob/master/README.md
 SciPipe is still in prototype phase but there are a fair number of fully working toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), so the basic idea seems to be working. 
 
 Feedback and suggestions for improvement of the idea and the code are much welcome!
-
-### A few words on the ideas behind SciPipe
-
-I will refer to the [SciPipe website](http://scipipe.org) or [README](https://github.com/samuell/scipipe/blob/master/README.md) for more background information, but just a few words about the thinking behind creating a scientific
-workflow system in Go...
-
-In short idea of using Go was based on the realization that Go's concurrency primitives provide an excellent basis for an
-implicit task scheduler, where tasks are "scheduled" or run, as soon as data arrives on the in-ports of any of the
-processes. Or, a better way to put this I guess, is that Go's internal scheduler is taking care of the scheduling, so that
-we don't need to implement a dedicated task scheduler, just to run tasks concurrently. We just have to take care of the data
-dependencies between processes, and wire up a network of Go channel according to these dependencies and feed data over that
-network of channels, and the scheduling is simply inherent in this concurrent data flow network.
-
-Also, using a full-fledged programming language to write workflows in, enables re-using the great tooling infrastructure
-around the language, such as syntax highlighting and auto-completion support for many editors, etc.
-
-Furthermore, the fact that components are pure Go, enables combining processes that call external programs via shell commands,
-with processes implemented in pure Go when possible. Since Go is a decently performant language with excellent concurrency
-support, the drive would be to move over as many processes as possible into Go, to lessen the dependencies and possibly
-increase performance, of the workflow.
-
-Finally, I quite like the idea of being able to compile at least the workflow part of a scientific workflow into a single
-executable, to upload for execution basically anywhere (and if and when all the external programs is uses have been replaced
-with Go counterparts, this will go for the full workflow)! :)
