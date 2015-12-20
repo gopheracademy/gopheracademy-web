@@ -97,7 +97,7 @@ proc1.Out = proc2.In
 ## Let's create a pipeline component too
 
 There was one other ugly part of that previously blogged example. In order to drive the execution of a set of connected
-processes, we were just looping over the output of the out-port of the last component, right in the programs main-method.
+processes, we were looping over the output of the out-port of the last component, right in the programs main-method.
 
 That is, the following part in the previous post:
 
@@ -115,8 +115,7 @@ I couldn't come up with a better suggestion for how to drive such a chain of pro
 
 While I did not use Egon's whole suggestion since it included a fair bit of reflection and departed from my idea
 of a framework-less pattern, his code examples did a nice trick; Rather than letting the processes fire up go-routines,
-like my pattern did inside the `Init()` methods, he had plain `Run()` methods without any go-routines in them, and instead
-fired off as go-routines (with the `go` keyword) outside of the processes.
+(i.e. use the `go` keyword) like my pattern did inside the `Init()` methods, he had `Run()` methods without any `go` statements in them and instead fired called the `go` keyword outside of the processes.
 
 So, if we replaced the `Init()` method in the code examples above with the following `Run()` method:
 
@@ -147,7 +146,7 @@ go proc1.Run() // Execute in separate go-routine
 proc2.Run() // Execute the last process in the main thread
 ```
 
-Now, this can of course be packaged into a convenient Pipeline component:
+Now, this can be packaged into a convenient Pipeline component:
 
 ```go
 type Pipeline struct {
@@ -175,7 +174,7 @@ func (pl *Pipeline) Run() {
 }
 ```
 
-... that we now can use like this (assuming we have already initiated and connected together `proc1` and `proc2`):
+... that we can use like this (assuming we have already initiated and connected `proc1` and `proc2`):
 
 ```go
 // Add processes to pipeline and run
@@ -184,8 +183,7 @@ pipeline.AddProcesses(proc1, proc2)
 pipeline.Run()
 ```
 
-So, a full code example of using the refined "framework-less flow-based-programming inspired" pattern (apart from
-the component implementations), could look like so:
+So a full code example of using the refined "framework-less flow-based-programming inspired" pattern, could look like so, (leaving out the process implementations for brevity):
 
 ```go
 // Init processes
@@ -201,10 +199,10 @@ pipeline.AddProcesses(proc1, proc2)
 pipeline.Run()
 ```
 
-Just note that if the last process is sending its output on a channel too, we need another process in the end that just
-receives inputs and does nothing with it.
+Just note that if the last process is sending some output on a channel as well we need another process in the end that just
+receives these outputs as inputs, doing nothing with it.
 
-We could even implement a special "sink" process for that:
+We could for example implement a special "sink" process for that:
 
 ```go
 type Sink struct {
