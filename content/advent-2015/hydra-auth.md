@@ -1,6 +1,6 @@
 +++
 author = ["arekkas"]
-date = "2015-12-17T16:05:49+01:00"
+date = "2015-12-21T00:00:00+01:00"
 linktitle = "Hydra: Run your own IAM service in <5 Minutes"
 series = ["Advent 2015"]
 title = "Hydra: Run your own Identity and Access Management service in <5 Minutes"
@@ -57,23 +57,29 @@ also known as the [OAuth2 Client Grant](https://aaronparecki.com/articles/2012/0
 git clone https://github.com/ory-am/hydra.git
 cd hydra
 vagrant up
-# Get a coffee or wait until the Docker container is released ;)
 ```
 
-You should now have a running Hydra instance! Vagrant exposes ports 9000 (HTTPS - Hydra) and 9001 (Postgres) on your localhost.
-Open [https://localhost:9000/](https://localhost:9000/) to confirm that Hydra is running. You will probably have to add an exception for the
-HTTP certificate because it is self-signed, but after that you should see a 404 error indicating that Hydra is running!
+**Note:** For the rest of this tutorial, I am assuming that you do not change your working directory. I am also assuming,
+that you are on a Linux/Unix host and have a decent shell. If you do not, feel free to `vagrant ssh` into the VM. You will
+then be able to run all the commands (e.g. curl) without hassle. Only make sure that stay in the VM by avoiding `exit` calls.
+I am recommending this especially if you are on windows, because it is missing curl and other command line tool quirks.
 
-Vagrant sets up a test client app (id: app, secret: secret) with super user rights. To do so,
+You should now have a running Hydra instance! Vagrant exposes ports 9000 (HTTPS - Hydra) and 9001 (Postgres) on your localhost.
+Open [https://localhost:9000/alive](https://localhost:9000/alive) to confirm that Hydra is running. You will probably have to add an exception for the
+HTTP certificate because it is self-signed, but after that you should see `{"status":"alive"}` indicating that Hydra is alive and running!
+
+Vagrant sets up a test client app (id: app, secret: secret) **with super user rights**. To do so,
 Vagrant runs `hydra-host client create -i app -s secret -r http://localhost:3000/authenticate/callback --as-superuser`.
 
 *hydra-host* offers different capabilities for managing your Hydra instance. Check the [docs](https://github.com/ory-am/hydra#cli-usage) for additional information.
 You can also always access hydra-host through vagrant.
 
 ```
-# Assuming, that your current working directory is /where/you/cloned/hydra
 vagrant ssh
 hydra-host help
+
+# to exit vagrant shell type
+exit
 ```
 
 *Note: Vagrant sometimes fails to boot due to network issues, if you don't see the 404 error simply run `vagrant destroy -f && vagrant up`. After a minute or two delay,
@@ -84,10 +90,12 @@ Hydra should be running fine after that.*
 Now that Hydra is running, let's try out some token magic! I'm assuming that you have curl installed on your system. If not, check [this page](http://curl.haxx.se/download.html).
 Our goal is to exchange our client credentials for an access token.
 
+*Note:* We're using `curl --insecure` because the TLS certificate is self-signed. Your output will have different tokens,
+but the response should always look the same.
+
 ```
-# --insecure skips SSL verification, do not use this in production.
 curl --insecure -X POST --user app:secret "https://localhost:9000/oauth2/token?grant_type=client_credentials"
-# You should see something like
+
 {
     "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNTc4MDksImlhdCI6MTQ1MDM1NDIwOSwiaXNzIjoiIiwiamlkIjoiMmYyYjk2MGQtZjE3OC00MzE5LWI4OGEtODc3YzM1Y2U5NTFkIiwibmJmIjoxNDUwMzU0MjA5LCJzdWIiOiJhcHAifQ.cLSY3G0Ngz62hJmanADZ3LUfblB5nOZOWr7bAflE9T0pZBp-Qv1sTkwRCQfqv870cpHdFvN9xL_AReMmNo_o9sLmXfNZDL5WJzDhhsLximxPMD-rO0DjnvY5663l0fvhFMlaGREsHGWDzPN-wZLczRjlFr1JXPv80qMeCm9d343hGMu26WWZ8bfdgAbae8ecmSO_oP7I8U0tWn22FzVJjSRuaShKxlWyQY2K_0-VoHDQDZMTEIXxYGNPA0MmCOEK1DDAiUeKTbguMSLMCjXTkbxd2rMwHday1oHDH8aBkyL0CGmmfVfl20hfRYqJ0x7_0sTd__-inASEjozSvYkVOw",
     "expires_in": 3600,
@@ -100,24 +108,23 @@ Feel free to join the discussion our [GitHub Issue Tracker](https://github.com/o
 
 ## OAuth2 Token Password grant
 
-That was quick, right? Let's try this with a user account!
-*Please make a note of the allocated ID. We will need it later! This user account does not have super user rights.**
+That was quick, right? Let's create a regular user account! You can use anything you want as the username (email, name, random id)
+but it **must to unique**. Please make a note of the allocated ID. We will need it later!
 
 ```
-# Assuming that the current working directory is:  /where/you/cloned/hydra
-vagrant ssh
-hydra-host account create foo@bar.com --password secret
-#
-# Something as follows will appear. Make note of this ID for later use!!
-#
+> vagrant ssh
+> hydra-host account create foo@bar.com --password secret
+
 Created account as "e152f029-424f-4d4d-9d69-643225113ee5".
+
+> exit
 ```
 
-Authenticate the user account through the [OAuth2 Password Credentials Workflow](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others)!
+Authenticate the user account through the [OAuth2 Password Credentials Workflow](https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified#others).
 
 ```
 curl --insecure --data "grant_type=password&username=foo@bar.com&password=secret" --user app:secret "https://localhost:9000/oauth2/token"
-# Something such as follows should appear:
+
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNzAwODAsImlhdCI6MTQ1MDM2NjQ4MCwiaXNzIjoiIiwiamlkIjoiYTdjZDFmYWQtZTg5MS00ZDJmLWIwZmEtMzE2Zjg3MTI5ZGIyIiwibmJmIjoxNDUwMzY2NDgwLCJzdWIiOiJiY2U5M2QzMy05YjVhLTQ5MzMtOTQ3Mi1jYWRhMDE4ZGFmNjAifQ.dqUHiAJ0uoUYtV4hqhgVqYqA6PSy1cmNZQruyTpmRaCBh2RHzkijFj4F-T8xTbrFBnysTQG3LxxeXkDNq6PZBsZ4WzvUXSy1R18MayT5FWkgAi-ROQ2lHn9Isw1IgN3XWO-YOaQt9rO0gG4w_hRQ-DprMMKcUkNVC1zK_pdUpaB7cEurYF3sd7krPQjIhucPVhJqDjkAIZGG54kd28_uLqKi3eTaDrViwGLbYzmLenfTb79Hxjfd8qFd_KBQW-f1maLy0BwQNP1pVu2I_P7CBjIwEm898wTPye42CFUfVzyvB6ob4sAZM60YVwzxN_zaw_SO1160HbDI4oO-HwwPig",
   "expires_in": 3600,
@@ -135,13 +142,17 @@ Take a look at them [hydra-signin](https://github.com/ory-am/hydra/blob/master/c
 and [hydra-signup](https://github.com/ory-am/hydra/blob/master/cli/hydra-signup/main.go) to see some very basic example code.
 
 ```
-# Assuming that the current working directory is:  /where/you/cloned/hydra
 vagrant ssh
-#
-# Use the account ID from above
-# ACCOUNT_ID=<account_id_from_above> hydra-signin
-# for example:
+ACCOUNT_ID=<account_id_from_above> hydra-signin &
+exit
+```
+
+Replace <...> with your values from above, for example:
+
+```
+vagrant ssh
 ACCOUNT_ID=e152f029-424f-4d4d-9d69-643225113ee5 hydra-signin &
+exit
 ```
 
 Now, point the web browser to: [https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo](https://localhost:9000/oauth2/auth?response_type=code&client_id=app&redirect_uri=http://localhost:3000/authenticate/callback&state=foo).
@@ -155,12 +166,17 @@ Click the text "Press this link to sign in" to be redirected to another page.
 This location of the sign up and sign in locations are defined the environment variables `SIGNUP_URL` and `SIGNUP_URL`.
 Obviously, these endpoints are just mock ups. There are more details on environment variables in the [docs](https://github.com/ory-am/hydra/blob/master/README.md#available-environment-variables).
 
-For the next step, use the allocated code and call curl again:
+For the next step, use the allocated code and call curl again.
 
 ```
-# curl --insecure --data "grant_type=authorization_code&code=<code_crom_above>" --user app:secret "https://localhost:9000/oauth2/token"
+curl --insecure --data "grant_type=authorization_code&code=<code_crom_above>" --user app:secret "https://localhost:9000/oauth2/token"
+```
+
+Replace <...> with your values from above, for example:
+
+```
 curl --insecure --data "grant_type=authorization_code&code=fEat4PS3TVeyWrwKgLxICg" --user app:secret "https://localhost:9000/oauth2/token"
-# You should see something like
+
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNTkwNDMsImlhdCI6MTQ1MDM1NTQ0MywiaXNzIjoiIiwiamlkIjoiZmMzODg4NjktZWE2MC00YzE4LWI1NmMtM2I4YmYzOTJmMzU5IiwibmJmIjoxNDUwMzU1NDQzLCJzdWIiOiJhcHAifQ.foEvIJX3hwuCJCQvIi6x31m3g1VQ0RAp6ouiiVFIs2mVM7GsD2O3aS8WxlKaxZ5P7VhbJpxTR2zg9GDSGRe-Acj26r1OVjY9QSoLIeMNg2VfA6AwpASmYhP8EOdlbyjFEK8hC14JXToWn-cT6UXE0IZxg0ANevzDSHlPnaLDemNBkxoQ1cQPIOxPOz7xZSSDZmw9rv-MNlPi6F-FNZOEig5iEyl5vzDgExr5438Qkmc5OzlLYz-RoOroFtiyoqPXp0aYEms4zaowzB4m_DrQd0cIuAKjrtlUnbvId0rOnx-PBtF6yWZfSC7_hmWwtfrmho-XFWfaawjZswRWTAgaMg",
   "expires_in": 3600,
@@ -223,7 +239,7 @@ Let's see if the test client app has the rights to do "create" on resource "file
 
 ```
 curl --insecure --data "grant_type=client_credentials&username=foo@bar.com&password=secret" --user app:secret "https://localhost:9000/oauth2/token"
-# You should see something like
+
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNTkwNDMsImlhdCI6MTQ1MDM1NTQ0MywiaXNzIjoiIiwiamlkIjoiZmMzODg4NjktZWE2MC00YzE4LWI1NmMtM2I4YmYzOTJmMzU5IiwibmJmIjoxNDUwMzU1NDQzLCJzdWIiOiJhcHAifQ.foEvIJX3hwuCJCQvIi6x31m3g1VQ0RAp6ouiiVFIs2mVM7GsD2O3aS8WxlKaxZ5P7VhbJpxTR2zg9GDSGRe-Acj26r1OVjY9QSoLIeMNg2VfA6AwpASmYhP8EOdlbyjFEK8hC14JXToWn-cT6UXE0IZxg0ANevzDSHlPnaLDemNBkxoQ1cQPIOxPOz7xZSSDZmw9rv-MNlPi6F-FNZOEig5iEyl5vzDgExr5438Qkmc5OzlLYz-RoOroFtiyoqPXp0aYEms4zaowzB4m_DrQd0cIuAKjrtlUnbvId0rOnx-PBtF6yWZfSC7_hmWwtfrmho-XFWfaawjZswRWTAgaMg",
   "expires_in": 3600,
@@ -239,15 +255,23 @@ Hydra needs the following information to allow an access request:
 * Header `Authorization: Bearer <token>` with a valid access token, so this endpoint can't be scanned by malicious anonymous users.
 
 To check if the client app *app* has the right to *create* the resource *filA.png*, use the following curl request, and copy
-the access token from above into both the POST body (--data "...token=...") and the Authorization header (-H "Bearer ..."):
+the access token from above into the POST body (--data "...token=...") and use the clients credentials in the Authorization (--user app:secret):
 
 ```
-# curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\", \"token\": \"<client_token_from_above>\"}" -H "Authorization: Bearer <client_token_from_above>" "https://localhost:9000/guard/allowed"
+curl --insecure \
+--data '{"resource": "filA.png", "permission": "create", "token": "<client_token_from_above>"}' \
+--user app:secret \
+"https://localhost:9000/guard/allowed"
+```
 
-# For example:
-curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\", \"token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNjkzOTQsImlhdCI6MTQ1MDM2NTc5NCwiaXNzIjoiIiwiamlkIjoiZWZkM2M2ODMtZTQ3Ny00ODQ4LThmZTYtZWU4NGI1YzAzZTUxIiwibmJmIjoxNDUwMzY1Nzk0LCJzdWIiOiJhcHAifQ.Q4zaiLaQvbVr9Ex3Oe9Htk-zhNsY2mtxXQgtzvnxbIbWcvF2TE_fKoVAgOGQiUiF263CNVCpKqQkMGtWcm_c1fa_2r4HYXZvOoccxHrz7foaSuLDfqcfKinlhLn_UvERT5jR9sYOA5Vw7ES1cq2WdrP17LXog9V40I0aZzmhqHXFdAv5vb4y5MdUKpaJgR_PWLBE_c12nmCRrLceSgHzVAVEyxW0BkUAK4cypIH0cz-lsSPsFZLUogQQi0oBON3FVEuXeNBxJb-Ecp3V3C5aKjrg2bs0OKeJt-ZItrzfsQF4Gsgh2irpLfF4tMN6fNDosulNT5-HuGLJGfzJzT2RYQ\"}" -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNjkzOTQsImlhdCI6MTQ1MDM2NTc5NCwiaXNzIjoiIiwiamlkIjoiZWZkM2M2ODMtZTQ3Ny00ODQ4LThmZTYtZWU4NGI1YzAzZTUxIiwibmJmIjoxNDUwMzY1Nzk0LCJzdWIiOiJhcHAifQ.Q4zaiLaQvbVr9Ex3Oe9Htk-zhNsY2mtxXQgtzvnxbIbWcvF2TE_fKoVAgOGQiUiF263CNVCpKqQkMGtWcm_c1fa_2r4HYXZvOoccxHrz7foaSuLDfqcfKinlhLn_UvERT5jR9sYOA5Vw7ES1cq2WdrP17LXog9V40I0aZzmhqHXFdAv5vb4y5MdUKpaJgR_PWLBE_c12nmCRrLceSgHzVAVEyxW0BkUAK4cypIH0cz-lsSPsFZLUogQQi0oBON3FVEuXeNBxJb-Ecp3V3C5aKjrg2bs0OKeJt-ZItrzfsQF4Gsgh2irpLfF4tMN6fNDosulNT5-HuGLJGfzJzT2RYQ" "https://localhost:9000/guard/allowed" # You should receive something like
+Replace <...> with your values from above, for example:
 
-# You should get:
+```
+curl --insecure \ 
+--data '{"resource": "filA.png", "permission": "create", "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNjkzOTQsImlhdCI6MTQ1MDM2NTc5NCwiaXNzIjoiIiwiamlkIjoiZWZkM2M2ODMtZTQ3Ny00ODQ4LThmZTYtZWU4NGI1YzAzZTUxIiwibmJmIjoxNDUwMzY1Nzk0LCJzdWIiOiJhcHAifQ.Q4zaiLaQvbVr9Ex3Oe9Htk-zhNsY2mtxXQgtzvnxbIbWcvF2TE_fKoVAgOGQiUiF263CNVCpKqQkMGtWcm_c1fa_2r4HYXZvOoccxHrz7foaSuLDfqcfKinlhLn_UvERT5jR9sYOA5Vw7ES1cq2WdrP17LXog9V40I0aZzmhqHXFdAv5vb4y5MdUKpaJgR_PWLBE_c12nmCRrLceSgHzVAVEyxW0BkUAK4cypIH0cz-lsSPsFZLUogQQi0oBON3FVEuXeNBxJb-Ecp3V3C5aKjrg2bs0OKeJt-ZItrzfsQF4Gsgh2irpLfF4tMN6fNDosulNT5-HuGLJGfzJzT2RYQ"}' \
+--user app:secret \
+"https://localhost:9000/guard/allowed"
+
 {"allowed": true}
 ```
 
@@ -255,23 +279,32 @@ We could now check if our test user *foo@bar.com* has the rights to do "create" 
 *Spoiler alert:* he does not because he is not a superuser and we did not define any additional permissions.
 First, make an access token for the client and then an access token for the user:
 
+
 ```
-# Fetch User Token
 curl --insecure --data "grant_type=password&username=foo@bar.com&password=secret" --user app:secret "https://localhost:9000/oauth2/token"
-# You should see something like
+
 {
   "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNzAwODAsImlhdCI6MTQ1MDM2NjQ4MCwiaXNzIjoiIiwiamlkIjoiYTdjZDFmYWQtZTg5MS00ZDJmLWIwZmEtMzE2Zjg3MTI5ZGIyIiwibmJmIjoxNDUwMzY2NDgwLCJzdWIiOiJiY2U5M2QzMy05YjVhLTQ5MzMtOTQ3Mi1jYWRhMDE4ZGFmNjAifQ.dqUHiAJ0uoUYtV4hqhgVqYqA6PSy1cmNZQruyTpmRaCBh2RHzkijFj4F-T8xTbrFBnysTQG3LxxeXkDNq6PZBsZ4WzvUXSy1R18MayT5FWkgAi-ROQ2lHn9Isw1IgN3XWO-YOaQt9rO0gG4w_hRQ-DprMMKcUkNVC1zK_pdUpaB7cEurYF3sd7krPQjIhucPVhJqDjkAIZGG54kd28_uLqKi3eTaDrViwGLbYzmLenfTb79Hxjfd8qFd_KBQW-f1maLy0BwQNP1pVu2I_P7CBjIwEm898wTPye42CFUfVzyvB6ob4sAZM60YVwzxN_zaw_SO1160HbDI4oO-HwwPig",
   "expires_in": 3600,
   "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBlNmJmNTBlLTU1N2EtNGJiYy1iZDk1LTg3ZDJkOTNkOGQ5YSJ9.JFVgu7Tf1BZJLrMbgKi0wyBKXZuHB63yKbv6_UP8TUkUgH8e9S5Gi9MhlPOnU0KyiEkh8p5Z0CMN2HQeIeYj-0p3POFxoSkY6NPZeWKsnPXzDjlJJmXWYrqgI-N-BD26MmoGXLjHt_DY3hxBX_EzHHuqVk9q-2pUAfwc0BHjSidF5EZ852I5e3J0WHbiw4KnogNRKNN-lsiIIEBSjkBxyyH85Dx4JdQZsAJVBKiXXzizWIQeQABAIutvIs5ok3T4xD8WYEiSuiHdKbPKe9bjNGX2OqW1X-eDts4RE0eHWatNQ-IafwMvi-7A0f5PSf26pSGPQ5TyvpA5qbnYAIXrMw",
   "token_type": "Bearer"
 }
+```
 
-# Check if user is allowed to perform the action
-# curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\", \"token\": \"<user_account_token_from_above>\"}" -H "Authorization: Bearer <client_token_from_before>" "https://localhost:9000/guard/allowed"
-# So for example:
-curl --insecure --data "{\"resource\": \"filA.png\", \"permission\": \"create\", \"token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNzAwODAsImlhdCI6MTQ1MDM2NjQ4MCwiaXNzIjoiIiwiamlkIjoiYTdjZDFmYWQtZTg5MS00ZDJmLWIwZmEtMzE2Zjg3MTI5ZGIyIiwibmJmIjoxNDUwMzY2NDgwLCJzdWIiOiJiY2U5M2QzMy05YjVhLTQ5MzMtOTQ3Mi1jYWRhMDE4ZGFmNjAifQ.dqUHiAJ0uoUYtV4hqhgVqYqA6PSy1cmNZQruyTpmRaCBh2RHzkijFj4F-T8xTbrFBnysTQG3LxxeXkDNq6PZBsZ4WzvUXSy1R18MayT5FWkgAi-ROQ2lHn9Isw1IgN3XWO-YOaQt9rO0gG4w_hRQ-DprMMKcUkNVC1zK_pdUpaB7cEurYF3sd7krPQjIhucPVhJqDjkAIZGG54kd28_uLqKi3eTaDrViwGLbYzmLenfTb79Hxjfd8qFd_KBQW-f1maLy0BwQNP1pVu2I_P7CBjIwEm898wTPye42CFUfVzyvB6ob4sAZM60YVwzxN_zaw_SO1160HbDI4oO-HwwPig\"}" -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNjkzOTQsImlhdCI6MTQ1MDM2NTc5NCwiaXNzIjoiIiwiamlkIjoiZWZkM2M2ODMtZTQ3Ny00ODQ4LThmZTYtZWU4NGI1YzAzZTUxIiwibmJmIjoxNDUwMzY1Nzk0LCJzdWIiOiJhcHAifQ.Q4zaiLaQvbVr9Ex3Oe9Htk-zhNsY2mtxXQgtzvnxbIbWcvF2TE_fKoVAgOGQiUiF263CNVCpKqQkMGtWcm_c1fa_2r4HYXZvOoccxHrz7foaSuLDfqcfKinlhLn_UvERT5jR9sYOA5Vw7ES1cq2WdrP17LXog9V40I0aZzmhqHXFdAv5vb4y5MdUKpaJgR_PWLBE_c12nmCRrLceSgHzVAVEyxW0BkUAK4cypIH0cz-lsSPsFZLUogQQi0oBON3FVEuXeNBxJb-Ecp3V3C5aKjrg2bs0OKeJt-ZItrzfsQF4Gsgh2irpLfF4tMN6fNDosulNT5-HuGLJGfzJzT2RYQ" "https://localhost:9000/guard/allowed"
+The command you need to execute looks very similar to the one above, but this time, we're going to pass the user access token with the JSON body:
+```
+curl --insecure \
+--data '{"resource": "filA.png", "permission": "create", "token": "<ACCOUNT_token_from_above>"}' \
+--user app:secret \
+"https://localhost:9000/guard/allowed"
+```
 
-# You should get:
+```
+curl --insecure \
+--data '{"resource": "filA.png", "permission": "create", "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNzAwODAsImlhdCI6MTQ1MDM2NjQ4MCwiaXNzIjoiIiwiamlkIjoiYTdjZDFmYWQtZTg5MS00ZDJmLWIwZmEtMzE2Zjg3MTI5ZGIyIiwibmJmIjoxNDUwMzY2NDgwLCJzdWIiOiJiY2U5M2QzMy05YjVhLTQ5MzMtOTQ3Mi1jYWRhMDE4ZGFmNjAifQ.dqUHiAJ0uoUYtV4hqhgVqYqA6PSy1cmNZQruyTpmRaCBh2RHzkijFj4F-T8xTbrFBnysTQG3LxxeXkDNq6PZBsZ4WzvUXSy1R18MayT5FWkgAi-ROQ2lHn9Isw1IgN3XWO-YOaQt9rO0gG4w_hRQ-DprMMKcUkNVC1zK_pdUpaB7cEurYF3sd7krPQjIhucPVhJqDjkAIZGG54kd28_uLqKi3eTaDrViwGLbYzmLenfTb79Hxjfd8qFd_KBQW-f1maLy0BwQNP1pVu2I_P7CBjIwEm898wTPye42CFUfVzyvB6ob4sAZM60YVwzxN_zaw_SO1160HbDI4oO-HwwPig"}' \
+--user app:secret \
+"https://localhost:9000/guard/allowed"
+
 {"allowed": false}
 ```
 
