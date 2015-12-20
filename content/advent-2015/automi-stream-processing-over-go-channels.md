@@ -1,6 +1,6 @@
 +++
 author = ["Vladimir Vivien"]
-date = "2015-12-19T07:48:03-05:00"
+date = "2015-12-20T00:00:00-05:00"
 linktitle = "Automi: Stream Processing Over Go Channels"
 series = ["Advent 2015"]
 title = "Automi: Stream Processing Over Go Channels"
@@ -81,7 +81,7 @@ func main() {
 ```
 http://play.golang.org/p/LQJzC4X-MS
 
-The pipeline patterns afford programmers a set of tools to create powerful and complex execution flow by dividing the the work into stages.  Each stage is wrapped within a goroutine and connected with each other using channels.  In the previous code for instance, the data from the the input channel is processed using three distinct stages including ingest, process, and store. 
+The pipeline patterns afford programmers a set of tools to create powerful and complex execution flow by dividing the the work into stages.  Each stage is wrapped within a goroutine and connected with each other using channels.  In the previous code for instance, the data from the the input channel is processed using three distinct stages including ingest, process, and store.
 
 	ingest() -> process() -> store()
 
@@ -95,7 +95,7 @@ Stream processing, as it turns out, is an extremely useful paradigm for processi
 
 	f (in) -> out
 
-The functional model facilitates the creation of larger processing flow using composition where output of one function is used as the input of the next (downstream) processing element.  This chain can grow until a terminal function produces the desired result. 
+The functional model facilitates the creation of larger processing flow using composition where output of one function is used as the input of the next (downstream) processing element.  This chain can grow until a terminal function produces the desired result.
 
 	g (f (in)) -> out
 
@@ -130,7 +130,7 @@ strm.Do(func(ctx context.Context, item interface{}) interface{} {
     form := item.(Form)
     resp, err := svc.Validate(form)
     if err != nil {
-        return nil 
+        return nil
     }
     return []string{resp.Id, resp.Code, resp.Content}
 })
@@ -153,11 +153,11 @@ The `From()` method, for instance, starts the stream by ingesting the content of
 The code implements stream processing based on the pipeline patterns mentioned earlier.  What is clearly absent, however, is the low level channel communication code to coordinate and synchronize goroutines.  The programmer is provided a clean surface to express business code without the noisy infrastructure code.  Underneath the cover however, Automi is using patterns similar to the pipeline patterns discussed earlier to create safe and concurrent structures to execute the processing of the data stream.
 
 # The Automi Project
-I am extremely pleased with the final direction of the project.  Although the API is still taking shape, the overall design feels more natural than previous attempts.  Automi API design is taking cues from popular open source stream processing projects (Apache Flink, Spark Streaming, etc) and numerous countless on the subject.  Automi has plenty of room to grow and there are numerous ideas and features that I plan to add in the coming year. 
+I am extremely pleased with the final direction of the project.  Although the API is still taking shape, the overall design feels more natural than previous attempts.  Automi API design is taking cues from popular open source stream processing projects (Apache Flink, Spark Streaming, etc) and numerous countless on the subject.  Automi has plenty of room to grow and there are numerous ideas and features that I plan to add in the coming year.
 
 Automi is really two projects rolled up in one.  On one hand, the core of Automi will be concerned with creating a superb API for expressing and realizing complex stream processing data flow.  On the other hand, Automi will also be a collection of integration API that will allow programmers to work with a variety of sources and sinks.
 
-## Features 
+## Features
 Here are some stream processing features that are coming (or already implemented):
 
 * Support for processing functions (Map, Filter, FlatMap, grouping, etc)

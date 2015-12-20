@@ -23,10 +23,7 @@ the new post for you.
 
 For example if I was writing a post for the 2014 advent called "go awesome":
 
-```
-cd gopheracademy-web
-hugo new "advent-2014/go-awesome.md"
-```
+    hugo new "advent-2014/go-awesome.md"
 
 Hugo will automatically create the file and put the proper metadata in place.
 Just make sure to review the metadata and adjust as needed.
