@@ -137,7 +137,7 @@ go proc1.Run()
 go proc2.Run()
 ```
 
-This suggests an elegant solution of the problem of driving a chain of go-routines from the main thread: Just skip the go
+This suggests an elegant solution to the problem of driving a chain of go-routines from the main thread: Skip the go
 keyword for the last process in the chain! So, for example like so:
 
 ```go
