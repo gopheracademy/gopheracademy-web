@@ -12,17 +12,11 @@ I describe below.
 
 ## The old way
 
-The basic idea described in that earlier post was the following: Rather to do [like in the generator "pattern"](https://talks.golang.org/2012/concurrency.slide#25),
-where concurrent processes were packed into functions that returns the output channels on which their lazy-evaluated output will be provided,
-we instead store each process into structs, with each in-port and out-port (I use the term port from Flow-based programming here, though technically in Go, it
-is in this case just a channel stored in a named struct field) as separate struct fields, and the main code of the processes in a
-go-routine, to make it concurrent.
+The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows respresenting in-port and out-ports as struct fields, that can be used to connect in-ports and out-ports of multiple processes in a more fluent way.
 
-The basic approach has the benefits that the code for routing out-ports to in-ports becomes a lot clearer
-than with the generator pattern, since each port is handled separately, even on separate lines of code.
+I have realized some further simplifications of this pattern though. One unnecessary thing suggested in that post was to use a method for each out-port, that would ensure that a channel is created for that out-port before returning it. 
 
-An unnecessary feat of that provided pattern though, was using methods for each out-ports, that would ensure that a channel
-is created for that out-port, and then returning that channel. The pattern proposed that a process would be defined like so:
+The pattern proposed that a process would be defined like so:
 
 ```go
 type AProcess struct {
