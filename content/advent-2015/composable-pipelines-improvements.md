@@ -49,8 +49,8 @@ proc2.In = proc1.OutChan()
 
 ## A better way
 
-What I realized, is that if we use a function to create new tasks, that pre-populates all the channel fields, we can
-just assign those fields to each other.
+What I realized though is that if we use a "factory function" to create new tasks and pre-populate the channel fields, we
+just need to assign one such field to a field of another processes to connect two processes.
 
 So, a task would be defined like so, including its factory function:
 
