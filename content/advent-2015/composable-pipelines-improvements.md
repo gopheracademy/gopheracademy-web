@@ -226,14 +226,12 @@ This pattern is now serving as the basis for a scientific workflow library that 
 
 Very briefly, the implementation of SciPipe consists of the pattern above with the addition of a specialized process type (`ShellProcess`), that can take a shell
 command pattern and generate a component out of that with one in-port per input file, and out-port per output file,
-and that will fire off tasks executing the shell command for every full set of inputs received on the in-ports (read more
+and that will fire off tasks executing a formatted shell command for every full set of inputs received on the in-ports (read more
 in the [SciPipe README](https://github.com/samuell/scipipe/blob/master/README.md)).
 
-SciPipe is still in the prototype phase, but there are a fair number of toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), that
-are fully working, so the basic idea seems to be working. 
+SciPipe is still in prototype phase but there are a fair number of fully working toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), so the basic idea seems to be working. 
 
-Feedback and suggestions for improvement of the idea and the code, are very much welcome, as we hope to
-make SciPipe a usable tool in the near future.
+Feedback and suggestions for improvement of the idea and the code are much welcome!
 
 ### A few words on the ideas behind SciPipe
 
