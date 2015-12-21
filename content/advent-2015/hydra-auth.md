@@ -248,6 +248,7 @@ curl --insecure --data "grant_type=client_credentials&username=foo@bar.com&passw
 ```
 
 Hydra needs the following information to allow an access request:
+
 * Resource: Which resource is affected?
 * Permission: Which permission is requested?
 * Token: What access token is trying to perform this action?
@@ -267,7 +268,7 @@ curl --insecure \
 Replace <...> with your values from above, for example:
 
 ```
-curl --insecure \ 
+curl --insecure \
 --data '{"resource": "filA.png", "permission": "create", "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIiLCJleHAiOjE0NTAzNjkzOTQsImlhdCI6MTQ1MDM2NTc5NCwiaXNzIjoiIiwiamlkIjoiZWZkM2M2ODMtZTQ3Ny00ODQ4LThmZTYtZWU4NGI1YzAzZTUxIiwibmJmIjoxNDUwMzY1Nzk0LCJzdWIiOiJhcHAifQ.Q4zaiLaQvbVr9Ex3Oe9Htk-zhNsY2mtxXQgtzvnxbIbWcvF2TE_fKoVAgOGQiUiF263CNVCpKqQkMGtWcm_c1fa_2r4HYXZvOoccxHrz7foaSuLDfqcfKinlhLn_UvERT5jR9sYOA5Vw7ES1cq2WdrP17LXog9V40I0aZzmhqHXFdAv5vb4y5MdUKpaJgR_PWLBE_c12nmCRrLceSgHzVAVEyxW0BkUAK4cypIH0cz-lsSPsFZLUogQQi0oBON3FVEuXeNBxJb-Ecp3V3C5aKjrg2bs0OKeJt-ZItrzfsQF4Gsgh2irpLfF4tMN6fNDosulNT5-HuGLJGfzJzT2RYQ"}' \
 --user app:secret \
 "https://localhost:9000/guard/allowed"
