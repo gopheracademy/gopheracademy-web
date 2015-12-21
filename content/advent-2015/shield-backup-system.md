@@ -105,6 +105,8 @@ func main() {
 
 <small>[Click here](http://play.golang.org/p/GhW7dL-pCv) to test on the Go Playground.</small>
 
+<iframe src="http://play.golang.org/p/GhW7dL-pCv" frameborder="0" style="width: 100%; height: 100%"><a href="http://play.golang.org/p/GhW7dL-pCv">see this code in play.golang.org</a></iframe>
+
 The `FieldValidator` type allows for any function as long as it takes in a `string` and `int` and outputs
 an `error`. This allows us to pass different named functions, or even anonymous functions, as an argument.
 Since the function is stored in the struct, all three functions can just be called using dot notation just
@@ -164,6 +166,8 @@ func main() {
 ```
 
 <small>[Click here](http://play.golang.org/p/SaZV522EBc) to test on the Go Playground.</small>
+
+<iframe src="http://play.golang.org/p/SaZV522EBc" frameborder="0" style="width: 100%; height: 100%"><a href="http://play.golang.org/p/SaZV522EBc">see this code in play.golang.org</a></iframe>
 
 In SHIELD we used an interface for JSON payloads similar to the above, but for error handling.
 Specifically we used a single function for writing the JSON error the client calling the API
