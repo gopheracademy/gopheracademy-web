@@ -262,13 +262,40 @@ So basically 2 things to follow:
 be called after the main() starts.
 - the flow definitions should be inside ```init()```
 
-The flow definition can be thought as a machine. Your code can have
+
+## Why define flows in init()?
+It is worth noting that I declared the flow definition in init()
+function.
+
+This is because Go currently lacks the capability to dynamically
+compile and load a piece of code. This impacts the design of Glow.
+In distributed mode, Glow needs to send the compiled binary to Glow
+Agents, and then run the binary in executor mode by adding flow id
+and task id to existing command line options.
+
+To achieve this correctly, the flows should be statically
+deterministic. The flows and the flow steps should not change given
+the same command line parameters.
+
+Go's init() is an ideal place to cleanly define flows, in one or
+multiple files.
+
+## How to make flows dynamically?
+As mentioned above, the flows are static. How to dynamically change
+the flow?
+
+Actually we do not change flows. We can just define multiple flows,
+and dynamically invoke a flow based on the results coming out of the
+flow via channels.
+
+The flow definitions can be thought as machines. Your code can have
 many machines, defined in several files' init() functions.
 Depending on your situation, you can start a machine, feed it via
 Go's channels, and read the output also via Go's channels.
 
-The function closures used as parameters in Map()/Reduce()/etc
-functions are just normal Go functions.
+A typical example would be running Linear Regression until the error
+is small enough. The error can be sent back to the driver, and the
+driver can decide whether need to run one more round of regression.
 
 # A more real example
 
@@ -433,53 +460,19 @@ $ dot -Tpng -ojoin.png x.dot
 The generated flow chart is:
 ![Join Flow](/postimages/advent-2015/glow-join-flow.png)
 
-## Define flows in init()
-It is worth noting that I declared the flow definition in init()
-function.
-
-This is because Go currently lacks the capability to dynamically
-compile and load a piece of code. This impacts the design of Glow.
-In distributed mode, Glow needs to send the compiled binary to Glow
-Agents, and then run the binary in executor mode by adding flow id
-and task id to existing command line options.
-
-To achieve this correctly, the flows should be statically
-deterministic. The flows and the flow steps should not change given
-the same command line parameters.
-
-Go's init() is an ideal place to cleanly define flows, in one or
-multiple files.
-
-## How to make flows dynamically?
-As mentioned above, the flows are static. How to dynamically change
-the flow?
-
-Actually we do not change flows. We can just define multiple flows,
-and dynamically invoke a flow based on the results coming out of the
-flow via channels.
-
-Just think the defined flows are a set of machines. The machines are
-static. But you as the driver is not. You can use one machine to do
-something, and use another to do something else.
-
-A typical example would be running Linear Regression until the error
-is small enough. The error can be sent back to the driver, and the
-driver can decide whether need to run one more round of regression.
 
 # Final words
 
-Glow is young, simple, but powerful. Setting up Glow cluster is
-super easy. A simple piece of code is all you need to run
-distributedly.
+Glow is simple, but powerful. Setting up Glow cluster is super easy.
+A simple piece of code is all you need to run distributedly.
 
-And you can use Go's channel to input or output data out of a flow.
+Conceptually, we just use Go's channels to connect to a flow.
 
 Glow has many components underneath. But the code is fairly easy to
 read, with potential to improve or customize. I welcome everyone to
-start using it and share your story or customization.
+start using it and welcome any improvements.
 
 Glow's APIs, e.g., Map()/Reduce()/Filter() functions, can be used in
-standalone mode also. It is not really following Go's idiomatic. But
-it makes code easy to read and write. This could also be quite
-useful.
+standalone mode also. It makes code easy to read and write. This
+could also be quite useful.
 
