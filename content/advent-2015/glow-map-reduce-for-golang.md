@@ -479,3 +479,7 @@ could also be quite useful.
 Golang's channel is an ideal model for moving data along the
 processing system. Glow currently works with batch proccesing, and
 may support stream processing in the future.
+
+Glow also need to add monitoring, fault tolerant error handling, etc.
+Lots of work to be done. Welcome to any kind of contribution!
+
