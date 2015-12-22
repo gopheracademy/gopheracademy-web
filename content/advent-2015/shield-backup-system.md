@@ -11,7 +11,7 @@ title = "shield backup system"
 
 ## Quick background: What is SHIELD?
 
-[SHIELD](https://github.com/starkandwayne/shield) is a backup solution for Cloud Foundry and BOSH deployed services such as Redis, PostgreSQL, and Docker. (For the interested, [here](http://gnuconsulting.com/blog/2014/09/07/intro-to-cloud-foundry-and-bosh/) is a quick summary of the basics of BOSH and Cloud Foundry.) The original design was inspired by a client's need to have both broad and granular backups of their private Cloud Foundry and its ecosystem. Specifically, in addition to being able to recover from a meteor strike they also wanted to be able to create more granular backups so they could restore specific containers, credentials, databases, and so on. Since there was not an existing backup solution of this type available for Cloud Foundry/etc., we designed a new solution named SHIELD.
+[SHIELD][shield] is a backup solution for Cloud Foundry and BOSH deployed services such as Redis, PostgreSQL, and Docker. (For the interested, [here][CFBlogPost] is a quick summary of the basics of BOSH and Cloud Foundry.) The original design was inspired by a client's need to have both broad and granular backups of their private Cloud Foundry and its ecosystem. Specifically, in addition to being able to recover from a meteor strike they also wanted to be able to create more granular backups so they could restore specific containers, credentials, databases, and so on. Since there was not an existing backup solution of this type available for Cloud Foundry/etc., we designed a new solution named SHIELD.
 
 ## Functions as Fields in Structs
 
@@ -85,13 +85,13 @@ func main() {
 }
 ```
 
-<small>[Click here](http://play.golang.org/p/gsgKJ6HL5X) to test on the Go Playground.</small>
+<small>[Click here][form-play] to test on the Go Playground.</small>
 
 ### Using Interfaces with JSON
 
 Some of you may be familiar with the concept of "function overloading". For those who aren't, function overloading is when a language permits you to create multiple functions with the same name. A trivial example might be to create two `add` functions: one for adding ints and another for adding floats. This allows you to avoid cluttering your code with function names like `addInt` and `addFloat`.
 
-BUT: [Go explicitly doesn't support function overloading](https://github.com/golang/go/wiki/GoForCPPProgrammers) (fourth to last bullet point). They provide a quick explanation about why on their FAQ page [here](https://golang.org/doc/faq#overloading). And that's ok - we don't really need function overloading to accomplish our goals. Why? Because we have interfaces!
+BUT: [Go explicitly doesn't support function overloading][GoForCPP] (fourth to last bullet point). They provide a quick explanation about why on their FAQ page [here][GoFAQ]. And that's ok - we don't really need function overloading to accomplish our goals. Why? Because we have interfaces!
 
 In the SHIELD project we were mostly concerned with this for error handling in JSON: we wanted to use a single function for writing JSON errors to the client calling the API endpoint. Tying this into what we did above with validation functions in structs, interfaces provided a consistent way to pass JSON error payloads from different sources. Simplified example:
 
@@ -171,13 +171,13 @@ func main() {
 }
 ```
 
-<small>[Click here](http://play.golang.org/p/-cj2QO-_RY) to test on the Go Playground.</small>
+<small>[Click here][json-play] to test on the Go Playground.</small>
 
 ## A Race Condition in the Pipes
 
 First, what is a race condition?
 
-> "A race condition occurs when one goroutine modifies a variable and another reads it or modifies it without any synchronization." *--[Source](http://www.airs.com/blog/archives/482)*
+> "A race condition occurs when one goroutine modifies a variable and another reads it or modifies it without any synchronization." *--[Source][race-def]*
 
 The code that caused our race condition was a result of the way we had originally tried to implement the backup and restore processes. SHIELD has both target and store plugins so a user can select what type of data is being backed up or restored (e.g. PostgreSQL) and what type of storage the data is being backed up to or restored from (e.g. S3). To run the backups and restores, we created stdin, stdout, stderr pipes for both the target and store. In the case of a backup, the store read what was being sent by the target (i.e. the target's standard output was piped into the store's standard input). Likewise, during a restore the target read what was being sent by the store (i.e. the store's standard output was piped into the target's standard input).
 
@@ -230,9 +230,9 @@ func main() {
 }
 ```
 
-<small>Due to limitations in Go Playground this code must be run locally to reproduce, please see [example code on Github](https://github.com/starkandwayne/shield-race).</small>
+<small>Due to limitations in Go Playground this code must be run locally to reproduce, please see [example code on Github][race-code].</small>
 
-In this example, `ls` and `sort` are taking over the roles of `target` and `store` from SHIELD. Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to `sort` the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort the output of `ls`, similar to the way that store would wait to read the output of target (or vice versa). At this point, `sort` is running in the background and will continue to do so until its stdin is complete. Since `sort.Stdin` is defined as `ls.StdoutPipe`, that means waiting for the `ls.StdoutPipe` to complete. Then Go hits the `Wait` command. [Taking a look at `Wait`](https://golang.org/src/os/exec/exec.go#L372) and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
+In this example, `ls` and `sort` are taking over the roles of `target` and `store` from SHIELD. Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to `sort` the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort the output of `ls`, similar to the way that store would wait to read the output of target (or vice versa). At this point, `sort` is running in the background and will continue to do so until its stdin is complete. Since `sort.Stdin` is defined as `ls.StdoutPipe`, that means waiting for the `ls.StdoutPipe` to complete. Then Go hits the `Wait` command. [Taking a look at `Wait`][go-src-code] and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
 
 ```
 $ go build -race
@@ -330,18 +330,38 @@ Found 2 data race(s)
 
 Note that two data races are found - one for each of the goroutines draining the stderr pipes.
 
-Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector](http://blog.golang.org/race-detector), `go build -race`, the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
+Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector][race-dedect], `go build -race`, the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
 
-To see exactly how the race condition appeared in SHIELD at that time, take a look at [task.go in commit 6020baa](https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go). When we researched our data race, we discovered that it is a known problem with exec'ing certain commands/pipes (see [here](https://github.com/golang/go/issues/9307), [here](https://github.com/golang/go/issues/9382), and [here](https://code.google.com/p/go/issues/detail?id=2266)). As a result, we ended up resolving the issue by implementing a [BASH script](https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe) to handle the pipes. The first commit with this fix is [3548036](https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162). Since then, the relevant go code has been refactored into `request.go`.
+To see exactly how the race condition appeared in SHIELD at that time, take a look at [task.go in commit 6020baa][task-6020baa]. When we researched our data race, we discovered that it is a known problem with exec'ing certain commands/pipes (see [here][race-1], [here][race-2], and [here][race-3]). As a result, we ended up resolving the issue by implementing a [BASH script][shield-bash] to handle the pipes. The first commit with this fix is [3548036][commit-3548036]. Since then, the relevant go code has been refactored into `request.go`.
 
 ## Open Invitation: Want to test and contribute to SHIELD?
 
-To setup a local testing environment for SHIELD, please use the `setup-env` script in our [testbed](https://github.com/starkandwayne/shield-testbed-deployments) repository after [setting up a local Cloud Foundry on BOSH Lite](https://github.com/cloudfoundry/bosh-lite/). Our testbed deploys Cloud Foundry and docker-postgres with SHIELD and sets up some initial dummy values in SHIELD itself.
+To setup a local testing environment for SHIELD, please use the `setup-env` script in our [testbed][shield-test] repository after [setting up a local Cloud Foundry on BOSH Lite][bosh-lite]. Our testbed deploys Cloud Foundry and docker-postgres with SHIELD and sets up some initial dummy values in SHIELD itself.
 
-The CLI is pretty straightforward - for example `shield create target` and `shield list stores`. There are also some aliased commands, e.g. `shield ls` for `shield list`. For a full list of commands, please take a look at the CLI documentation on the project [README](https://github.com/starkandwayne/shield#cli-usage-examples).
+The CLI is pretty straightforward - for example `shield create target` and `shield list stores`. There are also some aliased commands, e.g. `shield ls` for `shield list`. For a full list of commands, please take a look at the CLI documentation on the project [README][shield-cli].
 
 We welcome feedback and pull requests!
 
 ### And also...
 
 I hope everyone is enjoying their winter holidays and Merry Christmas to those who celebrate! :)
+
+[shield]: https://github.com/starkandwayne/shield
+[CFBlogPost]: http://gnuconsulting.com/blog/2014/09/07/intro-to-cloud-foundry-and-bosh/
+[form-play]: http://play.golang.org/p/gsgKJ6HL5X
+[json-play]: http://play.golang.org/p/-cj2QO-_RY
+[race-code]: https://github.com/starkandwayne/shield-race
+[GoForCPP]: https://github.com/golang/go/wiki/GoForCPPProgrammers
+[GoFAQ]: https://golang.org/doc/faq#overloading
+[race-def]: http://www.airs.com/blog/archives/482
+[go-src-code]: https://golang.org/src/os/exec/exec.go#L372
+[race-dedect]: http://blog.golang.org/race-detector
+[task-6020baa]: https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go
+[commit-3548036]: https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162
+[race-1]: https://github.com/golang/go/issues/9307
+[race-2]: https://github.com/golang/go/issues/9382
+[race-3]: https://code.google.com/p/go/issues/detail?id=2266
+[shield-bash]: https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe
+[shield-test]: https://github.com/starkandwayne/shield-testbed-deployments
+[shield-cli]: https://github.com/starkandwayne/shield#cli-usage-examples
+[bosh-lite]: https://github.com/cloudfoundry/bosh-lite/
