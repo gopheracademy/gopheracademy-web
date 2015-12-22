@@ -1,15 +1,13 @@
 +++
 author = ["Quintessence Anx"]
-date = "2015-12-12T00:05:27-05:00"
+date = "2015-12-25T00:00:00-05:00"
 linktitle = "Lessons in Go Learned while Implementing SHIELD"
 series = ["Advent 2015"]
-title = "shield backup system"
+title = "Lessons in Go Learned while Implementing SHIELD"
 
 +++
 
-# Lessons in Go Learned while Implementing SHIELD
-
-## Quick background: What is SHIELD?
+# Quick background: What is SHIELD?
 
 [SHIELD][shield] is a backup solution for Cloud Foundry and BOSH deployed
 services such as Redis, PostgreSQL, and Docker. (For the interested,
@@ -22,7 +20,7 @@ specific containers, credentials, databases, and so on. Since there was not
 an existing backup solution of this type available for Cloud Foundry/etc.,
 we designed a new solution named SHIELD.
 
-## Functions as Fields in Structs
+# Functions as Fields in Structs
 
 Something we employed both in the CLI and in the server-side code was the
 ability to validate the received data to help keep out both non-sense and
@@ -113,7 +111,7 @@ func main() {
 
 <small>[Click here][form-play] to test on the Go Playground.</small>
 
-### Using Interfaces with JSON
+# Using Interfaces with JSON
 
 Some of you may be familiar with the concept of "function overloading". For
 those who aren't, function overloading is when a language permits you to
@@ -211,7 +209,7 @@ func main() {
 
 <small>[Click here][json-play] to test on the Go Playground.</small>
 
-## A Race Condition in the Pipes
+# A Race Condition in the Pipes
 
 First, what is a race condition?
 
@@ -421,7 +419,7 @@ script][shield-bash] to handle the pipes. The first commit with this fix is
 [3548036][commit-3548036]. Since then, the relevant go code has been
 refactored into `request.go`.
 
-## Open Invitation: Want to test and contribute to SHIELD?
+# Open Invitation: Want to test and contribute to SHIELD?
 
 To setup a local testing environment for SHIELD, please use the `setup-env`
 script in our [testbed][shield-test] repository after [setting up a local
@@ -436,7 +434,7 @@ CLI documentation on the project [README][shield-cli].
 
 We welcome feedback and pull requests!
 
-### And also...
+## And also...
 
 I hope everyone is enjoying their winter holidays and Merry Christmas to
 those who celebrate! :)
