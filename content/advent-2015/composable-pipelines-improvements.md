@@ -232,3 +232,5 @@ in the [SciPipe README](https://github.com/samuell/scipipe/blob/master/README.md
 SciPipe is still in prototype phase but there are a fair number of fully working toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), so the basic idea seems to be working. 
 
 Feedback and suggestions for improvement of the idea and the code are much welcome!
+
+Twitter: [@smllmp](http://twitter.com/smllmp)
