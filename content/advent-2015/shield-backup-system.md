@@ -11,13 +11,39 @@ title = "shield backup system"
 
 ## Quick background: What is SHIELD?
 
-[SHIELD][shield] is a backup solution for Cloud Foundry and BOSH deployed services such as Redis, PostgreSQL, and Docker. (For the interested, [here][CFBlogPost] is a quick summary of the basics of BOSH and Cloud Foundry.) The original design was inspired by a client's need to have both broad and granular backups of their private Cloud Foundry and its ecosystem. Specifically, in addition to being able to recover from a meteor strike they also wanted to be able to create more granular backups so they could restore specific containers, credentials, databases, and so on. Since there was not an existing backup solution of this type available for Cloud Foundry/etc., we designed a new solution named SHIELD.
+[SHIELD][shield] is a backup solution for Cloud Foundry and BOSH deployed
+services such as Redis, PostgreSQL, and Docker. (For the interested,
+[here][CFBlogPost] is a quick summary of the basics of BOSH and Cloud
+Foundry.) The original design was inspired by a client's need to have both
+broad and granular backups of their private Cloud Foundry and its ecosystem.
+Specifically, in addition to being able to recover from a meteor strike they
+also wanted to be able to create more granular backups so they could restore
+specific containers, credentials, databases, and so on. Since there was not
+an existing backup solution of this type available for Cloud Foundry/etc.,
+we designed a new solution named SHIELD.
 
 ## Functions as Fields in Structs
 
-Something we employed both in the CLI and in the server-side code was the ability to validate the received data to help keep out both non-sense and malicious values. Since different fields were expected to have different inputs, we ended up with several validation functions checking everything from whether input is appropriately structured and valid JSON to checking the values and types. There were so many different functions floating around and we needed a way to consistently work them into the input validation process.
+Something we employed both in the CLI and in the server-side code was the
+ability to validate the received data to help keep out both non-sense and
+malicious values. Since different fields were expected to have different
+inputs, we ended up with several validation functions checking everything
+from whether input is appropriately structured and valid JSON to checking
+the values and types. There were so many different functions floating around
+and we needed a way to consistently work them into the input validation
+process.
 
-The example code below is a scaled down version of the process. There are the `Form` and `Field` structs, but there is also a function type declared called `FieldValidator`. The `FieldValidator` type allows any function to be stored in the `Validator` field as long as it (1) takes in a `string` and an `int` and (2) outputs an `error`. You can see from the example that this holds true not just for the named functions `InputIsNotBigEnough` and `InputIsNotSmallEnough` but anonymous functions as well. The value in `Value` is evaluated when the form is shown and instead of some complicated legwork to match the appropriate validation functions to their field outside the struct, I can just call the validation function stored in the struct as `field.Validator`.
+The example code below is a scaled down version of the process. There are
+the `Form` and `Field` structs, but there is also a function type declared
+called `FieldValidator`. The `FieldValidator` type allows any function to be
+stored in the `Validator` field as long as it (1) takes in a `string` and an
+`int` and (2) outputs an `error`. You can see from the example that this
+holds true not just for the named functions `InputIsNotBigEnough` and
+`InputIsNotSmallEnough` but anonymous functions as well. The value in
+`Value` is evaluated when the form is shown and instead of some complicated
+legwork to match the appropriate validation functions to their field outside
+the struct, I can just call the validation function stored in the struct as
+`field.Validator`.
 
 ```go
 package main
@@ -89,11 +115,23 @@ func main() {
 
 ### Using Interfaces with JSON
 
-Some of you may be familiar with the concept of "function overloading". For those who aren't, function overloading is when a language permits you to create multiple functions with the same name. A trivial example might be to create two `add` functions: one for adding ints and another for adding floats. This allows you to avoid cluttering your code with function names like `addInt` and `addFloat`.
+Some of you may be familiar with the concept of "function overloading". For
+those who aren't, function overloading is when a language permits you to
+create multiple functions with the same name. A trivial example might be to
+create two `add` functions: one for adding ints and another for adding
+floats. This allows you to avoid cluttering your code with function names
+like `addInt` and `addFloat`.
 
-BUT: [Go explicitly doesn't support function overloading][GoForCPP] (fourth to last bullet point). They provide a quick explanation about why on their FAQ page [here][GoFAQ]. And that's ok - we don't really need function overloading to accomplish our goals. Why? Because we have interfaces!
+BUT: [Go explicitly doesn't support function overloading][GoForCPP] (fourth
+to last bullet point). They provide a quick explanation about why on their
+FAQ page [here][GoFAQ]. And that's ok - we don't really need function
+overloading to accomplish our goals. Why? Because we have interfaces!
 
-In the SHIELD project we were mostly concerned with this for error handling in JSON: we wanted to use a single function for writing JSON errors to the client calling the API endpoint. Tying this into what we did above with validation functions in structs, interfaces provided a consistent way to pass JSON error payloads from different sources. Simplified example:
+In the SHIELD project we were mostly concerned with this for error handling
+in JSON: we wanted to use a single function for writing JSON errors to the
+client calling the API endpoint. Tying this into what we did above with
+validation functions in structs, interfaces provided a consistent way to
+pass JSON error payloads from different sources. Simplified example:
 
 ```go
 package main
@@ -177,62 +215,97 @@ func main() {
 
 First, what is a race condition?
 
-> "A race condition occurs when one goroutine modifies a variable and another reads it or modifies it without any synchronization." *--[Source][race-def]*
+> "A race condition occurs when one goroutine modifies a variable and
+> another reads it or modifies it without any synchronization."
+> *--[Source][race-def]*
 
-The code that caused our race condition was a result of the way we had originally tried to implement the backup and restore processes. SHIELD has both target and store plugins so a user can select what type of data is being backed up or restored (e.g. PostgreSQL) and what type of storage the data is being backed up to or restored from (e.g. S3). To run the backups and restores, we created stdin, stdout, stderr pipes for both the target and store. In the case of a backup, the store read what was being sent by the target (i.e. the target's standard output was piped into the store's standard input). Likewise, during a restore the target read what was being sent by the store (i.e. the store's standard output was piped into the target's standard input).
+The code that caused our race condition was a result of the way we had
+originally tried to implement the backup and restore processes. SHIELD has
+both target and store plugins so a user can select what type of data is
+being backed up or restored (e.g. PostgreSQL) and what type of storage the
+data is being backed up to or restored from (e.g. S3). To run the backups
+and restores, we created stdin, stdout, stderr pipes for both the target and
+store. In the case of a backup, the store read what was being sent by the
+target (i.e. the target's standard output was piped into the store's
+standard input). Likewise, during a restore the target read what was being
+sent by the store (i.e. the store's standard output was piped into the
+target's standard input).
 
-While this conceptually makes sense and should work, we ran into issues during testing when we started to see non-reproducible, inconsistent, and seemingly random failures when we deployed the dev release to our testing environment. Things like leaking pipes where not all the data from stdout was making it to the corresponding stdin and corrupted archives. We upped the ante on our testing adding in various payload sizes, random sleeps, etc. but no matter what we did to our tests they still all passed. After our attempts to expose the issues we were experiencing with tests failed, we began to suspect we had created non-deterministic code. But how? To help show what happened, here's a trimmed down example:
+While this conceptually makes sense and should work, we ran into issues
+during testing when we started to see non-reproducible, inconsistent, and
+seemingly random failures when we deployed the dev release to our testing
+environment. Things like leaking pipes where not all the data from stdout
+was making it to the corresponding stdin and corrupted archives. We upped
+the ante on our testing adding in various payload sizes, random sleeps, etc.
+but no matter what we did to our tests they still all passed. After our
+attempts to expose the issues we were experiencing with tests failed, we
+began to suspect we had created non-deterministic code. But how? To help
+show what happened, here's a trimmed down example:
 
 ```go
 package main
-​
+
 import (
 	"bufio"
 	"fmt"
 	"io"
 	"os/exec"
 )
-​
+
 func Drain(prefix string, rd io.Reader) {
 	b := bufio.NewScanner(rd)
 	for b.Scan() {
 		fmt.Printf("%s> %s\n", prefix, b.Text())
 	}
 }
-​
+
 func main() {
 	/* <go> | ls -alh / | sort | <go> */
 	ls := exec.Command("ls", "-alh", "/")
 	sort := exec.Command("sort")
-​
+
 	/* grab standard error from both commands */
 	err1, _ := ls.StderrPipe()
 	err2, _ := sort.StderrPipe()
-​
+
 	/* wire up ls's stdout to sort's stdin */
 	sort.Stdin, _ = ls.StdoutPipe()
-​
+
 	/* grab the output from the `sort' command */
 	out, _ := sort.StdoutPipe()
-​
+
 	/* spin up two goroutines to stream errors */
 	go Drain("error", err1)
 	go Drain("error", err2)
-​
+
 	/* spin up a goroutine to stream output from `sort' */
 	go Drain("output", out)
-​
+
 	_ = sort.Start()
 	_ = ls.Start()
-​
+
 	_ = ls.Wait()
 	_ = sort.Wait()
 }
 ```
 
-<small>Due to limitations in Go Playground this code must be run locally to reproduce, please see [example code on Github][race-code].</small>
+<small>Due to limitations in Go Playground this code must be run locally to
+reproduce, please see [example code on Github][race-code].</small>
 
-In this example, `ls` and `sort` are taking over the roles of `target` and `store` from SHIELD. Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to `sort` the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort the output of `ls`, similar to the way that store would wait to read the output of target (or vice versa). At this point, `sort` is running in the background and will continue to do so until its stdin is complete. Since `sort.Stdin` is defined as `ls.StdoutPipe`, that means waiting for the `ls.StdoutPipe` to complete. Then Go hits the `Wait` command. [Taking a look at `Wait`][go-src-code] and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
+In this example, `ls` and `sort` are taking over the roles of `target` and
+`store` from SHIELD. Skimming over the code you can see that it is going to
+drain stdout and stderr into their respective pipes to `sort` the output of
+the `ls` command. `sort.Start` is run first so that `sort` is ready to sort
+the output of `ls`, similar to the way that store would wait to read the
+output of target (or vice versa). At this point, `sort` is running in the
+background and will continue to do so until its stdin is complete. Since
+`sort.Stdin` is defined as `ls.StdoutPipe`, that means waiting for the
+`ls.StdoutPipe` to complete. Then Go hits the `Wait` command. [Taking a look
+at `Wait`][go-src-code] and then looking back at the code, we can see that
+the descriptors that `Wait` needs to close before exiting are the read and
+stdout pipes. This read is the same read that `Drain` is trying to read
+(`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read,
+the program fails with a data race condition like so:
 
 ```
 $ go build -race
@@ -328,23 +401,45 @@ output> total 45
 Found 2 data race(s)
 ```
 
-Note that two data races are found - one for each of the goroutines draining the stderr pipes.
+Note that two data races are found - one for each of the goroutines draining
+the stderr pipes.
 
-Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector][race-dedect], `go build -race`, the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
+Since this example is a lot simpler than the one we ran into in SHIELD it
+still works in these sense that when you build the binary without the [data
+race detector][race-dedect], `go build -race`, the code will compile and run
+as expected. This is because you are essentially just running `ls | sort`
+which, unless you have a truly massive set of subdirectories, should resolve
+itself relatively quickly. The same cannot be said of of the similar data
+race we created and found in SHIELD.
 
-To see exactly how the race condition appeared in SHIELD at that time, take a look at [task.go in commit 6020baa][task-6020baa]. When we researched our data race, we discovered that it is a known problem with exec'ing certain commands/pipes (see [here][race-1], [here][race-2], and [here][race-3]). As a result, we ended up resolving the issue by implementing a [BASH script][shield-bash] to handle the pipes. The first commit with this fix is [3548036][commit-3548036]. Since then, the relevant go code has been refactored into `request.go`.
+To see exactly how the race condition appeared in SHIELD at that time, take
+a look at [task.go in commit 6020baa][task-6020baa]. When we researched our
+data race, we discovered that it is a known problem with exec'ing certain
+commands/pipes (see [here][race-1], [here][race-2], and [here][race-3]). As
+a result, we ended up resolving the issue by implementing a [BASH
+script][shield-bash] to handle the pipes. The first commit with this fix is
+[3548036][commit-3548036]. Since then, the relevant go code has been
+refactored into `request.go`.
 
 ## Open Invitation: Want to test and contribute to SHIELD?
 
-To setup a local testing environment for SHIELD, please use the `setup-env` script in our [testbed][shield-test] repository after [setting up a local Cloud Foundry on BOSH Lite][bosh-lite]. Our testbed deploys Cloud Foundry and docker-postgres with SHIELD and sets up some initial dummy values in SHIELD itself.
+To setup a local testing environment for SHIELD, please use the `setup-env`
+script in our [testbed][shield-test] repository after [setting up a local
+Cloud Foundry on BOSH Lite][bosh-lite]. Our testbed deploys Cloud Foundry
+and docker-postgres with SHIELD and sets up some initial dummy values in
+SHIELD itself.
 
-The CLI is pretty straightforward - for example `shield create target` and `shield list stores`. There are also some aliased commands, e.g. `shield ls` for `shield list`. For a full list of commands, please take a look at the CLI documentation on the project [README][shield-cli].
+The CLI is pretty straightforward - for example `shield create target` and
+`shield list stores`. There are also some aliased commands, e.g. `shield ls`
+for `shield list`. For a full list of commands, please take a look at the
+CLI documentation on the project [README][shield-cli].
 
 We welcome feedback and pull requests!
 
 ### And also...
 
-I hope everyone is enjoying their winter holidays and Merry Christmas to those who celebrate! :)
+I hope everyone is enjoying their winter holidays and Merry Christmas to
+those who celebrate! :)
 
 [shield]: https://github.com/starkandwayne/shield
 [CFBlogPost]: http://gnuconsulting.com/blog/2014/09/07/intro-to-cloud-foundry-and-bosh/
