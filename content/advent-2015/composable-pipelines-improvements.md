@@ -1,6 +1,6 @@
 +++
 author = ["Samuel Lampa"]
-date = "2015-12-18T00:00:00-08:00"
+date = "2015-12-22T00:00:00-00:00"
 title = "Composable Pipelines Improved"
 series = ["Advent 2015"]
 +++
@@ -14,7 +14,7 @@ I describe below.
 
 The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows respresenting in- and out-ports as struct fields that can be used to connect in- and out-ports of multiple processes in a more fluent way, which the post described.
 
-I have realized some further simplifications of this pattern though. One unnecessary thing suggested in that post was to use a method for each out-port, that would ensure that a channel is created for that out-port before returning it. 
+I have realized some further simplifications of this pattern though. One unnecessary thing suggested in that post was to use a method for each out-port, that would ensure that a channel is created for that out-port before returning it.
 
 The pattern proposed that a process would be defined like so:
 
@@ -229,7 +229,7 @@ command pattern and generate a component out of that with one in-port per input 
 and that will fire off tasks executing a formatted shell command for every full set of inputs received on the in-ports (read more
 in the [SciPipe README](https://github.com/samuell/scipipe/blob/master/README.md)).
 
-SciPipe is still in prototype phase but there are a fair number of fully working toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), so the basic idea seems to be working. 
+SciPipe is still in prototype phase but there are a fair number of fully working toy examples in the [examples folder](https://github.com/samuell/scipipe/tree/master/examples), so the basic idea seems to be working.
 
 Feedback and suggestions for improvement of the idea and the code are much welcome!
 
