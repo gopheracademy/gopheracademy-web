@@ -13,9 +13,11 @@ title = "shield backup system"
 
 [SHIELD](https://github.com/starkandwayne/shield) is a backup solution for Cloud Foundry and BOSH deployed services such as Redis, PostgreSQL, and Docker. (For the interested, [here](http://gnuconsulting.com/blog/2014/09/07/intro-to-cloud-foundry-and-bosh/) is a quick summary of the basics of BOSH and Cloud Foundry.) The original design was inspired by a client's need to have both broad and granular backups of their private Cloud Foundry and its ecosystem. Specifically, in addition to being able to recover from a meteor strike they also wanted to be able to create more granular backups so they could restore specific containers, credentials, databases, and so on. Since there was not an existing backup solution of this type available for Cloud Foundry/etc., we designed a new solution named SHIELD.
 
-## Functions in Structs
+## Functions as Fields in Structs
 
-Something we employed both in the CLI and in the server-side code was the ability to validate the received data to help keep out both non-sense and malicious values. A streamlined example of the validation functions from our CLI form looks like this:
+Something we employed both in the CLI and in the server-side code was the ability to validate the received data to help keep out both non-sense and malicious values. Since different fields were expected to have different inputs, we ended up with several validation functions checking everything from whether input is appropriately structured and valid JSON to checking the values and types. There were so many different functions floating around and we needed a way to consistently work them into the input validation process.
+
+The example code below is a scaled down version of the process. There are the `Form` and `Field` structs, but there is also a function type declared called `FieldValidator`. The `FieldValidator` type allows any function to be stored in the `Validator` field as long as it (1) takes in a `string` and an `int` and (2) outputs and an `error`. You can see from the example that this holds true not just for the named functions `InputIsNotBigEnough` and `InputIsNotSmallEnough` but anonymous functions as well. The value in `Value` is evaluated when the form is shown and instead of some complicated legwork to match the appropriate validation functions to their field outside the struct, I can just call the validation function stored in the struct as `field.Validator`.
 
 ```go
 package main
@@ -85,15 +87,13 @@ func main() {
 
 <small>[Click here](http://play.golang.org/p/GhW7dL-pCv) to test on the Go Playground.</small>
 
-The `FieldValidator` type allows for any function as long as it takes in a `string` and `int` and outputs and an `error`. This allows us to pass different named functions, or even anonymous functions, as an argument. Since the function is stored in the struct, all three functions can just be called using dot notation just like the other elements of the struct (`field.Validator`).
-
 ### Using Interfaces with JSON
 
 Some of you may be familiar with the concept of "function overloading". For those who aren't, function overloading is when a language permits you to create multiple functions with the same name. A trivial example might be to create two `add` functions: one for adding ints and another for adding floats. This allows you to avoid cluttering your code with function names like `addInt` and `addFloat`.
 
-BUT: [Go explicitly doesn't support function overloading.](https://github.com/golang/go/wiki/GoForCPPProgrammers) (fourth to last bullet point). They provide a quick explanation about why not on their FAQ page [here](https://golang.org/doc/faq#overloading). And that's ok. Why? Because we have interfaces, and with interfaces we can accomplish the same result.
+BUT: [Go explicitly doesn't support function overloading](https://github.com/golang/go/wiki/GoForCPPProgrammers) (fourth to last bullet point). They provide a quick explanation about why on their FAQ page [here](https://golang.org/doc/faq#overloading). And that's ok - we don't really need function overloading to accomplish our goals. Why? Because we have interfaces!
 
-Specifically, we used interfaces a lot for handling JSON messages like this:
+In the SHIELD project we were mostly concerned with this for error handling in JSON: we wanted to use a single function for writing JSON errors to the client calling the API endpoint. Tying this into what we did above with validation functions in structs, interfaces provided a consistent way to pass JSON error payloads from different sources. Simplified example:
 
 ```go
 package main
@@ -145,8 +145,6 @@ func main() {
 ```
 
 <small>[Click here](http://play.golang.org/p/zNbfiko6Ds) to test on the Go Playground.</small>
-
-In the SHIELD project we were mostly concerned error handling in JSON, so we wanted to use a single function for writing the JSON error to the client calling the API endpoint. Tying this into what we did above with validation functions in structs, this provided a consistent way to pass JSON error payloads from different sources.
 
 ## A Race Condition in the Pipes
 
@@ -205,7 +203,7 @@ As you can see, we're trying to drain stdout and stderr into their respective pi
 
 But how and why does this happen in our code?
 
-Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to sort the output of the ls command. `sort.Start` is run first so that `sort` is ready to sort for the output of `ls`, similar to running `ls | sort`. At this point, `sort` is running in the background until it's stdin is complete. In the code, you can see `sort.Stdin` is defined as `ls.StdoutPipe`. Then Go hits the `Wait` command. [Taking a look at `Wait`](https://golang.org/src/os/exec/exec.go#L372) and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
+Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to sort the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort for the output of `ls`, similar to running `ls | sort`. At this point, `sort` is running in the background until its stdin is complete. In the code, you can see `sort.Stdin` is defined as `ls.StdoutPipe`. Then Go hits the `Wait` command. [Taking a look at `Wait`](https://golang.org/src/os/exec/exec.go#L372) and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
 
 ```
 $ ./shield-race
@@ -302,13 +300,11 @@ Found 2 data race(s)
 
 Note that two data races are found - one for each of the goroutines draining the stderr pipes.
 
-Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector](http://blog.golang.org/race-detector) the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD. Finding that data race was a bit arduous and felt a little like receiving a lump of coal in our stockings from our past selves.
+Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector](http://blog.golang.org/race-detector) the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
 
-We found the data race by //FIXME
+We found the data race because of how SHIELD was behaving during testing: specifically non-reproducible issues had started to appear. Non-determinism being one of the defining symptoms, we turned on race testing and sure enough there the problem was. To see exactly how the code appeared at that time, take a look at [task.go in commit 6020baa](https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go). When we researched our data race, we discovered that it is a known problem with execing certain commands/pipes (see [here](https://github.com/golang/go/issues/9307), [here](https://github.com/golang/go/issues/9382), and [here](https://code.google.com/p/go/issues/detail?id=2266)). As a result, we ended up resolving the issue by implementing a [BASH script](https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe) to handle the pipes. The first commit with this fix is [3548036](https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162). Since then, the relevant go code has been refactored into `request.go`.
 
-To see the exact situation we ran into in SHIELD, take a look at [task.go in commit 6020baa](https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go). When we researched the data race, we discovered that this is a known problem with execing certain commands/pipes (see [here](https://github.com/golang/go/issues/9307), [here](https://github.com/golang/go/issues/9382), and [here](https://code.google.com/p/go/issues/detail?id=2266)). As a result, we ended up resolving the issue by implementing a [BASH script](https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe) to handle the pipes. The first commit with this fix is [3548036](https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162). Since then, the relevant go code has been refactored into `request.go`.
-
-## Addendum: Want to test and contribute to SHIELD?
+## Open Invitation: Want to test and contribute to SHIELD?
 
 To setup a local testing environment for SHIELD, please use the `setup-env` script in our [testbed](https://github.com/starkandwayne/shield-testbed-deployments) repository after [setting up a local Cloud Foundry on BOSH Lite](https://github.com/cloudfoundry/bosh-lite/). Our testbed deploys Cloud Foundry and docker-postgres with SHIELD and sets up some initial dummy values in SHIELD itself.
 
