@@ -476,3 +476,6 @@ Glow's APIs, e.g., Map()/Reduce()/Filter() functions, can be used in
 standalone mode also. It makes code easy to read and write. This
 could also be quite useful.
 
+Golang's channel is an ideal model for moving data along the
+processing system. Glow currently works with batch proccesing, and
+may support stream processing in the future.
