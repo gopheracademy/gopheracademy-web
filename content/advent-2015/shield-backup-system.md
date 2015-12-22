@@ -1,13 +1,13 @@
 +++
 author = ["Quintessence Anx"]
 date = "2015-12-12T00:05:27-05:00"
-linktitle = "SHIELD Backup System"
+linktitle = "Lessons in Go Learned while Implementing SHIELD"
 series = ["Advent 2015"]
 title = "shield backup system"
 
 +++
 
-# Go in SHIELD
+# Lessons in Go Learned while Implementing SHIELD
 
 ## Quick background: What is SHIELD?
 
@@ -46,16 +46,16 @@ func (f *Form) NewField(name string, value int, fcn FieldValidator) error {
 	return nil
 }
 
-func InputIsNotBigEnough(name string, value int) error {
-	if value < 3600 {
-		return fmt.Errorf("input value must be greater than 3600")
+func DateIsNotLateEnough(name string, value int) error {
+	if value < 20151206 {
+		return fmt.Errorf("date must be after 20151206")
 	}
 	return nil
 }
 
-func InputIsNotSmallEnough(name string, value int) error {
-	if value > 3600 {
-		return fmt.Errorf("input value must be less than 3600")
+func DateIsNotEarlyEnough(name string, value int) error {
+	if value > 20151214 {
+		return fmt.Errorf("date must be earlier than 20151214")
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (f *Form) Show() error {
 	for _, field := range f.Fields {
 		err := field.Validator(field.Name, field.Value)
 		if err == nil {
-			err = fmt.Errorf("value is valid")
+			err = fmt.Errorf("date is correct")
 		}
 		fmt.Printf("name: '%s', value: '%d', validate: '%v'\n", field.Name, field.Value, err)
 	}
@@ -73,11 +73,11 @@ func (f *Form) Show() error {
 
 func main() {
 	in := NewForm()
-	in.NewField("number", 3599, InputIsNotBigEnough)
-	in.NewField("another number", 3601, InputIsNotSmallEnough)
-	in.NewField("last number", 2500, func(n string, v int) error {
-		if v != 2500 {
-			return fmt.Errorf("value is not 2500")
+	in.NewField("Hanukkah", 20151205, DateIsNotLateEnough)
+	in.NewField("Another day of Hanukkah", 20151215, DateIsNotEarlyEnough)
+	in.NewField("Diwali", 20151111, func(n string, v int) error {
+		if v != 20151111 {
+			return fmt.Errorf("diwali must be 20151111")
 		}
 		return nil
 	})
@@ -85,7 +85,7 @@ func main() {
 }
 ```
 
-<small>[Click here](http://play.golang.org/p/GhW7dL-pCv) to test on the Go Playground.</small>
+<small>[Click here](http://play.golang.org/p/gsgKJ6HL5X) to test on the Go Playground.</small>
 
 ### Using Interfaces with JSON
 
@@ -148,7 +148,13 @@ func main() {
 
 ## A Race Condition in the Pipes
 
-It all started with a snippet of code that functioned like this:
+First, what is a race condition?
+
+> "A race condition occurs when one goroutine modifies a variable and another reads it or modifies it without any synchronization." *--[Source](http://www.airs.com/blog/archives/482)*
+
+The code that caused our race condition was a result of the way we had originally tried to implement the backup and restore processes. SHIELD has both target and store plugins so a user can select what type of data is being backed up or restored (e.g. PostgreSQL) and what type of storage the data is being backed up to or restored from (e.g. S3). To run the backups and restores, we created stdin, stdout, stderr pipes for both the target and store. In the case of a backup, the store read what was being sent by the target (i.e. the target's stdout pipe was read into the store's stdin). Likewise, during a restore the target read what was being sent by the store (i.e. the store's stdout pipe was read into the target's stdin).
+
+While this conceptually makes sense, we ran into issues during testing when we started to see non-reproducible, inconsistent, and seemingly random test failures: we had created non-deterministic code. But how? To help show what's going on, here's a trimmed down example:
 
 ```go
 package main
@@ -199,11 +205,7 @@ func main() {
 
 <small>Due to limitations in Go Playground this code must be run locally to reproduce, please see [example code on Github](https://github.com/starkandwayne/shield-race).</small>
 
-As you can see, we're trying to drain stdout and stderr into their respective pipes to sort the output of the ls command. When you do this, you run into a race condition. What is a race  condition? [Simply put](http://www.airs.com/blog/archives/482): "A race condition occurs when one goroutine modifies a variable and another reads it or modifies it without any synchronization."
-
-But how and why does this happen in our code?
-
-Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to sort the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort for the output of `ls`, similar to running `ls | sort`. At this point, `sort` is running in the background until its stdin is complete. In the code, you can see `sort.Stdin` is defined as `ls.StdoutPipe`. Then Go hits the `Wait` command. [Taking a look at `Wait`](https://golang.org/src/os/exec/exec.go#L372) and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
+In this example, `ls` and `sort` are taking over the roles of `target` and `store` from SHIELD. Skimming over the code you can see that it is going to drain stdout and stderr into their respective pipes to `sort` the output of the `ls` command. `sort.Start` is run first so that `sort` is ready to sort the output of `ls`, similar to the way that store would wait to read the output of target (or vice versa). At this point, `sort` is running in the background and will continue to do so until its stdin is complete. Since `sort.Stdin` is defined as `ls.StdoutPipe`, that means waiting for the `ls.StdoutPipe` to complete. Then Go hits the `Wait` command. [Taking a look at `Wait`](https://golang.org/src/os/exec/exec.go#L372) and then looking back at the code, we can see that the descriptors that `Wait` needs to close before exiting are the read and stdout pipes. This read is the same read that `Drain` is trying to read (`rd`) from. Since `Wait` is trying to close what `Drain` is trying to read, the program fails with a data race condition like so:
 
 ```
 $ ./shield-race
@@ -300,9 +302,9 @@ Found 2 data race(s)
 
 Note that two data races are found - one for each of the goroutines draining the stderr pipes.
 
-Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector](http://blog.golang.org/race-detector) the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
+Since this example is a lot simpler than the one we ran into in SHIELD it still works in these sense that when you build the binary without the [data race detector](http://blog.golang.org/race-detector), `go build -race`, the code will compile and run as expected. This is because you are essentially just running `ls | sort` which, unless you have a truly massive set of subdirectories, should resolve itself relatively quickly. The same cannot be said of of the similar data race we created and found in SHIELD.
 
-We found the data race because of how SHIELD was behaving during testing: specifically non-reproducible issues had started to appear. Non-determinism being one of the defining symptoms, we turned on race testing and sure enough there the problem was. To see exactly how the code appeared at that time, take a look at [task.go in commit 6020baa](https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go). When we researched our data race, we discovered that it is a known problem with execing certain commands/pipes (see [here](https://github.com/golang/go/issues/9307), [here](https://github.com/golang/go/issues/9382), and [here](https://code.google.com/p/go/issues/detail?id=2266)). As a result, we ended up resolving the issue by implementing a [BASH script](https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe) to handle the pipes. The first commit with this fix is [3548036](https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162). Since then, the relevant go code has been refactored into `request.go`.
+To see exactly how the race condition appeared in SHIELD at that time, take a look at [task.go in commit 6020baa](https://github.com/starkandwayne/shield/blob/6020baae38d37e4233e57d75a9a49202c4c4ce5e/supervisor/task.go). When we researched our data race, we discovered that it is a known problem with exec'ing certain commands/pipes (see [here](https://github.com/golang/go/issues/9307), [here](https://github.com/golang/go/issues/9382), and [here](https://code.google.com/p/go/issues/detail?id=2266)). As a result, we ended up resolving the issue by implementing a [BASH script](https://github.com/starkandwayne/shield/blob/master/bin/shield-pipe) to handle the pipes. The first commit with this fix is [3548036](https://github.com/starkandwayne/shield/commit/35480364275f12d6fc122eed8089e2113fa5a162). Since then, the relevant go code has been refactored into `request.go`.
 
 ## Open Invitation: Want to test and contribute to SHIELD?
 
