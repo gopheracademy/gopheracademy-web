@@ -6,11 +6,11 @@ title = "Glow: Map Reduce for Golang"
 
 +++
 
-Having been a Java developer for many years, I simply lose interest
-in Java and want to code everything in Go, mostly due to Go's
-simplicity and performance. But it's Java who is having fun in the
-party of big data. Go is sitting alone as a wall flower. There is no
-real map reduce system for Go, until now!
+Having been a Java developer for many years, I have simply lost
+interest in Java and want to code everything in Go, mostly due to
+Go's simplicity and performance. But it's Java that is having fun in
+the party of big data. Go is sitting alone as a wall flower. There
+is no real map reduce system for Go, until now!
 
 [Glow](https://github.com/chrislusf/glow) is aiming to be a simple
 and scalable map reduce system, all in pure Go. Not only the system
@@ -19,9 +19,9 @@ reduce code.
 
 Glow also provides [Map()/Filter()/Reduce() functions]
 (https://github.com/chrislusf/glow/wiki#glow-apis), which works
-well in standalone mode. It's totally fine just run in standalone
+well in standalone mode. It's totally fine to just run in standalone
 mode. Let's face it, very often you do not have that much data that
-must run on a distributed system. Glow can fully utilize Go's
+has to run on a distributed system. Glow can fully utilize Go's
 efficiency and goroutines to process fairly large amount of data.
 And if you really need to scale up, you can scale up with Glow by
 by running it in distributed mode.
@@ -163,7 +163,7 @@ And the flow graph looks like this:
 ## Something wrong!
 
 You may get a different result when running distributedly vs
-standalone mode! This is because I cheated!
+standalone! This is because I cheated!
 
 The input file "/etc/passwd" could be different on different servers.
 The file should be sent to the executor that's running the
@@ -187,11 +187,11 @@ distributed mode. We need to understand how Glow works first.
 The word count code looks simple, but does many things. It can act as either a driver or an executor depending on command line
 parameters.
 
-When the driver starts, it will ask Glow master for resources. Glow
-master knows the system's resource usage by the heartbeats from
-Glow agents. Glow master will assign agents to the driver when
+When the driver starts, it will ask the Glow master for resources.
+The master knows the system's resource usage by the heartbeats from
+the Glow agents. The master will assign agents to the driver when
 available. By design, the Glow distributed system theorectically can
-run with just one executor.
+run even with just one executor.
 
 Then for each task, the driver would contact the assigned agents,
 and send a binary clone of itself, but run in executor mode. The
@@ -295,7 +295,8 @@ Go's channels, and read the output also via Go's channels.
 
 A typical example would be running Linear Regression until the error
 is small enough. The error can be sent back to the driver, and the
-driver can decide whether need to run one more round of regression.
+driver can decide whether it needs to run one more round of
+regression.
 
 # A more real example
 
@@ -320,14 +321,14 @@ type UserAccount struct {
 
 Go's strict type system is one of my favorite Go features. This would
 make refactoring super easy. When there are lots of data processing
-flows, deteciting schema changes during compile time is invaluable.
+flows, detecting schema changes during compile time is invaluable.
 
-We will use Go's channel to feed data from the driver to the
+We will use Go's channels to feed data from the driver to the
 executors, and read the outputs out also via channels.
 
 However, the log files usually are fairly large. It's not efficient
 to read all data to the driver, and scatter them out to the cluster.
-In stead, we will just use the driver to list files under the
+Instead, we will just use the driver to list files under the
 folder, and send the list of files via channel to the executors.
 Each executor will pull its own input data from hdfs. This is
 [implemented in the ```hdfs.Source``` function]
@@ -463,8 +464,8 @@ The generated flow chart is:
 
 # Final words
 
-Glow is simple, but powerful. Setting up Glow cluster is super easy.
-A simple piece of code is all you need to run distributedly.
+Glow is simple, but powerful. Setting up a Glow cluster is super
+easy. A simple piece of code is all you need to run distributedly.
 
 Conceptually, we just use Go's channels to connect to a flow.
 
