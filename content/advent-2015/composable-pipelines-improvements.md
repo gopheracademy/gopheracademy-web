@@ -248,6 +248,9 @@ func (sn *Sink) Run() {
 }
 ```
 
+Again, make sure to check the [gist with a full working code example](https://gist.github.com/samuell/07ee336c9fb39c45b89b),
+if you want to test this pattern out in practice!
+
 ## SciPipe
 
 This pattern is now serving as the basis for a scientific workflow library that I'm experimenting with, which I call [SciPipe](http://scipipe.org).
