@@ -16,7 +16,7 @@ please see [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)!
 
 ## The old way
 
-The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows respresenting in- and out-ports as struct fields that can be used to connect in- and out-ports of multiple processes in a more fluent way, which the post described.
+The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows representing in- and out-ports as struct fields that can be used to connect in- and out-ports of multiple processes in a more fluent way, which the post described.
 
 I have realized some further simplifications of this pattern though. One unnecessary thing suggested in that post was to use a method for each out-port, that would ensure that a channel is created for that out-port before returning it.
 
