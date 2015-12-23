@@ -59,10 +59,17 @@ proc2.In = proc1.OutChan()
 What I realized though is that if we use a "factory function" to create new tasks and pre-populate the channel fields, we
 just need to assign one such field to a field of another processes to connect two processes.
 
+We will also let all the processes be based on a base interface named `process`, for reasons we will see later on.
+
 So, a task would be defined like so, including its factory function:
 
 ```go
+type process interface {
+	Run()
+}
+
 type AProcess struct {
+	process
 	In  chan string
 	Out chan string
 }
@@ -159,18 +166,23 @@ go proc1.Run() // Execute in separate go-routine
 proc2.Run() // Execute the last process in the main thread
 ```
 
-Now, this can be packaged into a convenient Pipeline component:
+Now, this can be packaged into a convenient Pipeline component (and this is where we have use of the `process` interface
+, to tell the pipeline component to take processes of type `process`):
 
 ```go
 type Pipeline struct {
-	processes []interface{} // TODO: We could use a base-process type here instead of interface{} ...
+	processes []process
 }
 
 func NewPipeline() *Pipeline {
 	return &Pipeline{}
 }
 
-func (pl *Pipeline) AddProcesses(procs ...interface{}) {
+func (pl *Pipeline) AddProcess(proc process) {
+	pl.processes = append(pl.processes, proc)
+}
+
+func (pl *Pipeline) AddProcesses(procs ...process) {
 	for _, proc := range procs {
 		pl.AddProcess(proc)
 	}
@@ -219,18 +231,19 @@ We could for example implement a special "sink" process for that:
 
 ```go
 type Sink struct {
+	process
 	In chan string
 }
 
-func NewSink() (s *Sink) {
+func NewSink() *Sink {
 	return &Sink{
 		In: make(chan string),
 	}
 }
 
-func (proc *Sink) Run() {
-	for _ = range proc.In {
-		// Do nothing ...
+func (sn *Sink) Run() {
+	for line := range sn.In {
+		fmt.Println(line)
 	}
 }
 ```
