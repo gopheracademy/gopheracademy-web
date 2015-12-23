@@ -10,7 +10,7 @@ GIS open source world is dominated by C/C++, Java and Python code.
 Libraries like PROJ4, JTS, GEOS or GDAL are at the core of most of the 
 open source geospatial projects. Through this article we will have a 
 look at the ecosystem of geospatial related packages. We will create a 
-GIF generator of animated earth. In case you want to know more about 
+GIF generator of an animated earth. In case you want to know more about 
 the image generation package, I recommend reading two articles on the 
 Go blog: [The Go image package](
 http://blog.golang.org/go-image-package) and [the Thanksgiving 2011 
@@ -32,7 +32,7 @@ the [github.com/lukeroth/gdal](https://github.com/lukeroth/gdal)
 package. It requires to have the GDAL shared library available at 
 runtime.
 
-Otherway you may you pure Go libraries which are available for some 
+Otherwise you may use pure Go libraries which are available for some 
 common formats:
 
 - Shapefile: https://github.com/jonas-p/go-shp and its forks
@@ -102,7 +102,7 @@ errno := C.pj_transform(src, dst,
 # Creating images
 [github.com/llgcode/draw2d](https://github.com/llgcode/draw2d) is a 
 pure go 2D vector graphics library. After choosing a backend (image, 
-pdf, ...) you can setup transformation matrix and start drawing in your
+pdf, ...) you can setup a transformation matrix and start drawing in your
 own coordinates system. In our case we want to have the center of our 
 coordinates system at the center of the image and a scale such that the 
 earth will use as much space as possible.
@@ -128,7 +128,7 @@ started transitionning from C/C++ or Python to Go. The ecosystem is still
 young but, thanks to cgo, interoperability with existing libraries is 
 easy.
 
-Some libraries are developped aiming at pure Go manipulation of 
+Some libraries are being developed aiming at pure Go manipulation of 
 geographical data. I may cite:
 
 - [github.com/paulmach/go.geo](https://github.com/paulmach/go.geo) focused
