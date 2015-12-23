@@ -101,7 +101,7 @@ and in-port:
 ```go
 // <snip>
 // Connect the other way around, setting the out-port to the channel in the in-port
-proc2.Out = proc2.In
+proc2.Out = proc1.In
 ```
 
 ## Let's create a pipeline component too
