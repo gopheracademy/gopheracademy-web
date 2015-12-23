@@ -12,7 +12,7 @@ I describe below.
 
 Please note that the code examples below are kept short and thus incomplete, for
 readability. For a full working example of the presented pattern in action,
-please see [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)!
+please see [this code example on the Go playground](http://play.golang.org/p/voUfPGQulf), or [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)!
 
 ## The old way
 
@@ -248,7 +248,7 @@ func (sn *Sink) Run() {
 }
 ```
 
-Again, make sure to check the [gist with a full working code example](https://gist.github.com/samuell/07ee336c9fb39c45b89b),
+Again, make sure to check [this code example on the Go playground](http://play.golang.org/p/voUfPGQulf), or [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)
 if you want to test this pattern out in practice!
 
 ## SciPipe
