@@ -10,7 +10,7 @@ about an idea for a "framework-less" pattern for [Flow-Based Programming](http:/
 or let's just call it "composable concurrent pipelines". During the year, I have experimented more, and added some minor modifications to this pattern, which
 I describe below.
 
-Please note that the code examples below are kept short and thus uncomplete, for
+Please note that the code examples below are kept short and thus incomplete, for
 readability. For a full working example of the presented pattern in action,
 please see [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)!
 
