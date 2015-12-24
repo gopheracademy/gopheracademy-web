@@ -3,7 +3,7 @@ author = ["Aditya Mukerjee"]
 date = "2015-12-26T00:00:00-05:00"
 title = "Symmetric API Testing"
 series = ["Advent 2015"]
-draft = true
+draft = false
 +++
 
 I maintain [Anaconda](https://github.com/ChimeraCoder/anaconda), the Twitter client library for Go. There are a lot of interesting things I could write about Anaconda - for example, automatic rate-limiting and throttling using the [tokenbucket](https://github.com/ChimeraCoder/tokenbucket) library. Today, I'd like to demonstrate symmetric API testing in Go, which Anaconda highlights quite well. 
