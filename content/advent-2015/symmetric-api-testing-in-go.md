@@ -8,8 +8,7 @@ draft = true
 
 I maintain [Anaconda](https://github.com/ChimeraCoder/anaconda), the Twitter client library for Go. There are a lot of interesting things I could write about Anaconda - for example, automatic rate-limiting and throttling using the [tokenbucket](https://github.com/ChimeraCoder/tokenbucket) library. Today, I'd like to demonstrate symmetric API testing in Go, which Anaconda highlights quite well. 
 
-
-The straightforward approach: test each function by querying the Twitter API and testing the response values returned. This is the easiest way to start, and especially when developing locally, it's the most logical place to begin.
+The asymmetric approach to testing the client library would be to test each function by querying the Twitter API and testing the response values returned. This is the easiest way to start, and especially when developing locally, it's the most logical place to begin.
 
 However, this has a few downsides. First, the Twitter API is rate-limited, which means that running the same test suite multiple times in a short period  of time will cause the later tests to take a long time to complete. If the client library did not automatically handle throttling and rate-limiting, these tests would fail entirely, resulting in a flaky test suite. Additionally, these tests require a set of API credentials with full read/write permissions in order to perform the test. Managing these credentials securely on public testing infrastructure is somewhere between cumbersome and impossible.
 
