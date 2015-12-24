@@ -1,4 +1,4 @@
-baseurl = "http://www.gopheracademy.com"
+baseurl = "https://www.gopheracademy.com"
 languageCode = "en-us"
 title = "Gopher Academy | Home"
 contentdir = "content"
