@@ -74,9 +74,9 @@ a Gameboy Color ROM, and the copy of `setfont` you just obtained.
 
 After this, you should be able to just boot your new gameboy-as-a-OS ->
 
-[Imgur](http://i.imgur.com/8yORQXQ.png?1)
+![Imgur](http://i.imgur.com/8yORQXQ.png?1)
 
-[Imgur](http://i.imgur.com/4ILCwQF.png?1)
+![Imgur](http://i.imgur.com/4ILCwQF.png?1)
 
 # Conclusion
 
