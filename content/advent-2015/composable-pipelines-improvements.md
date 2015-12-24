@@ -10,9 +10,13 @@ about an idea for a "framework-less" pattern for [Flow-Based Programming](http:/
 or let's just call it "composable concurrent pipelines". During the year, I have experimented more, and added some minor modifications to this pattern, which
 I describe below.
 
+Please note that the code examples below are kept short and thus incomplete, for
+readability. For a full working example of the presented pattern in action,
+please see [this code example on the Go playground](http://play.golang.org/p/voUfPGQulf), or [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)!
+
 ## The old way
 
-The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows respresenting in- and out-ports as struct fields that can be used to connect in- and out-ports of multiple processes in a more fluent way, which the post described.
+The basic idea in that earlier post was to expand on the [generator pattern described in a slide by Rob Pike](https://talks.golang.org/2012/concurrency.slide#25) by storing the concurrent processes in structs rather than just functions. This allows representing in- and out-ports as struct fields that can be used to connect in- and out-ports of multiple processes in a more fluent way, which the post described.
 
 I have realized some further simplifications of this pattern though. One unnecessary thing suggested in that post was to use a method for each out-port, that would ensure that a channel is created for that out-port before returning it.
 
@@ -20,19 +24,21 @@ The pattern proposed that a process would be defined like so:
 
 ```go
 type AProcess struct {
-	In  string
-	Out string
+	In  chan string
+	Out chan string
 }
 
 func (p *AProcess) OutChan() chan string {
-	p.Out = make(chan []byte, 16)
+	p.Out = make(chan string, 16)
 	return p.Out
 }
 
 func (p *AProcess) Init() {
 	go func() {
+		defer close(p.Out)
 		for line := range p.In {
-			// Do something with `line` ...
+			// Do something with `line` here ...
+			p.Out <- line
 		}
 	}()
 }
@@ -45,6 +51,7 @@ proc1 := &AProcess{}
 proc2 := &AProcess{}
 // Connect
 proc2.In = proc1.OutChan()
+// Code to drive this pipeline left out here for brevity
 ```
 
 ## A better way
@@ -52,15 +59,22 @@ proc2.In = proc1.OutChan()
 What I realized though is that if we use a "factory function" to create new tasks and pre-populate the channel fields, we
 just need to assign one such field to a field of another processes to connect two processes.
 
+We will also let all the processes be based on a base interface named `process`, for reasons we will see later on.
+
 So, a task would be defined like so, including its factory function:
 
 ```go
-type AProcess struct {
-	In  string
-	Out string
+type process interface {
+	Run()
 }
 
-func NewProcess(*AProcess) {
+type AProcess struct {
+	process
+	In  chan string
+	Out chan string
+}
+
+func NewProcess() *AProcess {
 	return &AProcess{
 		In:  make(chan string),
 		Out: make(chan string),
@@ -69,8 +83,10 @@ func NewProcess(*AProcess) {
 
 func (p *AProcess) Init() {
 	go func() {
+		defer close(p.Out)
 		for line := range p.In {
-			// Do something with line ...
+			// Do something with `line` ...
+			p.Out <- line
 		}
 	}()
 }
@@ -83,6 +99,7 @@ proc1 := NewProcess()
 proc2 := NewProcess()
 // Connect
 proc2.In = proc1.Out
+// Again, Code to drive this pipeline left out here for brevity
 ```
 ... and we could even connect the other way around, since both the In- and Out-port fields are initiated with channels,
 so it doesn't matter which of these channels we use, as long as it is the same channel used on the corresponding out-
@@ -115,14 +132,16 @@ I couldn't come up with a better suggestion for how to drive such a chain of pro
 
 While I did not use Egon's whole suggestion since it included a fair bit of reflection and departed from my idea
 of a framework-less pattern, his code examples did a nice trick; Rather than letting the processes fire up go-routines,
-(i.e. use the `go` keyword) like my pattern did inside the `Init()` methods, he had `Run()` methods without any `go` statements in them and instead fired called the `go` keyword outside of the processes.
+(i.e. use the `go` keyword) like my pattern did inside the `Init()` methods, he had `Run()` methods without any `go` statements in them and instead called the `go` keyword outside of the processes.
 
 So, if we replaced the `Init()` method in the code examples above with the following `Run()` method:
 
 ```go
 func (p *AProcess) Run() {
+	defer close(p.Out)
 	for line := range p.In {
-		// Do something with line ...
+		// Do something with `line` ...
+		p.Out <- line
 	}
 }
 ```
@@ -134,6 +153,7 @@ proc1 := NewProcess()
 proc2 := NewProcess()
 go proc1.Run()
 go proc2.Run()
+// Again, Code to drive this pipeline left out here for brevity
 ```
 
 This suggests an elegant solution to the problem of driving a chain of go-routines from the main thread: Skip the go
@@ -146,18 +166,23 @@ go proc1.Run() // Execute in separate go-routine
 proc2.Run() // Execute the last process in the main thread
 ```
 
-Now, this can be packaged into a convenient Pipeline component:
+Now, this can be packaged into a convenient Pipeline component (and this is where we have use of the `process` interface
+, to tell the pipeline component to take processes of type `process`):
 
 ```go
 type Pipeline struct {
-	processes []interface{} // TODO: We could use a base-process type here instead of interface{} ...
+	processes []process
 }
 
 func NewPipeline() *Pipeline {
 	return &Pipeline{}
 }
 
-func (pl *Pipeline) AddProcesses(procs ...interface{}) {
+func (pl *Pipeline) AddProcess(proc process) {
+	pl.processes = append(pl.processes, proc)
+}
+
+func (pl *Pipeline) AddProcesses(procs ...process) {
 	for _, proc := range procs {
 		pl.AddProcess(proc)
 	}
@@ -206,19 +231,25 @@ We could for example implement a special "sink" process for that:
 
 ```go
 type Sink struct {
+	process
 	In chan string
 }
 
-func NewSink() (s *Sink) {
-	return &Sink{}
+func NewSink() *Sink {
+	return &Sink{
+		In: make(chan string),
+	}
 }
 
-func (proc *Sink) Run() {
-	for _ := range proc.In {
-		// Do nothing ...
+func (sn *Sink) Run() {
+	for line := range sn.In {
+		fmt.Println(line)
 	}
 }
 ```
+
+Again, make sure to check [this code example on the Go playground](http://play.golang.org/p/voUfPGQulf), or [this gist](https://gist.github.com/samuell/07ee336c9fb39c45b89b)
+if you want to test this pattern out in practice!
 
 ## SciPipe
 
