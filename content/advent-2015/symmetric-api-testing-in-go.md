@@ -15,7 +15,7 @@ However, this has a few downsides. First, the Twitter API is rate-limited, which
 It's also quite slow. Even without accounting for normal rate-limiting and throttling, it can take a full minute to run the tests (depending on how many tests there are, the quality of the network connection, and the current state of the Twitter API servers). Accounting for the rate limits imposed by Twitter, it can actually take several minutes to run the full test suite, depending on how recently the API credentials were last used (ie, how recently the test suite was last run).
 
 
-Finally, this approach makes the test suite tightly coupled to the Twitter API. The tests should not rely on the Twitter API being available.  Twitter itself could be down, or the tests could be run in a sandbox that does not permit external network connections, and we still want the tests to function properly.
+Finally, this approach makes the test suite tightly coupled to the Twitter API. The tests should not rely on the Twitter API being available.  Twitter itself could be down, or the tests could be run in a sandbox that does not permit external network connections. We still want the tests to function properly.
 
 
 Our ideal test suite would be capable of running in a hermetic environment with no external network connectivity, while also capable of detecting changes to the responses returned by the Twitter API. If we were also responsible for implementing the API server as well, our ideal test suite would also test that the responses returned by the server of the server match the behavior that the client library expects.
