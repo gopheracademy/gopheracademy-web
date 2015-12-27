@@ -151,6 +151,12 @@ fetch the dependencies before building.
 Regardless of what *you* choose to do with it, the vendor folder enables you to
 do more.
 
+Two general guidelines:
+
+ * If you vendor a single package, you probably want to vendor all your dependencies.
+ * You probably want a flat vendor structure (you probably don't want nested vendor
+   folders).
+
 ## Tools that use this.
 
 There are [many tools](https://github.com/golang/go/wiki/PackageManagementTools#go15vendorexperiment) that use the vendor folder today. There are even more
@@ -161,7 +167,91 @@ I am the author of [govendor](https://github.com/kardianos/govendor) and
 [vendor-spec](https://github.com/kardianos/vendor-spec). The primary goal
 for `govendor` was to prove and use a common vendor specification file.
 The secondary goals were to make a tool that worked at the package level
-and could provide quick insight into the status of vendor packages. today
+and could provide quick insight into the status of vendor packages.
+It also has always ensured the dependencies are "flattened" and only contains
+a single vendor folder. Today
 `govendor list` and `govendor list -v` are some of my favorite commands.
 If you are coming from `godep`, you just need to run `govendor migrate`
 to start using the vendor folder today.
+
+### Example govendor commands
+Here are some examples of govendor commands on the `github.com/kardianos/spider` repo.
+```
+$ govendor list
+v github.com/andybalholm/cascadia
+v github.com/tdewolff/buffer
+v github.com/tdewolff/parse
+v github.com/tdewolff/parse/css
+v golang.org/x/net/html
+v golang.org/x/net/html/atom
+p github.com/kardianos/spider
+
+$ govendor list -no-status +v
+github.com/andybalholm/cascadia
+github.com/tdewolff/buffer
+github.com/tdewolff/parse
+github.com/tdewolff/parse/css
+golang.org/x/net/html
+golang.org/x/net/html/atom
+
+$ govendor list -v
+v github.com/andybalholm/cascadia ::/vendor/github.com/andybalholm/cascadia
+  └── github.com/kardianos/spider
+v github.com/tdewolff/buffer ::/vendor/github.com/tdewolff/buffer
+  └── github.com/kardianos/spider/vendor/github.com/tdewolff/parse/css
+v github.com/tdewolff/parse ::/vendor/github.com/tdewolff/parse
+  └── github.com/kardianos/spider/vendor/github.com/tdewolff/parse/css
+v github.com/tdewolff/parse/css ::/vendor/github.com/tdewolff/parse/css
+  └── github.com/kardianos/spider
+v golang.org/x/net/html ::/vendor/golang.org/x/net/html
+  ├── github.com/kardianos/spider
+  └── github.com/kardianos/spider/vendor/github.com/andybalholm/cascadia
+v golang.org/x/net/html/atom ::/vendor/golang.org/x/net/html/atom
+  └── github.com/kardianos/spider/vendor/golang.org/x/net/html
+p github.com/kardianos/spider
+
+$ govendor remove +v
+$ govendor list
+p github.com/kardianos/spider
+e github.com/andybalholm/cascadia
+e github.com/tdewolff/buffer
+e github.com/tdewolff/parse
+e github.com/tdewolff/parse/css
+e golang.org/x/net/html
+e golang.org/x/net/html/atom
+
+$ tree
+.
+├── css_test.go
+├── main.go
+└── vendor
+    └── vendor.json
+
+$ govendor add +e
+$ govendor list
+v github.com/andybalholm/cascadia
+v github.com/tdewolff/buffer
+v github.com/tdewolff/parse
+v github.com/tdewolff/parse/css
+v golang.org/x/net/html
+v golang.org/x/net/html/atom
+p github.com/kardianos/spider
+
+$ govendor update -n golang.org/x/net/html/...
+Copy "/home/daniel/src/golang.org/x/net/html" -> "/home/daniel/src/github.com/kardianos/spider/vendor/golang.org/x/net/html"
+	Ignore "escape_test.go"
+	Ignore "node_test.go"
+	Ignore "parse_test.go"
+	Ignore "entity_test.go"
+	Ignore "render_test.go"
+	Ignore "token_test.go"
+	Ignore "example_test.go"
+Copy "/home/daniel/src/golang.org/x/net/html/atom" -> "/home/daniel/src/github.com/kardianos/spider/vendor/golang.org/x/net/html/atom"
+	Ignore "atom_test.go"
+	Ignore "table_test.go"
+
+```
+
+As a side note, the test files are ignored in this repo because the "vendor/vendor.json" file
+has a field called `"ignore": "test"`. Multiple tags can be ignored. I also often
+ignore files with appengine and appenginevm build tags.
