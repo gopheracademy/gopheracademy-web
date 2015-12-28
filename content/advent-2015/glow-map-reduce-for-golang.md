@@ -24,7 +24,7 @@ mode. Let's face it, very often you do not have that much data that
 has to run on a distributed system. Glow can fully utilize Go's
 efficiency and goroutines to process fairly large amount of data.
 And if you really need to scale up, you can scale up with Glow by
-by running it in distributed mode.
+running it in distributed mode.
 
 This time I will cover:
 
@@ -56,9 +56,6 @@ func main() {
     ).Filter(func(line string) bool {
         return !strings.HasPrefix(line, "#")
     }).Map(func(line string, ch chan string) {
-        if strings.HasPrefix(line, "#"){
-            return
-        }
         for _, token := range strings.Split(line, ":") {
             ch <- token
         }
