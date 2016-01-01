@@ -99,7 +99,7 @@ mapper's result emitter. Usually 1 mapper emits 1 result, which
 can be represented as function's return result, e.g.,
 ``` func(key string) int ```. But if a mapper can emit 0 or more
 than 1 result, this won't work. The channel fits nicely here. If the
-last parameter of a mapper funtion is a channel, e.g.,
+last parameter of a mapper function is a channel, e.g.,
 ``` func(line string, ch chan string) ```, it will be treated
 as the result emitter.
 
@@ -227,7 +227,7 @@ var (
 
 func init() {
   // flow definitions
-  f1.Channel(inputChan).Map(...).Reduce(...).AddOutout(outputChan)
+  f1.Channel(inputChan).Map(...).Reduce(...).AddOutput(outputChan)
   f2.Slice(...).Map(...).Reduce(...)
 }
 
