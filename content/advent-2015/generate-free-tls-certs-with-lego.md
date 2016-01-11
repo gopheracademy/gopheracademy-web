@@ -85,15 +85,13 @@ The email address is optional, but highly recommended so you can recover your ac
 Now we can create a client for the user that will speak ACME with the CA server.
 
 ```go
-client, err := acme.NewClient("https://acme-v01.api.letsencrypt.org/directory", &myUser, rsaKeySize, "")
+client, err := acme.NewClient("https://acme-v01.api.letsencrypt.org/directory", &myUser, rsaKeySize)
 if err != nil {
     log.Fatal(err)
 }
 ```
 
-The acme package expects the URL to the CA server's ACME directory. In this case, we're using Let's Encrypt's live endpoint. If you're just testing, use their staging endpoint, `https://acme-staging.api.letsencrypt.org/directory`. The staging endpoint is mostly the same, except it returns untrusted certificates and doesn't have the same rate limits.
-
-We also pass in our user and the size of the key for generated certs. The last argument to NewClient is an optional alternate port to bind to; we left it blank to use the default port, which depends on the challenge (see below). You can leave it blank if your Go program has permission to bind to low ports.
+The acme package expects the URL to the CA server's ACME directory. In this case, we're using Let's Encrypt's live endpoint. If you're just testing, use their staging endpoint, `https://acme-staging.api.letsencrypt.org/directory`. The staging endpoint is mostly the same, except it returns untrusted certificates and doesn't have the same rate limits. We also pass in our user and the size of the key for generated certs.
 
 If your user is new, you will have to register it with the CA:
 
@@ -121,27 +119,27 @@ Now with all the paperwork out of the way, we can finally get to the exciting st
 
 ## Obtaining Certificates
 
-You can obtain one certificate per domain name (`client.ObtainCertificates`), or you can obtain a single SAN certificate (`client.ObtainSANCertificate`) which is valid for multiple domain names. SAN certificates are most commonly used for the "www." variant of the domain name. Typically, you'll want different certificates for different sites.
+You can obtain a certificate with a call to `client.ObtainCertificate`. It can issue both regular and SAN certificates, depending on how many names you pass in. SAN certificates are most commonly used for the "www." variant of the domain name. Typically, you'll want different certificates for different sites. You'll get back a `CertificateResource` which contains a certificate, private key, and some metadata.
 
 ```go
-certificates, failures := client.ObtainCertificates([]string{"mydomain.com", "www.mydomain.com"}, true)
+certResource, failures := client.ObtainCertificate([]string{"example.com", "www.example.com"}, true, nil)
 if len(failures) > 0 {
-    // At least one cert request failed; but some may have succeeded.
-    // Make sure to save the certs and keys for those that succeeded.
+    // At least one domain failed to verify, but others may have succeeded.
+    // If there were any failures, no certificate will be returned.
     for domain, err := range failures {
         log.Printf("[%s] %v", domain, err)
     }
 }
 ```
 
-The second argument is whether lego should bundle the intermediate certificates for us. Usually this is `true` unless you have a good reason.
+The first argument is the list of domains to include in the certificate; a challenge will be solved for each domain name. The second argument is whether lego should bundle the intermediate certificates for us; this is always `true` unless you have a good reason. The last argument is a private key to use; this is usually `nil` since lego will generate one for you, but you should provide one if you implement HPKP.
 
-The returned certificates come with their private keys (lego generated them for us). Save the certificates and private keys somewhere safe.
+Save the certificate and private key somewhere safe.
 
 
 ## ACME Challenges
 
-The ACME spec defines several *challenges* a client may solve to prove ownership of the domain. These are http-01, tls-sni-01, dns-01, and proofOfPosession-01 (the 01 is just a version number). At time of writing, only http-01 and tls-sni-01 are implemented by Let's Encrypt, but lego already supports those in addition to dns-01.
+The ACME spec defines several *challenges* a client may solve to prove ownership of the domain. These are http-01, tls-sni-01, dns-01, and proofOfPosession-01 (the 01 is just a version number). At time of writing, only http-01 and tls-sni-01 are implemented by Let's Encrypt, but lego already supports those and dns-01.
 
 These challenges are solved for you by lego, but you should be aware how they work.
 
@@ -153,11 +151,11 @@ The **dns-01** challenge requires a DNS record to be provisioned with a special 
 
 The **proofOfPosession-01** challenge requires you to prove ownership of a private key used in association with a public key already known to the server. This will be available in the future.
 
-Right now, the challenge is chosen at random, but the next release of lego will allow you to specify which challenges you can do.
+You can call [methods on the Client](https://godoc.org/github.com/xenolf/lego/acme#Client) to customize the challenges that may be used as well as alternate ports.
 
 ## Using Your Certificates
 
-The certificates are returned in PEM format, ready to be written to disk or for use with net/http. For example, after writing the cert chain to cert.pem and the private key to key.pem:
+The certificates are returned in PEM format, ready to be written to disk and for use with net/http. For example, after writing the cert chain to cert.pem and the private key to key.pem:
 
 ```go
 err := http.ListenAndServeTLS(":10443", "cert.pem", "key.pem", nil)
@@ -186,11 +184,11 @@ If you haven't noticed, there's a lot of moving parts here. Usually the failure 
 
 - Is your domain a registered, public domain name? Let's Encrypt does not issue certificates for internal domain names or IP addresses. (Adding a domain to your hosts file doesn't count.)
 
-- Does your domain resolve to the machine you're running the client on? You must configure your domain name to point to the IP of the machine you're solving the challenge on.
+- Does your domain resolve to the machine you're running the client on? Except for the DNS challenge, you must configure your domain name to point to the IP of the machine you're solving the challenge on.
 
 - Are you behind a load balancer? SSL termination will break the tls-sni-01 challenge, and load balancing to a machine other than the one solving the challenge will break http-01.
 
-- Can you bind to ports 80 and 443? The http-01 and tls-sni-01 challenges _must_ be completed on those ports. You're welcome to forward them to a higher port that your client uses (that'd be the optional alternate port I mentioned earlier), but those challenges require those ports, period.
+- Can you bind to ports 80 and 443? The http-01 and tls-sni-01 challenges _must_ be completed on those ports. You're welcome to forward them to a higher port that your client uses, but those challenges require these ports, period.
 
 - Are you on an IPv6-only network? Let's Encrypt's infrastructure only supports IPv4 at this time. Hopefully this changes soon.
 
