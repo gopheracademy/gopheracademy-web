@@ -33,7 +33,6 @@
         
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav ">
-          <li class="smallmenu"><a  href="/post/">Categories</a></li>
           <li class="smallmenu"><a href="https://www.gopheracademy.com">Gopher Academy</a></li>
           <li class="smallmenu"><a href="https://www.gophercon.com">GopherCon</a></li>
 
@@ -55,6 +54,7 @@
       </script>
         
       {{ end }}
+          <hr />
 
           <form name="google-search" method="get" action="https://www.google.com/search">
 
@@ -90,7 +90,6 @@
 					</form>
 
           <hr /> 
-          <li class=""><a  href="/post/">Categories</a></li>
           <li class=""><a href="https://www.gopheracademy.com">Gopher Academy</a></li>
           <li class=""><a href="https://www.gophercon.com">GopherCon</a></li>
 
@@ -113,6 +112,7 @@
 				
 			{{ end }}
           <hr />
+
 		<div id="social-wrapper">
 			<a class="icon-social twitter" href="https://twitter.com/gopheracademy" target="_blank"></a>
 			<a class="icon-social github" href="https://github.com/gopheracademy" target="_blank"></a>
@@ -121,11 +121,13 @@
 		</div> 
 		<!-- BOTTOM CREDITS -->
 		<div class="newCredit">
-			<p class="text-muted ">{{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{.Now.Format "2006"}} Gopher Academy, LLC 2013
+			<p class="text-muted ">{{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{.Now.Format "2006"}} Gopher Academy, LLC 2016
 				<br />
 				Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a>
 				<br />
 				Designed by <a href="https://www.ardanstudios.com/" target="_blank">Ardan Studios</a>
+				<br />
+				Hosting Sponsored by <a href="https://www.digitalocean.com/" target="_blank">Digital Ocean</a>
 				{{end}}
 			</p>
 		<div>
