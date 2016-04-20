@@ -70,3 +70,7 @@ So far this year we're sponsored by these amazing companies:
 * Intel
 
 If you'd like to put your company on this list, there's still time.  Email us: `gophercon@gopheracademy.com` or [download our prospectus](https://gophercon.com/Gophercon2016Prospectus.pdf).  We can't do this without your support.
+
+<img alt="Sponsors"
+     src="/postimages/sponsors.png"
+     style="float:right; margin-bottom:2em;"/>
