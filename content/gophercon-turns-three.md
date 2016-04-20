@@ -25,7 +25,7 @@ We had no expectations for the success that GopherCon 2014 achieved.  We did exp
 For 2015, we aimed higher.  We booked the Colorado Convention Center, effectively doubling our capacity.  And you, the Go Community, showed us that we chose wisely.  We had over 1300 people attend from all corners of the globe.  More talks, more sponsors, more opportunities for networking... it was a great way for Gophers to get together and learn about Go.
 
 
-## GopherCon 2016
+## GopherCon 2016 - July 11-13th, 2016
 
 This year, we've changed several things based on your feedback.  We're trying a new concept for multiple tracks.  Many people have asked for more content, but an equal number enjoy the single-track feel of the first two GopherCon events.  We're going to keep our mornings single-track, but split the afternoon into three different tracks.  Two tracks will offer tutorials and advanced content, while in the main auditorium we'll do lightning talks, presenter Q&A sessions, and invited speakers.  We hope that this will give you the opportunity to choose more advanced sessions based on your interest level, while keeping the plenary sessions as a single-track schedule.
 
