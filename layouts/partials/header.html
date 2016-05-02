@@ -12,7 +12,7 @@
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
       <![endif] d-->
     </head>
     <body>
@@ -33,10 +33,9 @@
         
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav ">
-          <li class="smallmenu"><a  href="/post/">Categories</a></li>
-          <li class="smallmenu"><a href="http://www.gopheracademy.com">Gopher Academy</a></li>
-          <li class="smallmenu"><a href="http://www.gophercon.com">GopherCon</a></li> 
-          
+          <li class="smallmenu"><a href="https://www.gopheracademy.com">Gopher Academy</a></li>
+          <li class="smallmenu"><a href="https://www.gophercon.com">GopherCon</a></li>
+
           <hr />
       {{ range $name, $taxonomy := .Site.Taxonomies.series}}
       <script type="text/javascript">
@@ -55,6 +54,7 @@
       </script>
         
       {{ end }}
+          <hr />
 
           <form name="google-search" method="get" action="https://www.google.com/search">
 
@@ -78,7 +78,7 @@
         <ul class="sidebar-nav nav nav-pills nav-stacked">
           <li class="sidebar-brand"><a href="/"><img src="/images/gopheracademy-logo.png" srcset="/images/gopheracademy-logo.png 1x, /images/gopheracademy-logo-2x.png 2x" width="140" height="145" alt="" /></a></li>
           <hr /> 
-					<form name="google-search" method="get" action="http://www.google.com/search">
+					<form name="google-search" method="get" action="https://www.google.com/search">
 
 	          <div class="post_search input-group">
 							<input type="hidden" name="sitesearch" value="blog.gopheracademy.com">
@@ -90,9 +90,8 @@
 					</form>
 
           <hr /> 
-          <li class=""><a  href="/post/">Categories</a></li>
-          <li class=""><a href="http://www.gopheracademy.com">Gopher Academy</a></li>
-          <li class=""><a href="http://www.gophercon.com">GopherCon</a></li>      
+          <li class=""><a href="https://www.gopheracademy.com">Gopher Academy</a></li>
+          <li class=""><a href="https://www.gophercon.com">GopherCon</a></li>
 
 		      <hr />
 			{{ range $name, $taxonomy := .Site.Taxonomies.series}}
@@ -113,19 +112,22 @@
 				
 			{{ end }}
           <hr />
+
 		<div id="social-wrapper">
 			<a class="icon-social twitter" href="https://twitter.com/gopheracademy" target="_blank"></a>
 			<a class="icon-social github" href="https://github.com/gopheracademy" target="_blank"></a>
-			<a class="icon-social slack" href="http://bit.ly/go-slack-signup" target="_blank"></a>
+			<a class="icon-social slack" href="https://gophersinvite.herokuapp.com/" target="_blank"></a>
 			<a class="icon-social rss" href="/index.xml" target="_blank"></a>
 		</div> 
 		<!-- BOTTOM CREDITS -->
 		<div class="newCredit">
-			<p class="text-muted ">{{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{.Now.Format "2006"}} Gopher Academy, LLC 2013
+			<p class="text-muted ">{{ with .Site.Params.Copyright }}{{.}}{{ else }}&copy; {{.Now.Format "2006"}} Gopher Academy, LLC 2016
 				<br />
-				Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> 
+				Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a>
 				<br />
-				Designed by <a href="http://www.ardanstudios.com/" target="_blank">Ardan Studios</a>
+				Designed by <a href="https://www.ardanstudios.com/" target="_blank">Ardan Studios</a>
+				<br />
+				Hosting Sponsored by <a href="https://www.digitalocean.com/" target="_blank">Digital Ocean</a>
 				{{end}}
 			</p>
 		<div>

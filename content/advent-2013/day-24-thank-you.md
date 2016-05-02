@@ -14,7 +14,7 @@ So far this year's Go Advent has generated over 60k unique page views and exists
 - On [day 3](/advent-2013/day-03-building-a-twelve-factor-app-in-go) [Kelsey Hightower](https://twitter.com/kelseyhightower) explained how to handle application configuration, [12 factor app](http://12factor.net/) style, in your Go applications.
 - In their post on [day 4](/advent-2013/day-04-goconvey), [Matthew Holt](https://twitter.com/mholt6) and [Michael Whatcott](https://twitter.com/mdwhatcott) introduced [GoConvey](https://github.com/smartystreets/goconvey), their testing framework for Go.
 - For his post on [day 5](/advent-2013/day-05-beego) [Jiahua Chen](https://plus.google.com/106856826379042824026) introduced [beego](http://beego.me/) which has recently announced its 1.0 release.
-- On [day 6](/advent-2013/day-06-service-discovery-with-etcd]) [Andrew Bonventre](https://twitter.com/andybons) spilt the beans on how [Poptip](https://poptip.com/) use [etcd](https://github.com/coreos/etcd) to manage service discovery and configuration.
+- On [day 6](/advent-2013/day-06-service-discovery-with-etcd) [Andrew Bonventre](https://twitter.com/andybons) spilt the beans on how [Poptip](https://poptip.com/) use [etcd](https://github.com/coreos/etcd) to manage service discovery and configuration.
 
 - Finishing out the week, James Stewart explained on [day 7](/advent-2013/day-07-a-router-for-govuk) how he used Go to replace the front end router for the entire `gov.uk` domain.
 - Heading into the second week, [Elliott Stoneham](https://plus.google.com/+ElliottStoneham/about) explained on [day 8](/advent-2013/day-08-dr-who-and-the-mutant-go-compilers) how he used [haxe](http://haxe.org/), the Go SSA package and a sonic screwdriver to translate Go code into JavaScript.
