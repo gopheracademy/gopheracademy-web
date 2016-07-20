@@ -375,7 +375,7 @@ func init() {
     // each executor reads a file from hdfs
     f,
     "hdfs://localhost:9000/etc",
-    3, // listed files are partitioned to 8 shards
+    3, // listed files are partitioned to 3 shards
   ).Map(func(line string, ch chan LogLine) {
     parts := strings.Split(line, ",")
     userId, _ := strconv.Atoi(parts[1])
