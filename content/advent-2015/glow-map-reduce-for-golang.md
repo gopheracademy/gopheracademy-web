@@ -481,3 +481,6 @@ may support stream processing in the future.
 Glow also need to add monitoring, fault tolerant error handling, etc.
 Lots of work to be done. Welcome to any kind of contribution!
 
+Glow has limitations that Go code can not be sent and executed remotely.
+My next project, [Gleam](https://github.com/chrislusf/gleam), tries to
+address this. More details later.
