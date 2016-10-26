@@ -13,7 +13,7 @@ For the remainder of this post we will introduce [Delve](https://www.github.com/
 
 ## Getting set up
 
-*Delve is only available on Linux and OSX, with Windows support [coming soon](https://github.com/derekparker/delve/pull/276).*
+*Delve is only available on 64-bit systems, with 32-bit support [coming soon](https://github.com/derekparker/delve/issues/20).*
 
 If you haven't already installed [Delve](https://www.github.com/derekparker/delve), check out the [installation instructions](https://github.com/derekparker/delve/tree/master/Documentation/installation#installation) to get started. Note that if you're on OSX you must follow the instructions to codesign the binary. Once you're finished you will have everything you need to begin debugging Go programs.
 
