@@ -12,7 +12,9 @@ title = "December Blog Series Introduction"
 Here are the articles from our previous three years:
 
 [2015 Posts](https://blog.gopheracademy.com/series/advent-2015/) 
+
 [2014 Posts](https://blog.gopheracademy.com/series/advent-2014/) 
+
 [2013 Posts](https://blog.gopheracademy.com/series/advent-2013/) 
 
 As you can see from the quality of the past posts, you're in for a treat this year.  We've got articles lined up from some amazing Gophers on subjects ranging from controlling your BBQ grill to machine learning and everything you can imagine in between!
