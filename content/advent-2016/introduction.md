@@ -7,7 +7,7 @@ title = "December Blog Series Introduction"
 
 +++
 
-2016 has been a great year for the Go language and the Go community.  We love to celebrate the end of the year with a series fo blog posts from the community on a wide variety of topics.  
+2016 has been a great year for the Go language and the Go community.  We love to celebrate the end of the year with a series of blog posts from the community on a wide variety of topics.  
 
 Here are the articles from our previous three years:
 
