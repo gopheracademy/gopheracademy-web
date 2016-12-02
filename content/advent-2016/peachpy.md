@@ -4,7 +4,6 @@ date = "2016-12-02T11:49:46+01:00"
 author = [ "Damian Gryski" ]
 title = "Writing Go assembly functions with PeachPy"
 series = ["Advent 2016"]
-draft = true
 +++
 
 **What is PeachPy**
