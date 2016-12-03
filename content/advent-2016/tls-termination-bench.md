@@ -4,7 +4,8 @@ title = "Go, Nginx, and TLS Termination"
 author = [
   "Ian Chiles (@fortytw2)",
 ]
-date = "2016-11-29T16:21:01+01:00"
+date = "2016-12-03T00:00:00"
+series = ["Advent 2016"]
 
 +++
 
