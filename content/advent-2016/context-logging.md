@@ -31,7 +31,7 @@ independent thing at a time, or at some point you would want to switch
 it from processing one thing at a time to many things at the same
 time.  Why else are you using Go?
 
-## Enough future tense.  Give me some content.  What does `context` do ?
+## Enough future tense.  Give me some content.  What does `context` do?
 
 `context` enables a bunch of cool libraries implementing
 *cross-cutting concerns* to get access to the stuff you know you
@@ -128,7 +128,7 @@ and how `context` can help you turn your logs into rich sources of
 insight.
 
 Initially, you might start with the built-in `log` library, and its
-`Printf` inteface:
+`Printf` interface:
 
 ```go
     package somelibrary
@@ -293,7 +293,7 @@ Now, the requests will come through tagged!
 ```
 
 It's now possible to see which line was handled by each request
-handler, even through they are arriving in the log interleaved with
+handler, even though they are arriving in the log interleaved with
 each other.
 
 ## Wait, so what is `context.WithValue` doing?  Does it return a copy?!
