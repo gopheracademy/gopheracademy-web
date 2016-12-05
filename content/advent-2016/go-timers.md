@@ -104,11 +104,9 @@ sends current time to the channel or discards it if send blocks. Used in
 [time.Timer](https://github.com/golang/go/blob/release-branch.go1.7/src/time/sleep.go#L80)
 and
 [time.Ticker](https://github.com/golang/go/blob/release-branch.go1.7/src/time/tick.go#L34).
-
 * [goFunc](https://github.com/golang/go/blob/release-branch.go1.7/src/time/sleep.go#L153) -
 executes some function in a goroutine. Used in
 [time.AfterFunc](https://github.com/golang/go/blob/release-branch.go1.7/src/time/sleep.go#L145).
-
 * [goroutineReady](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L81) -
 wakes up a specific goroutine. Used in
 [runtime.timeSleep](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L48)
@@ -121,14 +119,16 @@ it's time to call them.
 ## runtime.timers
 
 [runtime.timers](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L28)
-is just a [Heap data structure](https://en.wikipedia.org/wiki/Heap_(data_structure)).
+is just a [Heap data structure](https://en.wikipedia.org/wiki/Heap_\(data_structure\)).
 Heap is very useful when you want to repeatedly find extremum (minimum or maximum) among
 some elements. In our case extremum is a timer with closest `when` to the current
 time. Very convenient, isn't it? So, let's see what algorithmic complexity the
 operations with timers for the worst case:
+
 * add new timer - O(log(n))
 * delete timer - O(log(n))
 * spawning timers functions - O(log(n))
+
 So, if you have 1 million timers, the number of operations with heap will usually be
 less than 1000(log(1kk) ~= 20, but spawning can require multiple minimum deletions,
 because multiple timers can reach their deadline at about the same time).
@@ -136,7 +136,7 @@ It's very fast and all the work is happening in a separate goroutine, so it does
 The [siftupTimer](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L238)
 and [siftdownTimer](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L255)
 functions are used for maintaining heap properties.
-But data structures don't work on their own; something should use them. In our 
+But data structures don't work on their own; something should use them. In our
 case it's just one goroutine with the function
 [timerproc](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L154).
 It's spawned on
@@ -268,7 +268,7 @@ There are two variables which I think deserve explanation: `rescheduling` and
 `sleeping`. They both indicate that the goroutine was put to sleep, but different
 synchronization mechanisms are used, let's discuss them.
 
-- `sleeping` is set when all "current" timers are processed, but there are more
+`sleeping` is set when all "current" timers are processed, but there are more
 which we need to spawn in future. It uses OS-based synchronization, so it calls
 some OS syscalls to put to sleep and wake up the goroutine and syscalls means it spawns
 OS threads for this.
@@ -276,16 +276,16 @@ It uses [note](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045
 structure and next functions for synchronization:
 	* [noteclear](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L125) -
 	resets note state.
-	* [notetsleepg](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L199) - 
+	* [notetsleepg](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L199) -
 	puts goroutine to sleep until `notewakeup` is called or after some period
 	of time (in case of timers it's time until next timer). This func fills `timers.waitnote`
 	with "pointer to timer goroutine".
-	* [notewakeup](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L129) - 
+	* [notewakeup](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L129) -
 	wakes up goroutine which called `notetsleepg`.
 `notewakeup` might be called in `addtimerLocked` if the new timer is "earlier" than
 the previous "earliest" timer.
 
-- `rescheduling` is set when there are no timers in our heap, so nothing to do.
+`rescheduling` is set when there are no timers in our heap, so nothing to do.
 It uses the go scheduler to put the goroutine to sleep with function
 [goparkunlock](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/proc.go#L264).
 Unlike `notetsleepg` it does not consume any OS resources, but also does not
