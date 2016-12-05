@@ -23,7 +23,7 @@ All the code for this post is at
 
 **A Simple Example**
 
-Lets start with a simple function: one that takes two integers and returns their sum.
+Let's start with a simple function: one that takes two integers and returns their sum.
 
 [embedmd]:# (args/add.py)
 ```py
@@ -269,7 +269,7 @@ But if you're just writing Go code, it's nicer if they're the same.  (You can
 still call your slice-expecting-assembly routine from C -- you just need to
 pass the length twice to pretend to be the capacity).
 
-Lets look at an example.  Here are the arguments to the function:
+Let's look at an example.  Here are the arguments to the function:
 
 [embedmd]:# (slice/add.py /s_base/ /(?m:^$)/)
 ```py
