@@ -1,6 +1,6 @@
 +++
 author = ["Sam Vilain"]
-date = "2016-12-06T05:00:00+00:00"
+date = "2016-12-05T00:00:00+00:00"
 series = ["Advent 2016"]
 title = "Using Go's 'context' library for making your logs make sense"
 +++
