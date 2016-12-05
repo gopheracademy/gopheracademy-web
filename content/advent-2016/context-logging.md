@@ -570,3 +570,11 @@ I'll close this post out with a list of some other good uses of context:
   like Newrelic's `go-agent`, you'll need to pass its transaction
   object down scopes to functions that call external libraries.
   [Context is one way to do this](https://medium.com/@gosamv/using-gos-context-library-for-performance-monitoring-aaf25dacb0fe).
+
+## About the author
+
+A second-generation database-driven developer, Sam has been scratching
+his head and figuring out what happened with Perl, Python and Go
+applications from the logs since the late 90's.  He is currently
+working for [Parsable](http://parsable.com), a San Francisco start-up
+serving mostly heavy industry.
