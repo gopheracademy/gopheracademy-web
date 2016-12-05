@@ -5,7 +5,7 @@ series = ["Advent 2016"]
 title = "Using Go's 'context' library for making your logs make sense"
 +++
 
-One of the shiny new toys in go 1.7 is the 'context' library.  Not
+One of the shiny new toys in Go 1.7 is the 'context' library.  Not
 shiny as in it is genuinely new.  It started out at
 `golang.org/x/net/context`, which is where you'll need to import it
 from if you're on 1.6 or before - but don't worry, the old import path
@@ -26,10 +26,10 @@ matched against your system logs and more.  There's also a few
 It doesn't matter an awful lot.  It could be a regular HTTP service of
 some kind, a consumer of kafka topics, a cog in a vast stream
 processing machine, anything - the key characteristic being that a
-single go program is responsible for processing more than one
+single Go program is responsible for processing more than one
 independent thing at a time, or at some point you would want to switch
 it from processing one thing at a time to many things at the same
-time.  Why else are you using go?
+time.  Why else are you using Go?
 
 ## Enough future tense.  Give me some content.  What does `context` do ?
 
@@ -37,7 +37,7 @@ time.  Why else are you using go?
 *cross-cutting concerns* to get access to the stuff you know you
 shouldn't have to muck with all the time.  Let me explain...
 
-One of the things you'll notice after not very long at all using go is
+One of the things you'll notice after not very long at all using Go is
 that it doesn't really use global variables very much.  This seems all
 well and good and clean when you're writing your own code to implement
 logic, but quickly becomes problematic when it comes to calling or
@@ -107,7 +107,7 @@ they all need to do it the same way for cancellation to be possible.
 That's fine if it's a system function (as with threads or processes),
 or your language uses a virtual machine or an interpreter or something
 slow like that.  The virtual machine can stand in for the system.  But
-in a language like go, again this must be done in your code.
+in a language like Go, again this must be done in your code.
 
 And if you change the policy on how to stop the code processing, you
 sure don't want to have to change your code all over again.  `context`
@@ -174,7 +174,7 @@ When you solved this problem in
 assigned a request ID to the request, and then some magic library made
 that request ID log in every line logged anywhere in the program.
 
-So how can we do this in go?
+So how can we do this in Go?
 
 First, let's ditch the standard `log` library, which is horribly
 unstructured, and use Uber's `zap` logger.  You could equally well do
@@ -461,7 +461,7 @@ functions pull the parts out they want as they go.
 **Why this is bad**: In python, the string keys in Python mean that
 the arguments can potentially collide.  Every function has to handle
 all the arguments in between, and because the keys are all strings you
-don't know who is going to do what with that extra argument.  In go,
+don't know who is going to do what with that extra argument.  In Go,
 using key types which are private avoids that problem, but again this
 comes down to - this is surprising to the reader.  `context` is
 *optional* context, not materially affecting the logical flow of the
