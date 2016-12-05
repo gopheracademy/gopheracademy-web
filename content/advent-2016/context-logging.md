@@ -113,7 +113,12 @@ And if you change the policy on how to stop the code processing, you
 sure don't want to have to change your code all over again.  `context`
 solves this problem with its `Deadline` and `CancelFunc` APIs.
 
-This falls into the general bucket of quasi-global concerns.
+This falls into the general bucket of quasi-global concerns.  I'm not
+going to focus on cancellation in this post, but beware that some
+people
+[may assume](https://twitter.com/chris_csguy/status/804700188380172288)
+that if your function accepts `ctx` as its first argument, that it
+supports cancellation.  Don't let them down!
 
 ## That sounds great!  Now how will this make my logs better?
 
