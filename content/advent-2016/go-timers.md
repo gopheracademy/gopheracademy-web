@@ -121,7 +121,7 @@ it's time to call them.
 ## runtime.timers
 
 [runtime.timers](https://github.com/golang/go/blob/release-branch.go1.7/src/runtime/time.go#L28)
-is just a [Heap data structure](https://en.wikipedia.org/wiki/Heap_(data_structure)).
+is just a [Heap data structure](https://en.wikipedia.org/wiki/Heap_\(data_structure\)).
 Heap is very useful when you want to repeatedly find extremum (minimum or maximum) among
 some elements. In our case extremum is a timer with closest `when` to the current
 time. Very convenient, isn't it? So, let's see what algorithmic complexity the
