@@ -76,7 +76,7 @@ and get this advice:
 
     dosomething.go:12:18: d can be Doer
 
-You quickly fix the `DoSometing` function and go to bed, knowing that
+You quickly fix the `DoSomething` function and go to bed, knowing that
 you now can easily pass some `MockDoIt` struct to `DoSomething` when
 you'll write the tests tomorrow.
 
@@ -86,12 +86,12 @@ you'll write the tests tomorrow.
 # *zb:* Take some shortcuts to the go toolchain
 
 After you finished some work on your latest project, you run
-gometalinter. It takes some time to finish, and you discover that some
+`gometalinter`. It takes some time to finish, and you discover that some
 of the lint tools have descended into the vendor directory, and now the
 output is cluttered with lots of useless messages.
 
-Then you run go build, only to observe that some tests failed. Aw,
-forgot to run go generate.
+Then you run `go build`, only to observe that some tests failed. Aw,
+forgot to run `go generate`.
 
 While you fix this, you realize how time is passing, and you wish your
 tools were faster and a bit smarter.
@@ -130,7 +130,7 @@ tests each time you save a source file.
 
 `realize` is your friend. 
 
-Activating go build, test, run, generate, fmt, etc is just a matter of
+Activating `go build`, `test`, `run`, `generate`, `fmt`, etc. is just a matter of
 flipping some boolean switches in a config file (as opposed to
 specifying the complete command line). 
 
