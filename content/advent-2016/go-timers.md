@@ -274,14 +274,16 @@ some OS syscalls to put to sleep and wake up the goroutine and syscalls means it
 OS threads for this.
 It uses [note](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/runtime2.go#L131)
 structure and next functions for synchronization:
-	* [noteclear](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L125) -
-	resets note state.
-	* [notetsleepg](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L199) -
-	puts goroutine to sleep until `notewakeup` is called or after some period
-	of time (in case of timers it's time until next timer). This func fills `timers.waitnote`
-	with "pointer to timer goroutine".
-	* [notewakeup](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L129) -
-	wakes up goroutine which called `notetsleepg`.
+
+* [noteclear](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L125) -
+  resets note state.
+* [notetsleepg](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L199) -
+  puts goroutine to sleep until `notewakeup` is called or after some period
+  of time (in case of timers it's time until next timer). This func fills `timers.waitnote`
+  with "pointer to timer goroutine".
+* [notewakeup](https://github.com/golang/go/blob/2f6557233c5a5c311547144c34b4045640ff9f71/src/runtime/lock_futex.go#L129) -
+  wakes up goroutine which called `notetsleepg`.
+
 `notewakeup` might be called in `addtimerLocked` if the new timer is "earlier" than
 the previous "earliest" timer.
 
