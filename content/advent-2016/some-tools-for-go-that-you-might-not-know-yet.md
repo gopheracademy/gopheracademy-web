@@ -67,7 +67,7 @@ func DoSomething(d DoIt) {
 ```
 
 You vaguely remember that `Do` belongs to some interface but you can't 
-remember which one. You're to lazy to search for it (and after all, 
+remember which one. You're too lazy to search for it (and after all, 
 it is already 11pm), so you run 
 
     $ interfacer dosomething.go
@@ -117,7 +117,7 @@ and have a look.
 Caveat: The author describes the tool as opinionated, and I would
 tend to agree. On the other hand, there is no obligation to use 
 all of the available commands. Just pick the ones you find useful and
-that don't go in the way of your workflow.
+that don't get in the way of your workflow.
 
 [zb on GitHub](https://github.com/joshuarubin/zb)
 
