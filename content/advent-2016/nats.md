@@ -3,7 +3,6 @@ author = ["NATS.io team"]
 date = "2016-12-06T0:00:00-08:00"
 title = "Using NATS Messaging with some of your favorite Golang tools"
 series = ["Advent 2016"]
-draft = true
 +++
 
 # Quick Intro to NATS, and Why We Love Go!
@@ -15,7 +14,7 @@ In this blog post, we want to take a look at two things: 1) What do we love abou
 
 ### What are some things we love about Go, and how are we using it in NATS?
 * We like the performance Go provides across the major platforms (Linux, OSX, Windows).  While other technologies support multiple platforms like Go, they do not compile down to native binaries, sacrificing performance and requiring a larger footprint with additional runtime components to be installed.
-* [Goroutines}(https://tour.golang.org/concurrency/1) eliminate the need to manage threads and thread pools - they are very simple to use, extremely lightweight, and performant.
+* [Goroutines](https://tour.golang.org/concurrency/1) eliminate the need to manage threads and thread pools - they are very simple to use, extremely lightweight, and performant.
 * Built-in facilities like [Channels](https://tour.golang.org/concurrency/2) and WaitGroups make it really easy to use a variety of concurrency patterns. 
 * The consistent formatting style enforced in Go facilitates development in a team environment.
 * The rich and portable “net” package lets us focus on the important things, rather than low-level and traditionally error prone socket code.
