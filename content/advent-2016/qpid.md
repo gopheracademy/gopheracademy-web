@@ -28,4 +28,9 @@ With the help of the #bbq channel in the Gopher Slack, I've made several additio
 
 QPID powered the Ketelsen [Thanksgiving Turkey](https://drive.google.com/file/d/12BOndwHK5J86RsvVNedjjC1_kat1-k8lNw/view?usp=sharing) this year, and it was the best turkey I've ever grilled.  Thanks to Justin's inspiration, the awesome Gobot team, and a little bit of soldering, we have a fun project powered by Go that helped to join two of my favorite things: Go and BBQ.
 
+What's in the future for qpid? We're currently working on giving qpid some hardware love, supporting multiple meat probes, solar power, and the ability to view and set temps at the grill:
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">What happens when an engineer/programmer gets annoyed by their grill thermometer?<br><br>They build their own... <a href="https://t.co/tkPQuAjGBx">pic.twitter.com/tkPQuAjGBx</a></p>&mdash; Erik St. Martin (@erikstmartin) <a href="https://twitter.com/erikstmartin/status/805471375121063936">December 4, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 If you love BBQ and Go, we'd love your contributions on the [QPID Project](https://github.com/bbqgophers/qpid).  You can find a [parts list and general notes](https://github.com/bbqgophers/links) in our Github organization if you're looking to get started automating your cooking.
