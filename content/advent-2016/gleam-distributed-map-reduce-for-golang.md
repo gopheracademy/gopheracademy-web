@@ -27,19 +27,19 @@ embeddable language. Go should embrace it. (BTW, LuaJIT's FFI is really
 easy to call an external C library function, much simpler than CGO.)
 
 Additionally, Unix Pipe tools, e.g., "sort", "tr", "uniq", etc, 
-are also gems for data proccesing. But being single threaded, they lack 
+are also gems for data processing. But being single threaded, they lack 
 the power to tackle big data. Go should be able to help to scale them up,
 to distributedly run these tools.
 
 With [Gleam](https://github.com/chrislusf/gleam), we can combine pure Go, 
 LuaJIT, and Unix Pipes, all the 3 powerful weapons together.
 
-Let's understand Gleam architecutre of how it works. 
+Let's understand Gleam architecture of how it works. 
 Then I will cover 2 examples:
 
-1. Sort an 1GB file in both standalone and distributed modes, and distributed
+1. Sort a 1GB file in both standalone and distributed modes, and distributed
 Unix sort mode, with performance comparison.
-2. Implement Joining of CSV files.
+2. Implement joining of CSV files.
 
 
 # Architecture
@@ -58,9 +58,9 @@ statuses to the master.
 The agents also manage intermediate data. The data can be streamed via memory,
 or optionally go through disk for better scalability and robustness.
 
-When run in a distributed cluster, the Gleam code becomes a driver of 
+When ran in a distributed cluster, the Gleam code becomes a driver of 
 the whole flow's execution. It requests resources from the master, and then
-contact the agents to schedule jobs on them.
+contacts the agents to schedule jobs on them.
 
 One feature I like for Gleam is that the master and agents are very efficient.
 They took about 5~6MB memory and almost no resource usages when idle. So
@@ -113,12 +113,12 @@ Peak Memory used: 1.46 GB, CPU is about 100%.
 The complete source code is here. It has these steps:
 
 1. read the input txt file line by line
-- extract the interger part as a string from each line (LuaJIT)
+- extract the integer part as a string from each line (LuaJIT)
 - hash the key and distribute data into 4 partitions
 - sort the key, first locally, then merge then into one partition
 - print out data to stdout.
 
-There could be better algorithms. For example, instead of randomly hash the
+There could be better algorithms. For example, instead of randomly hashing the
 key to partitions, we can just distribute the lines by the first few bits 
 to 4 partitions, local sort, and we can have 4 already sorted partitions.
 But it loses the generality of the sorting code.
@@ -172,7 +172,7 @@ https://github.com/chrislusf/gleam/wiki/Gleam-Cluster-Setup for instructions.
 This piece of code does the following:
 
 1. read the input txt file line by line
-2. extract the interger part as a string from each line (LuaJIT)
+2. extract the integer part as a string from each line (LuaJIT)
 3. hash the key and distribute data into 4 partitions
 4. sort the key locally for each partition (Unix sort command)
 5. merge the 4 sorted partitions into one partition
@@ -230,7 +230,7 @@ show a way to adjust the required memory.
 The data flowing between each dataset are usually in MessagePack format.
 But the data flowing to and from Pipe() are tab-separated lines, 
 when each line has multiple fields. So there is a small amount of time 
-for the extra convertion.
+for the extra conversion.
 
 As you can see, as long as any program can work as Unix Pipes, Gleam
 can make them work distributedly.
@@ -240,7 +240,7 @@ can make them work distributedly.
 This piece of code takes these steps:
 
 1. read the input txt file line by line
-2. extract the interger part as a string from each line (LuaJIT)
+2. extract the integer part as a string from each line (LuaJIT)
 3. hash the key and distribute data into 4 partitions
 4. sort the key locally for each partition, then merge into one partition
 5. print out data to stdout.
@@ -334,7 +334,7 @@ func main() {
 
 ```
 In the example, the csv files are on local disk. This is the simplest form. 
-The csv files can also be read from HDFS or S3.
+The CSV files can also be read from HDFS or S3.
 
 CSV is one of the storage format supported. There are different adapters 
 for different data sources, e.g. Gleam can read from Cassandra in parallel.
@@ -343,7 +343,7 @@ More adapters are planned.
 # Summary
 
 Gleam is a simple and powerful distributed map reduce system.
-By combining high performance LuaJIT and Go's powerful system programing,
+By combining high performance LuaJIT and Go's powerful system programming,
 Gleam can dynamically schedule jobs to run on remote computers via agents, 
 intelligently allocate resources, and process the data in parallel.
 
