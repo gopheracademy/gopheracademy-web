@@ -37,47 +37,47 @@ and it will tell you if you did.
 
 ## An example
 
-Imagine that one day, you start writing a larger library that contains a
-`Doer` interface and a `DoIt` struct that implements `Doer`.  
+Imagine that one day, you start writing a BBQ sensor library for
+controlling the temperature of your Thanksgiving turkey. The library
+contains an `Alerter` interface consisting of function `Alerter`, and a
+`Sensor` struct that implements `Alerter`.  
 
 
 ```go 
-type Doer interface { 
-	Do() 
+type Alerter interface {
+	Alert()
 }
 
+type Sensor struct{}
 
-type DoIt struct {
-	//...	
+func (Sensor) Alert() {
+	fmt.Println("Turkey is done!")
 }
 
-func (DoIt) Do() {
-	//...
-}
 ```
 
 A couple hours and few thousand lines later (yes, you feel productive 
-this day) you define a function `DoSomething` that expects a `DoIt` 
-struct and calls its `Do` method.
+this day) you define a function `sensorAlert` that expects a `Sensor` 
+struct and calls its `Alert` method.
 
 ```go 
-func DoSomething(d DoIt) {
-	d.Do()
+func sensorAlert(s Sensor) {
+	s.Alert()
 }
 ```
 
-You vaguely remember that `Do` belongs to some interface but you can't 
+You vaguely remember that `Alert` belongs to some interface but you can't 
 remember which one. You're too lazy to search for it (and after all, 
 it is already 11pm), so you run 
 
-    $ interfacer dosomething.go
+    $ interfacer bbq.go
 
 and get this advice:
 
-    dosomething.go:12:18: d can be Doer
+    bbq.go:15:18: s can be Alerter
 
-You quickly fix the `DoSomething` function and go to bed, knowing that
-you now can easily pass some `MockDoIt` struct to `DoSomething` when
+You quickly fix the `sensorAlert` function and go to bed, knowing that
+you now can easily pass some `MockSensor` struct to `sensorAlert` when
 you'll write the tests tomorrow.
 
 [Interfacer on GitHub](https://github.com/mvdan/interfacer/)
