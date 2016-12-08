@@ -51,6 +51,8 @@ myusername/projectname, 4, 350
 myusername/anotherprojectname, 8, 427
 ```
 
+The output of the pipeline is version controlled by Pachyderm as well.  This is pretty cool, because, if we wanted to, we could see back in time to what our stats were at any commit.  Further we could deduce the provenance of the results (i.e., what data and calculations led to those results) and reproduce them exactly.  For more about 
+
 **Step 1: Deploying Pachyderm**
 
 Our Pachyderm pipeline will run in, where else, but a Pachyderm cluster.  Thus, let's get our Pachyderm cluster running.  Thankfully, this can be done in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html) locally, or via one of a number of [deploy commands](http://docs.pachyderm.io/en/latest/deployment/deploying_on_the_cloud.html) for Google, Amazon, or Azure cloud platforms.
@@ -70,7 +72,7 @@ pachd               1.3.0
 To create a pachyderm pipeline we need:
 
 - One or more Docker images that will be used for our data processing (in this case to calculate number of lines of Go code and number of dependencies).
-- A [JSON pipeline specification](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html).
+- A [JSON pipeline specification](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html) that tells Pachyderm which images to use, how to parallelize, what to use as input data, etc.
 
 To get our metrics for each input project, let's just use `wc -l` to get the number of lines of go codes and `go list` to get the number of dependencies.  We will put these commands in a shell script that can be run in a Docker image built `FROM golang`.  
 
@@ -111,12 +113,54 @@ golines=`( find $pkgPath -name '*.go' -print0 | xargs -0 cat ) | wc -l`
 echo $REPONAME, $deps, $golines
 ```
 
-This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  Then our Docker image is simple the `golang` image plus this script:
+This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  Then our Docker image is simply the `golang` image plus this script:
 
 ```
 FROM golang
 ADD stats.sh /
 ```
+
+We can then create a JSON Pachyderm pipeline specification, `pipeline.json`  that uses this image (uploaded to Docker Hub as `dwhitena/stats`) to process our input data:
+
+```json
+{
+  "pipeline": {
+    "name": "stats"
+  },
+  "transform": {
+    "image": "dwhitena/stats",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [
+        "for filename in /pfs/projects/*; do",
+		"REPONAME=`cat $filename`",
+		"source /stats.sh >> /pfs/out/results",	
+	"done"
+    ]
+  },
+  "parallelism_spec": {
+    "strategy": "CONSTANT",
+    "constant": "1"
+  },
+  "inputs": [
+    {
+      "repo": {
+        "name": "projects"
+      },
+      "method": "reduce"
+    }
+  ]
+}
+```
+
+Note the following about what we are telling Pachyderm in this pipeline specification:
+
+- Use the `dwhitena/stats` image, which we created above.
+- Run the command `/bin/bash` in the container with the specified `stdin`.
+- We are not parallelizing this processing yet, but we could specify a specific parallelization by changing the `constant` field under `parallelism_spec`.
+- The input for this pipeline is a "repo" named `projects`.  Remember Pachyderm's data versioning is similar to "git for data."  In this case, we are telling the pipeline to look for input in the versioned data repository called `projects`.  We could specify multiple repositories if we wish.  When the container runs, it will have access to the specified repos at `/pfs/<reponame>` (`/pfs/projects` here).
+- We are accessing the input via a `reduce` method.  This means that as data is committed, the pipeline will only see the new data, and, if we introduced parallelism, Pachyderm could distribute the data over the containers at a block level.  For more information on this method and other see the docs for [Combining Parition Unit and Incrementality](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html#combining-partition-unit-and-incrementality).
+
+In essense, when new data is committed to a data repository call `projects`, this pipeline will be triggered and process the data using the specified image, cmd, and stdin.  
 
 **Resources**
 
