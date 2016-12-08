@@ -35,11 +35,12 @@ With [Gleam](https://github.com/chrislusf/gleam), we can combine pure Go,
 LuaJIT, and Unix Pipes, all the 3 powerful weapons together.
 
 Let's understand Gleam architecture of how it works. 
-Then I will cover 2 examples:
+Then I will cover 3 examples:
 
 1. Sort a 1GB file in both standalone and distributed modes, and distributed
 Unix sort mode, with performance comparison.
-2. Implement joining of CSV files.
+2. Sort a 10GB file in On-Disk mode.
+3. Implement joining of CSV files.
 
 
 # Architecture
@@ -63,7 +64,7 @@ the whole flow's execution. It requests resources from the master, and then
 contacts the agents to schedule jobs on them.
 
 One feature I like for Gleam is that the master and agents are very efficient.
-They took about 5~6MB memory and almost no resource usages when idle. So
+They took about 8~1MB memory and almost no resource usages when idle. So
 you can install it anywhere, e.g., on or close to the source database  
 so the data be processed locally.
 
@@ -301,7 +302,65 @@ The code used more CPU and memory than basic Unix sort. Instead of on-disk
 merge sort, the Gleam sort is just all in-memory Timsort.
 The actual sorting time is reduced from 4m57s to 1m55s, 39% of the baseline.
 
-# Example 2: Joining CSV files
+# Example 2: Sort large data with On-Disk mode.
+
+The above examples all stream through pipes, or fit in the memory.
+But sometimes the data size is more than the sum of all the machines 
+in the cluster. In this case, we will need to fallback to OnDisk mode.
+
+In this example, it hints the data size is 10GB, 10 times as the above example.
+The number partitions is also changed from 4 to 40. And we add an OnDisk()
+function to wrap the ```Partition(40).Sort()``` steps, to have them run
+in on-disk mode.
+
+```go
+package main
+
+import (
+	"os"
+
+	"github.com/chrislusf/gleam/distributed"
+	"github.com/chrislusf/gleam/flow"
+)
+
+func main() {
+	flow.New().TextFile(
+	  "/Users/chris/Desktop/record_10GB_input.txt",
+	).Hint(flow.TotalSize(10240)).Map(`
+	  function(line)
+	    return string.sub(line, 1, 10), string.sub(line, 13)
+	  end
+	`.OnDisk(func(d *flow.Dataset) *flow.Dataset {
+		return d.Partition(40).Sort()
+	}).Fprintf(os.Stdout, "%s  %s\n").Run(distributed.Option())
+}
+```
+Result:
+```sh
+$ time ./gleam_sort > result4.txt
+...
+real	96m1.932s
+user	14m3.423s
+sys	3m12.283s
+
+```
+
+The numbers may not look that impressive. If sorting the same 1GB data 
+in memory, it takes about 2 minutes. But this on-disk mode took about 
+100 minutes for 10GB data.
+
+It is due to the intensive disk IO. All the data within the
+OnDisk() function will need to write to disk, so that the computer 
+can process other fractions of data.
+
+This is also why we want to use in-memory mode if possible. And, we still need
+the capability to use on-disk mode when data is too big.
+
+This OnDisk() mode also allows robust retries if anything breaks.
+
+It is slower, but it will get the job done.
+
+# Example 3: Joining CSV files
 Data joining is another common use case for data processing. Here is a simple
 example to illustrate how it works.
 
