@@ -20,39 +20,103 @@ For more information visit [Pachyderm's website](http://pachyderm.io/) and look 
 
 In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. This data processing will gather some statistics about Go projects posted to [Github](github.com).  We will:
 
-1. Create a Pachyderm pipeline that takes Go repository names (e.g., `github.com/docker/docker`) as input and outputs as couple of stats/metrics about those repositories.  
+1. Deploy Pachyderm.
 
-2. Write a Go program that commits a series of repository names one at a time into Pachyderm's data versioning.  For each commit, we will automatically trigger the pipeline created in step 1 to update our stats.
+2. Create a Pachyderm pipeline that takes Go repository names (e.g., `github.com/docker/docker`) as input and outputs as couple of stats/metrics about those repositories.  
 
-To keep things simple, we will just calculate two statistics or metrics for each repository, number of lines of Go code and number of dependencies.  So our input data (supplied by the Go program written in step 2) will look something like this:
+3. Write a Go program that commits a series of repository names one at a time into Pachyderm's data versioning.  For each commit, we will automatically trigger the pipeline created in step 2 to update our stats.
 
-```
-github.com/myusername/projectname
-```
-
-and our output data will look like this:
+To keep things simple, we will just calculate two statistics or metrics for each repository, number of lines of Go code and number of dependencies.  So our input data (supplied by the Go program written in step 3) will look something like this:
 
 ```
-github.com/myusername/projectname, 4, 350
+myusername/projectname
+```
+
+where the `github.com/` prefix is assumed to be there.  Our output data will look like this:
+
+```
+myusername/projectname, 4, 350
 ```
 
 where we calculated that `github.com/myusername/projectname` contained 350 lines of Go code and imported 4 dependencies.  As we commit more and more input data, we will update our statistics.  For example, if we commit additional input data in the form of:
 
 ```
-github.com/myusername/anotherprojectname
+myusername/anotherprojectname
 ```
 
 we will have Pachyderm automatically update our results:
 
 ```
-github.com/myusername/projectname, 4, 350
-github.com/myusername/anotherprojectname, 8, 427
+myusername/projectname, 4, 350
+myusername/anotherprojectname, 8, 427
 ```
 
-**Step 1: Creating a Pachyderm Pipeline**
+**Step 1: Deploying Pachyderm**
 
-blah
+Our Pachyderm pipeline will run in, where else, but a Pachyderm cluster.  Thus, let's get our Pachyderm cluster running.  Thankfully, this can be done in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html) locally, or via one of a number of [deploy commands](http://docs.pachyderm.io/en/latest/deployment/deploying_on_the_cloud.html) for Google, Amazon, or Azure cloud platforms.
 
+
+After going through one of these simple deploys, you can verify that your Pachyderm cluster is running with the Pachyderm CLI tool `pachctl`:
+
+```
+$ pachctl version
+COMPONENT           VERSION
+pachctl             1.3.0
+pachd               1.3.0
+```
+
+**Step 2a: Creating a Pachyderm Pipeline**
+
+To create a pachyderm pipeline we need:
+
+- One or more Docker images that will be used for our data processing (in this case to calculate number of lines of Go code and number of dependencies).
+- A [JSON pipeline specification](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html).
+
+To get our metrics for each input project, let's just use `wc -l` to get the number of lines of go codes and `go list` to get the number of dependencies.  We will put these commands in a shell script that can be run in a Docker image built `FROM golang`.  
+
+_Aside:_ Note, even though our "processing" is simple in this example, one of the beauties of Pachyderm is that we can use any Docker images for our processing. We can use any language or framework and any logic from simple unix commands to recurrent neural networks implemented in [Tensorflow](https://www.tensorflow.org/).
+
+Here is the shell script, `stats.sh` that we will use:
+
+```sh
+#!/bin/bash
+
+# Grab the source code
+go get -d github.com/$REPONAME/...
+
+# Grab Go package name
+pkgName=github.com/$REPONAME
+
+# Grab just first path listed in GOPATH
+goPath="${GOPATH%%:*}"
+
+# Construct Go package path
+pkgPath="$goPath/src/$pkgName"
+
+if [ -e "$pkgPath/Godeps/_workspace" ];
+then
+  # Add local godeps dir to GOPATH
+  GOPATH=$pkgPath/Godeps/_workspace:$GOPATH
+fi
+
+# get the number of dependencies in the repo
+go list $pkgName/... > dep.log || true
+deps=`wc -l dep.log | cut -d' ' -f1`;
+rm dep.log
+
+# get number of lines of go code
+golines=`( find $pkgPath -name '*.go' -print0 | xargs -0 cat ) | wc -l`
+
+# output the stats
+echo $REPONAME, $deps, $golines
+```
+
+This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  Then our Docker image is simple the `golang` image plus this script:
+
+```
+FROM golang
+ADD stats.sh /
+```
 
 **Resources**
 
