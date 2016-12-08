@@ -81,10 +81,13 @@ super simple. Just need to run
 // on the master machine
 $ gleam master
 // on the agent machines
-$ gleam agent --port=45327 --master="localhost:45326"
-$ gleam agent --port=45328 --master="localhost:45326"
+$ gleam agent --port=45327 --master="localhost:45326" --memory=5120
+$ gleam agent --port=45328 --master="localhost:45326" --memory=5120
 ...
 ```
+Above we setup a cluster of 1 master and 2 agents. Each agents has 
+quota of 5GB memory.
+
 See https://github.com/chrislusf/gleam/wiki/Gleam-Cluster-Setup
 
 # Example 1: Sorting 1GB file
