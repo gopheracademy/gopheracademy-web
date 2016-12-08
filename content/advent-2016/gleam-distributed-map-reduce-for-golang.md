@@ -333,7 +333,7 @@ func main() {
 }
 
 ```
-In the example, the csv files are on local disk. This is the simplest form. 
+In the example, the CSV files are on local disk. This is the simplest form. 
 The CSV files can also be read from HDFS or S3.
 
 CSV is one of the storage format supported. There are different adapters 
