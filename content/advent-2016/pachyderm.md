@@ -262,11 +262,186 @@ Sweet! We can keep committing new files and the results will keep getting update
 $ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /resultsdocker/docker, 559, 798271
 ```
 
+**Step 3a: Write a Go program that uses the Pachyderm client**
+
+Using the `pachctl` CLI is good, but let's use Pachyderm's Go client to stream a series of Github Go project names into the `projects` repo and, in turn, calculate our stats for each of the committed projects.  
+
+First, let's create a program `feed.go` that imports Pachyderm's Go client, connects to our Pachyderm cluster, and creates the `projects` repo:
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/pachyderm/pachyderm/src/client"
+)
+
+func main() {
+
+	// Connect to Pachyderm.
+	c, err := client.NewFromAddress("0.0.0.0:30650")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a repo called "projects."
+	if err := c.CreateRepo("projects"); err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+Then let's add a loop that commits a new file to `projects` every 1 second, where each successive file includes the name of a different Go project on Github:
+
+```
+package main
+
+import (
+	"log"
+	"strconv"
+	"strings"
+
+	"github.com/pachyderm/pachyderm/src/client"
+)
+
+// projects includes a list of example Go projects on Github.
+var projects = []string{
+	"docker/docker",
+	"kubernetes/kubernetes",
+	"hashicorp/consul",
+	"spf13/hugo",
+	"prometheus/prometheus",
+	"influxdata/influxdb",
+	"coreos/etcd",
+}
+
+func main() {
+
+	// Connect to Pachyderm.
+	c, err := client.NewFromAddress("0.0.0.0:30650")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a repo called "projects."
+	if err := c.CreateRepo("projects"); err != nil {
+		log.Fatal(err)
+	}
+
+	// Loop over the projects.
+	for idx, project := range projects {
+
+		// Start a commit in our "projects" data repo on the "master" branch.
+		commit, err := c.StartCommit("projects", "master")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Put a file containing the respective project name.
+		if _, err := c.PutFile("projects", commit.ID, strconv.Itoa(idx), strings.NewReader(project)); err != nil {
+			log.Fatal(err)
+		}
+
+		// Finish the commit.
+		if err := c.FinishCommit("projects", commit.ID); err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+```
+
+Finally, let's add the functionality to create the pipeline from this Go program:
+
+```go
+package main
+
+import (
+	"log"
+	"strconv"
+	"strings"
+
+	"github.com/pachyderm/pachyderm/src/client"
+	"github.com/pachyderm/pachyderm/src/client/pps"
+)
+
+// projects includes a list of example Go projects on Github.
+var projects = []string{
+	"docker/docker",
+	"kubernetes/kubernetes",
+	"hashicorp/consul",
+	"spf13/hugo",
+	"prometheus/prometheus",
+	"influxdata/influxdb",
+	"coreos/etcd",
+}
+
+func main() {
+
+	// Connect to Pachyderm.
+	c, err := client.NewFromAddress("0.0.0.0:30650")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a repo called "projects."
+	if err := c.CreateRepo("projects"); err != nil {
+		log.Fatal(err)
+	}
+
+	// Loop over the projects.
+	for idx, project := range projects {
+
+		// Start a commit in our "projects" data repo on the "master" branch.
+		commit, err := c.StartCommit("projects", "master")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Put a file containing the respective project name.
+		if _, err := c.PutFile("projects", commit.ID, strconv.Itoa(idx), strings.NewReader(project)); err != nil {
+			log.Fatal(err)
+		}
+
+		// Finish the commit.
+		if err := c.FinishCommit("projects", commit.ID); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// Define the stdin for our pipeline.
+	stdin := []string{
+		"for filename in /pfs/projects/*; do",
+		"REPONAME=`cat $filename`",
+		"source /stats.sh >> /pfs/out/results",
+		"done",
+	}
+
+	// Create our stats pipeline.
+	if err := c.CreatePipeline(
+		"stats",               // the name of the pipeline
+		"dwhitena/stats",      // your docker image
+		[]string{"/bin/bash"}, // the command run in your docker image
+		stdin,
+		nil, // let pachyderm decide the parallelism
+		[]*pps.PipelineInput{
+			// reduce over "projects"
+			client.NewPipelineInput("projects", client.ReduceMethod),
+		},
+		false, // not an update
+	); err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+
 **Resources**
 
 [Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands]() locally.  Also be sure to:
 
-- Join our Slack team for questions, discussions, deployment help, nerdy jokes, etc.
-- Read our docs.
-- Check out example Pachyderm pipelines.
-- Connect with us on Twitter.
+- [Join our Slack team](http://slack.pachyderm.io/) for questions, discussions, deployment help, nerdy jokes, etc.
+- Read [our Pachyderm docs](http://docs.pachyderm.io/en/latest/).
+- Read [our godocs](https://godoc.org/github.com/pachyderm/pachyderm/src/client) for the Go client.
+- Check out [example Pachyderm pipelines](http://docs.pachyderm.io/en/latest/examples/readme.html).
+- Connect with us [on Twitter](https://twitter.com/pachydermIO).
