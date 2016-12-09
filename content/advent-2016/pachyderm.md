@@ -494,9 +494,11 @@ influxdata/influxdb, 68, 126163
 coreos/etcd, 157, 407630
 ```
 
-Yay for data versioning, pipelining, and analysis in Go!  Be sure to try this out on your own and replace the projects above with the ones that are interesting to you.
+where, as a reminder, the first number in each row is the number of dependencies in the project and the second number is the number of lines of Go code in the project (at least at the time of writing this post).  Yay for data versioning, pipelining, and analysis in Go!  Be sure to try this out on your own and replace the projects above with the ones that are interesting to you.
 
 **Resources**
+
+All the code and files for this example can be found [here](https://github.com/dwhitena/pachyderm-go-stats).
 
 [Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html).  Also be sure to:
 
