@@ -8,17 +8,17 @@ series = ["Advent 2016"]
 
 # I know about Gophers, but what is a Pachyderm?
 
-[Pachyderm](http://pachyderm.io/) is an open source framework, written in Go, for reproducible data processing.  With Pachyderm, you can create [language agnostic data pipelines](http://pachyderm.io/pps.html) where the data input and output of each stage of your pipeline are versioned controlled in [Pachyderm's File System (PFS)](http://pachyderm.io/pfs.html).  Think "git for data."  You can view diffs of your data and collaborate with teammates using Pachyderm commits and branches. Moreover, if your data pipeline generates a surprising result, you can debug or validate it by understanding its historical processing steps (or even reproducing them exactly).
+[Pachyderm](http://pachyderm.io/) is an open source framework, written in Go, for reproducible data processing.  With Pachyderm, you can create [language agnostic data pipelines](http://pachyderm.io/pps.html) where the data input and output of each stage of your pipeline are versioned controlled in [Pachyderm's File System (PFS)](http://pachyderm.io/pfs.html).  Think "git for data."  You can view diffs of your data and collaborate with teammates using Pachyderm commits and branches. Also, if your data pipeline generates an unexpected result, you can debug or validate it by understanding the historical processing steps leading to the result (or even reproducing them exactly).
 
-Pachyderm leverages the container ecosystem ([Kubernetes](http://kubernetes.io/) and [Docker](https://www.docker.com/)) to enable this functionality and to distribute your data processing.  It can parallize your computation by only showing a subset of your data to each container within a Pachyderm cluster. A single node either sees a slice of each file (a map job) or a whole single file (a reduce job). The data itself lives in any object store of your choice (usually S3 or GCS), and Pachyderm smartly assigns different pieces of data to be processed by different containers.
+Pachyderm leverages the container ecosystem ([Kubernetes](http://kubernetes.io/) and [Docker](https://www.docker.com/)) to enable this functionality and to distribute your data processing.  It can parallize your computation by only showing a subset of your data to each container within a Pachyderm cluster. A single node either sees a slice of each file (a map job) or a whole single file (a reduce job). The data itself can live in an object store of your choice (usually S3 or GCS), and Pachyderm smartly assigns different pieces of data to be processed by different containers.
 
-As mentioned, you can build your Pachyderm data pipelines using any languages or frameworks (python, Tensorflow, Spark, Rust, etc.), but, because it is written in Go, Pachyderm has a nice [Go client](https://godoc.org/github.com/pachyderm/pachyderm/src/client) that will let you launch pipelines, put data into data versioning, pull data out of data versioning, etc. directly from your Go applications.  For example, you could commit metrics from your Go backend service directly to Pachyderm and, on every commit, have Pachyderm automatically update predictive analysis (written using Go, Tensorflow, python, or whatever you might prefer) that is detecting fraudulent activity based on those metrics.
+As mentioned, you can build your Pachyderm data pipelines using any languages or frameworks (Go, python, Tensorflow, Spark, Rust, etc.), but Pachyderm does have a nice [Go client](https://godoc.org/github.com/pachyderm/pachyderm/src/client) that will let you launch pipelines, put data into data versioning, pull data out of data versioning, etc. directly from your Go applications.  For example, you could commit metrics from your Go backend service directly to Pachyderm and, on every commit, have Pachyderm automatically update predictive analysis (written in Go, Tensorflow, python, or whatever you might prefer) to detect fraudulent activity based on those metrics.
 
-For more information visit [Pachyderm's website](http://pachyderm.io/) and look through [the docs](http://docs.pachyderm.io/en/latest/). 
+To read more about the Pachyderm project, visit [Pachyderm's website](http://pachyderm.io/) and look through [the docs](http://docs.pachyderm.io/en/latest/). 
 
 # A data processing example for this post
 
-In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. This data processing will gather some statistics about Go projects posted to [Github](github.com).  We will:
+In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. The goal of the data processing will be to generate statistics about Go projects posted to [Github](github.com).  We will:
 
 1. Deploy Pachyderm.
 
@@ -26,19 +26,19 @@ In this post, we are going to illustrate some distributed data processing and da
 
 3. Write a Go program that commits a series of repository names one at a time into Pachyderm's data versioning.  For each commit, we will automatically trigger the pipeline created in step 2 to update our stats.
 
-To keep things simple, we will just calculate two statistics or metrics for each repository, number of lines of Go code and number of dependencies.  So our input data (supplied by the Go program written in step 3) will look something like this:
+To keep things simple, we will just calculate two statistics/metrics for each repository, number of lines of Go code and number of dependencies.  Our input data (supplied by the Go program written in step 3) will look something like this:
 
 ```
 myusername/projectname
 ```
 
-where the `github.com/` prefix is assumed to be there.  Our output data will look like this:
+where the `github.com/` prefix is implied, and our output data will look like this:
 
 ```
 myusername/projectname, 4, 350
 ```
 
-where we calculated that `github.com/myusername/projectname` contained 350 lines of Go code and imported 4 dependencies.  As we commit more and more input data, we will update our statistics.  For example, if we commit additional input data in the form of:
+where 4 is the number of dependencies in `github.com/myusername/projectname` and 350 is the number of lines of Go code.  As we commit more and more input data, we will update our statistics.  For example, if we commit additional input data:
 
 ```
 myusername/anotherprojectname
@@ -51,14 +51,14 @@ myusername/projectname, 4, 350
 myusername/anotherprojectname, 8, 427
 ```
 
-The output of the pipeline is version controlled by Pachyderm as well.  This is pretty cool, because, if we wanted to, we could see back in time to what our stats were at any commit.  Further we could deduce the provenance of the results (i.e., what data and calculations led to those results) and reproduce them exactly.  For more about 
+The output of the pipeline will be version controlled by Pachyderm as well.  This is pretty cool, because, if/when we wanted, we could look back in time to what our stats were at any commit.  Further we could deduce the provenance of the results (i.e., what data and calculations led to those results) and reproduce them exactly.  To learn more about this "data provenance" feature, check out [this article](https://medium.com/pachyderm-data/provenance-the-missing-feature-for-good-data-science-now-in-pachyderm-1-1-2bd9d376a7eb#.1jyvi2ek2).
 
 ## Step 1: Deploying Pachyderm
 
-Our Pachyderm pipeline will run in, where else, but a Pachyderm cluster.  Thus, let's get our Pachyderm cluster running.  Thankfully, this can be done in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html) locally, or via one of a number of [deploy commands](http://docs.pachyderm.io/en/latest/deployment/deploying_on_the_cloud.html) for Google, Amazon, or Azure cloud platforms.
+Our Pachyderm pipeline will run in, where else, but a Pachyderm cluster.  Thus, let's get a Pachyderm cluster up and running.  Thankfully, Pachyderm can be deployed in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html) locally, or via a [deploy command](http://docs.pachyderm.io/en/latest/deployment/deploying_on_the_cloud.html) for Google, Amazon, or Azure cloud platforms.
 
 
-After going through one of these simple deploys, you can verify that your Pachyderm cluster is running with the Pachyderm CLI tool `pachctl`:
+After completing one of these deploys, you can verify that your Pachyderm cluster is running with the Pachyderm CLI tool `pachctl`:
 
 ```
 $ pachctl version
@@ -67,16 +67,18 @@ pachctl             1.3.0
 pachd               1.3.0
 ```
 
+where `pachd` is the Pachyderm server daemon.
+
 ## Step 2a: Creating a Pachyderm Pipeline
 
 To create a pachyderm pipeline we need:
 
-- One or more Docker images that will be used for our data processing (in this case to calculate number of lines of Go code and number of dependencies).
+- One or more Docker images that will be used to process/manipulate input data (in this case to calculate number of lines of Go code and number of dependencies), and
 - A [JSON pipeline specification](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html) that tells Pachyderm which images to use, how to parallelize, what to use as input data, etc.
 
-To get our metrics for each input project, let's just use `wc -l` to get the number of lines of go codes and `go list` to get the number of dependencies.  We will put these commands in a shell script that can be run in a Docker image built `FROM golang`.  
+Regarding the first piece, let's just run `wc -l` to get the number of lines of go codes and `go list` to get the number of dependencies for each Go project.  We will put these commands in a shell script that can be run in a Docker image built `FROM golang`.  
 
-_Aside:_ Note, even though our "processing" is simple in this example, one of the beauties of Pachyderm is that we can use any Docker images for our processing. We can use any language or framework and any logic from simple unix commands to recurrent neural networks implemented in [Tensorflow](https://www.tensorflow.org/).
+_Aside:_ Note, even though our "processing" is simple in this example, one of the beauties of Pachyderm is that you can use any Docker images for the data processing. This includes any language or framework and any logic from simple unix commands to recurrent neural networks implemented in [Tensorflow](https://www.tensorflow.org/).
 
 Here is the shell script, `stats.sh` that we will use:
 
@@ -113,14 +115,14 @@ golines=`( find $pkgPath -name '*.go' -print0 | xargs -0 cat ) | wc -l`
 echo $REPONAME, $deps, $golines
 ```
 
-This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  This will output our metrics given a Github repository exported to the variable `REPONAME`.  Our Docker image is simply the `golang` image plus this script:
+This includes the `wc -l` and `go list` commands along with some clean up and things to support [Godep](https://github.com/tools/godep).  The script will output our metrics given a Github Go project name input to the variable `REPONAME`.  Note, the metrics are output to `/pfs/out`, which is a way of telling Pachyderm to output something to the output data repository of a pipeline stage (which will be explained further below).  Our Docker image is simply the `golang` image plus this script:
 
 ```
 FROM golang
 ADD stats.sh /
 ```
 
-We can then create a JSON Pachyderm pipeline specification, `pipeline.json`  that uses this image (uploaded to Docker Hub as `dwhitena/stats`) to process our input data:
+We can then create a JSON Pachyderm pipeline specification, `pipeline.json`, that uses this image (uploaded to Docker Hub as `dwhitena/stats`) to process our input data:
 
 ```json
 {
@@ -152,25 +154,25 @@ We can then create a JSON Pachyderm pipeline specification, `pipeline.json`  tha
 }
 ```
 
-Note the following about what we are telling Pachyderm in this pipeline specification:
+In this specification, we are telling Pachyderm the following:
 
-- Use the `dwhitena/stats` image, which we created above.
+- Use the `dwhitena/stats` image.
 - Run the command `/bin/bash` in the container with the specified `stdin`.
-- We are not parallelizing this processing yet, but we could specify a specific parallelization by changing the `constant` field under `parallelism_spec`.
-- The input for this pipeline is a "repo" named `projects`.  Remember Pachyderm's data versioning is similar to "git for data."  In this case, we are telling the pipeline to look for input in the versioned data repository called `projects`.  We could specify multiple repositories if we wish.  When the container runs, it will have access to the specified repos at `/pfs/<reponame>` (`/pfs/projects` here).
+- We are not parallelizing this processing yet (although we could specify a specific parallelization by simply changing the `constant` field under `parallelism_spec`).
+- The data input for this pipeline is a "repo" named `projects`.  Remember Pachyderm's data versioning is similar to "git for data."  In this case, we are telling the pipeline to look for input in the versioned data repository called `projects`.  We could specify multiple repositories if we wish.  When the container runs, it will have access to the specified repos at `/pfs/<reponame>` (`/pfs/projects` here).
 - We are accessing the input via a `reduce` method.  This means that as data is committed, the pipeline will only see the new data, and, if we introduced parallelism, Pachyderm could distribute the data over the containers at a block level.  For more information on this method and other see the docs for [Combining Parition Unit and Incrementality](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html#combining-partition-unit-and-incrementality).
 
-In essense, when new data is committed to a data repository call `projects`, this pipeline will be triggered and process the data using the specified image, cmd, and stdin.  
+In essense, when new data is committed to a data repository call `projects`, this pipeline will be triggered and process the data using the specified image, cmd, and stdin.  The pipeline only has one "stage."  That is, we are only specifying one data processing step that takes data from the `projects` repository and outputs our metrics.  If we wanted to have more stages in our pipeline (e.g., a stage that compiles the project and measures compile time), we would just need to add more JSON blobs to `pipeline.json`.  See Pachyderm's [fruit stand example](http://pachyderm.readthedocs.io/en/stable/getting_started/beginner_tutorial.html) to see a multistage pipeline in action.
 
 ## Step 2b: Run and Test the Pachyderm Pipeline
 
-Now we have the following:
+At this point, we have the following:
 
-- A script called `stats.sh` outputting our Go project given a Github repository name.
-- A docker image `dwhitena/stats` with the script.
+- A script called `stats.sh` that calculates metrics for a Go project given a Github repository name.
+- A docker image `dwhitena/stats` containing the script.
 - A pipeline spec called `pipeline.json` that runs the script on data committed to a `projects` data repository.
 
-Before we run this pipeline using the Go client, let's run it manually to ensure that it works and gain some more intuition about Pachyderm's pipelining and data versioning. To run the pipeline manually, we first need to create the `projects` data repository with the `pachctl` CLI tool:
+Before we run this pipeline using the Go client, let's run it manually to ensure that it works and to gain some intuition about Pachyderm's pipelining and data versioning. To run the pipeline manually, we first need to create the `projects` data repository with the `pachctl` CLI tool:
 
 ```
 $ pachctl create-repo projects
@@ -182,7 +184,7 @@ Next, let's create the pipeline with our JSON specification:
 $ pachctl create-pipeline -f pipeline.json
 ```
 
-At this point, we haven't committed any data into Pachyderm's data versioning, and, thus, our pipeline doesn't have any input to process yet.  However, we can verify that our pipeline and repository exist:
+At this point, we haven't committed any data into Pachyderm's data versioning, and, thus, our pipeline doesn't have any input data to process.  However, we can verify that our pipeline and repository exist:
 
 ```
 $ pachctl list-repo
@@ -194,9 +196,9 @@ NAME                INPUT               OUTPUT              STATE
 stats               projects            stats               running 
 ```
 
-Notice that an output repository (with the name of our pipeline) has also been created.  The output of our `stats` repository will be versioned there.  
+Notice that an output repository (with the name of our pipeline) has also been created.  The output of our `stats` pipeline will be versioned there.  
 
-Now, let's commit some data into the input repository `projects`.  Specifically we will commit a first file `one.txt` into the `projects` repository on the `master` branch, where `one.txt` includes the Github repository name that we want to analyze (`docker/docker`):
+Now, let's commit some data into the input data repository called `projects`.  Specifically we will commit a first file `one.txt` into the `projects` repository on the `master` branch, where `one.txt` includes the Github repository name that we want to analyze (`docker/docker`):
 
 ```
 echo "docker/docker" | pachctl put-file projects master one.txt -c
@@ -210,7 +212,7 @@ ID                                 OUTPUT                                     ST
 4c4f53668e46c20fdeb1286ca971ea1f   stats/9c8c1ad2667d44d586818306ec19f1ec/0   About a minute ago   57 seconds          success 
 ```
 
-The `OUTPUT` column above shows the location of the output of our `stats` pipeline within Pachyderm's data versioning in the form `<repo name>/<branch>/<commit>`.  To see what our output looks like we can list the files in the output and get the `results` file:
+The `OUTPUT` column above shows the location of the output of our `stats` pipeline within Pachyderm's data versioning in the pattern `<repo name>/<branch>/<commit>`.  To see what our output looks like we can list the files in the output and get the `results` file:
 
 ```
 $ pachctl list-file stats 9c8c1ad2667d44d586818306ec19f1ec
@@ -220,13 +222,13 @@ $ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /results
 docker/docker, 559, 798271   
 ```
 
-By examining the results we can see that our pipeline determined that the `github.com/docker/docker` project has 559 dependencies and 798,271 lines of Go code.  Pretty cool. Let's commit another repository and see what happens:
+The `results` file shows that our pipeline determined that the `github.com/docker/docker` project has 559 dependencies and 798,271 lines of Go code.  Pretty cool. Let's commit another repository and see what happens:
 
 ```
 echo "kubernetes/kubernetes" | pachctl put-file projects master two.txt -c
 ```
 
-We can now see that two commits have been made to the projects data repository:
+We can now see that two commits have been made to the `projects` data repository:
 
 ```
 $ pachctl list-commit projects
@@ -235,7 +237,7 @@ master              projects/master/0   <none>              About an hour ago   
 master              projects/master/1   master/0            50 seconds ago      49 seconds ago      22 B
 ```
 
-Where the second one added the second file and has a parent commit.  When we add this second commit, Pachyderm automatically runs our `stats` pipeline based on the new commit.  We can confirm this with `list-job` again, and we will see that there are now two commits in our output `stats` repo:
+where the second commit added the second file (and thus has a parent commit with the first file).  When we added this second commit, Pachyderm automatically ran our `stats` pipeline based on the newly committed data.  We can confirm this with `list-job` again, and we can also see that there are two commits in our output `stats` repo:
 
 ```
 $ pachctl list-commit stats
@@ -248,7 +250,7 @@ BRANCH                             REPO/ID                                    PA
 e1a8a83729d64ebeb9d8549ae9581e3f   stats/e1a8a83729d64ebeb9d8549ae9581e3f/0   <none>              10 minutes ago      3 minutes ago       64 B
 ```
 
-Now if we get the results file, we will see that the new commit was processed:
+Now if we get the `results` file, we will see that the new commit was processed:
 
 ```
 dwhitena@dirac:pachyderm-go-stats$ pachctl get-file stats e1a8a83729d64ebeb9d8549ae9581e3f /results
@@ -259,14 +261,15 @@ kubernetes/kubernetes, 1459, 2800450
 Sweet! We can keep committing new files and the results will keep getting updated.  Not only that, because everything is versioned, we can still access the state the results at any point in history.  For example, we can still access the `results` file at the previous commit:
 
 ```
-$ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /resultsdocker/docker, 559, 798271
+$ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /results
+docker/docker, 559, 798271
 ```
 
 ## Step 3a: Write a Go program that uses the Pachyderm client
 
-Using the `pachctl` CLI is good, but let's use Pachyderm's Go client to stream a series of Github Go project names into the `projects` repo and, in turn, calculate our stats for each of the committed projects.  
+The `pachctl` CLI is useful, but now let's use Pachyderm's Go client to stream a series of Go project names into the `projects` repo and, in turn, calculate stats for each of the committed projects.  
 
-First, let's create a program `feed.go` that imports Pachyderm's Go client, connects to our Pachyderm cluster, and creates the `projects` repo:
+First, create a program `feed.go` that imports Pachyderm's Go client, connects to our Pachyderm cluster, and creates the `projects` repo:
 
 ```go
 package main
@@ -292,7 +295,7 @@ func main() {
 }
 ```
 
-Then let's add a loop that commits a new file to `projects` every 1 second, where each successive file includes the name of a different Go project on Github:
+Then add a loop that commits files to `projects`, where each successive file includes the name of a different Go project on Github:
 
 ```go
 package main
@@ -351,7 +354,7 @@ func main() {
 }
 ```
 
-Finally, let's add the functionality to create the pipeline from this Go program:
+Finally, let's add the functionality to create the `stats` pipeline:
 
 ```go
 package main
@@ -439,7 +442,7 @@ func main() {
 
 The above `feed.go` program will do everything we did in steps 2a and 2b, but directly from Go itself.  Moreover, it allows us to automate the commits of input data.  
 
-After deleting our previous testing work with `pachctl delete-all`, we can compile and run this program.  After running the program, we can observe a few things.  First, all of our commits to the input repo `projects` show up:
+After deleting our previous testing data and pipeline with `pachctl delete-all`, we can compile and run this program.  We will then observe a few things.  First, all of our commits to the input repo `projects` show up:
 
 ```
 $ pachctl list-commit projects
@@ -467,7 +470,7 @@ fd5b8623ca2556e0da4b71fc205c6f52   stats/f7ebb735f2fa46b894d3ce81e8cb8855/0   2 
 4c4f53668e46c20fdeb1286ca971ea1f   stats/930e29b046a948649176b04225a547d9/0   2 minutes ago       -                   running   
 ```
 
-Eventually these will complete, and we will see a number of commits to our output data repository `stats`:
+Eventually these will finish, and we will see a each corresponding commit to our output data repository `stats`:
 
 ```
 $ pachctl list-commit stats
@@ -481,7 +484,7 @@ f7ebb735f2fa46b894d3ce81e8cb8855   stats/f7ebb735f2fa46b894d3ce81e8cb8855/0   <n
 ff7a262a03ea4f279e92c6d54c7e8129   stats/ff7a262a03ea4f279e92c6d54c7e8129/0   <none>              27 minutes ago      5 minutes ago       64 B
 ```
 
-Finally, we can examine our output file to see all of the nice metrics for the Go projects we were interested in:
+Finally, we can examine our output file, `results`, to see all of the nice metrics for the Go projects we supplied:
 
 ```
 $ pachctl get-file stats cd309fd23a3745b68dafe56b581d63bf /results
@@ -498,12 +501,12 @@ where, as a reminder, the first number in each row is the number of dependencies
 
 # Resources
 
-All the code and files for this example can be found [here](https://github.com/dwhitena/pachyderm-go-stats).
+All the code and files mentioned in this post can be found [here](https://github.com/dwhitena/pachyderm-go-stats).
 
 [Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html).  Also be sure to:
 
-- [Join our Slack team](http://slack.pachyderm.io/) for questions, discussions, deployment help, nerdy jokes, etc.
-- Read [our Pachyderm docs](http://docs.pachyderm.io/en/latest/).
-- Read [our godocs](https://godoc.org/github.com/pachyderm/pachyderm/src/client) for the Go client.
+- [Join the Pachyderm Slack community](http://slack.pachyderm.io/) for questions, discussions, deployment help, etc.
+- Read [the Pachyderm docs](http://docs.pachyderm.io/en/latest/).
+- Read [the godocs](https://godoc.org/github.com/pachyderm/pachyderm/src/client) for the Pachyderm Go client.
 - Check out [example Pachyderm pipelines](http://docs.pachyderm.io/en/latest/examples/readme.html).
-- Connect with us [on Twitter](https://twitter.com/pachydermIO).
+- Connect with Pachyderm [on Twitter](https://twitter.com/pachydermIO).
