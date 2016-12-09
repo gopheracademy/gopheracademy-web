@@ -113,7 +113,7 @@ golines=`( find $pkgPath -name '*.go' -print0 | xargs -0 cat ) | wc -l`
 echo $REPONAME, $deps, $golines
 ```
 
-This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  Then our Docker image is simply the `golang` image plus this script:
+This includes the `wc -l` and `go list` functionality along with some clean up and things to support [Godep](https://github.com/tools/godep).  This will output our metrics given a Github repository exported to the variable `REPONAME`.  Our Docker image is simply the `golang` image plus this script:
 
 ```
 FROM golang
@@ -161,6 +161,88 @@ Note the following about what we are telling Pachyderm in this pipeline specific
 - We are accessing the input via a `reduce` method.  This means that as data is committed, the pipeline will only see the new data, and, if we introduced parallelism, Pachyderm could distribute the data over the containers at a block level.  For more information on this method and other see the docs for [Combining Parition Unit and Incrementality](http://docs.pachyderm.io/en/latest/deployment/pipeline_spec.html#combining-partition-unit-and-incrementality).
 
 In essense, when new data is committed to a data repository call `projects`, this pipeline will be triggered and process the data using the specified image, cmd, and stdin.  
+
+**Step 2b: Run and Test the Pachyderm Pipeline**
+
+Now we have the following:
+
+- A script called `stats.sh` outputting our Go project given a Github repository name.
+- A docker image `dwhitena/stats` with the script.
+- A pipeline spec called `pipeline.json` that runs the script on data committed to a `projects` data repository.
+
+Before we run this pipeline using the Go client, let's run it manually to ensure that it works and gain some more intuition about Pachyderm's pipelining and data versioning. To run the pipeline manually, we first need to create the `projects` data repository with the `pachctl` CLI tool:
+
+```
+$ pachctl create-repo projects
+```
+
+Next, let's create the pipeline with our JSON specification:
+
+```
+$ pachctl create-pipeline -f pipeline.json
+```
+
+At this point, we haven't committed any data into Pachyderm's data versioning, and, thus, our pipeline doesn't have any input to process yet.  However, we can verify that our pipeline and repository exist:
+
+```
+$ pachctl list-repo
+NAME                CREATED             SIZE                
+projects            18 seconds ago      0 B                 
+stats               5 seconds ago       0 B                 
+$ pachctl list-pipeline
+NAME                INPUT               OUTPUT              STATE               
+stats               projects            stats               running 
+```
+
+Notice that an output repository (with the name of our pipeline) has also been created.  The output of our `stats` repository will be versioned there.  
+
+Now, let's commit some data into the input repository `projects`.  Specifically we will commit a first file `one.txt` into the `projects` repository on the `master` branch, where `one.txt` includes the Github repository name that we want to analyze (`docker/docker`):
+
+```
+echo "docker/docker" | pachctl put-file projects master one.txt -c
+```
+
+This will trigger the first run of our `stats` pipeline, and we can confirm that the pipeline ran via:
+
+```
+$ pachctl list-job
+ID                                 OUTPUT                                     STARTED              DURATION            STATE               
+4c4f53668e46c20fdeb1286ca971ea1f   stats/9c8c1ad2667d44d586818306ec19f1ec/0   About a minute ago   57 seconds          success 
+```
+
+The `OUTPUT` column above shows the location of the output of our `stats` pipeline within Pachyderm's data versioning in the form `<repo name>/<branch>/<commit>`.  To see what our output looks like we can list the files in the output and get the `results` file:
+
+```
+$ pachctl list-file stats 9c8c1ad2667d44d586818306ec19f1ec
+NAME                TYPE                MODIFIED            LAST_COMMIT_MODIFIED                 SIZE                
+/results            file                About an hour ago   9c8c1ad2667d44d586818306ec19f1ec/0   27 B  
+$ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /results
+docker/docker, 559, 798271   
+```
+
+By examining the results we can see that our pipeline determined that the `github.com/docker/docker` project has 559 dependencies and 798,271 lines of Go code.  Pretty cool. Let's commit another repository and see what happens:
+
+```
+echo "kubernetes/kubernetes" | pachctl put-file projects master two.txt -c
+```
+
+We can now see that two commits have been made to the projects data repository:
+
+```
+$ pachctl list-commit projects
+BRANCH              REPO/ID             PARENT              STARTED             FINISHED            SIZE                
+master              projects/master/0   <none>              About an hour ago   About an hour ago   14 B                
+master              projects/master/1   master/0            50 seconds ago      49 seconds ago      22 B
+```
+
+Where the second one added the second file and has a parent commit.  When we add this second commit, Pachyderm automatically runs our `stats` pipeline based on the new commit.  We can confirm this with `list-job` again, and we will see that there are now two commits in our output `stats` repo:
+
+```
+$ pachctl list-commit stats
+BRANCH                             REPO/ID                                    PARENT              STARTED             FINISHED            SIZE                
+9c8c1ad2667d44d586818306ec19f1ec   stats/9c8c1ad2667d44d586818306ec19f1ec/0   <none>              About an hour ago   About an hour ago   27 B                
+e1a8a83729d64ebeb9d8549ae9581e3f   stats/e1a8a83729d64ebeb9d8549ae9581e3f/0   <none>              3 minutes ago                           0 B
+```
 
 **Resources**
 
