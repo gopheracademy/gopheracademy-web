@@ -294,7 +294,7 @@ func main() {
 
 Then let's add a loop that commits a new file to `projects` every 1 second, where each successive file includes the name of a different Go project on Github:
 
-```
+```go
 package main
 
 import (
@@ -435,10 +435,70 @@ func main() {
 }
 ```
 
+**Step 3b: Runnning our Go program and examining the results**
+
+The above `feed.go` program will do everything we did in steps 2a and 2b, but directly from Go itself.  Moreover, it allows us to automate the commits of input data.  
+
+After deleting our previous testing work with `pachctl delete-all`, we can compile and run this program.  After running the program, we can observe a few things.  First, all of our commits to the input repo `projects` show up:
+
+```
+$ pachctl list-commit projects
+BRANCH              REPO/ID             PARENT              STARTED             FINISHED            SIZE                
+master              projects/master/0   <none>              6 minutes ago       6 minutes ago       13 B                
+master              projects/master/1   master/0            6 minutes ago       6 minutes ago       21 B                
+master              projects/master/2   master/1            6 minutes ago       6 minutes ago       16 B                
+master              projects/master/3   master/2            6 minutes ago       6 minutes ago       10 B                
+master              projects/master/4   master/3            6 minutes ago       6 minutes ago       21 B                
+master              projects/master/5   master/4            6 minutes ago       6 minutes ago       19 B                
+master              projects/master/6   master/5            6 minutes ago       6 minutes ago       11 B  
+``` 
+
+Also, we will see that Pachyderm is running our pipeline for each of the commits of data into `projects`:
+
+```
+$ pachctl list-job
+ID                                 OUTPUT                                     STARTED             DURATION            STATE               
+d9255dbe5df83e25ba3d3c890e022598   stats/cd309fd23a3745b68dafe56b581d63bf/0   2 minutes ago       -                   running    
+d15c3e962e2ed2412be460db26a21c85   stats/46b8270e1e2c4fdd990d89eaa4b4351b/0   2 minutes ago       -                   running    
+7d7a88b806fefcf8f2166492eb7e32a6   stats/65e0d4edaca7483fa06c7c2443133774/0   2 minutes ago       -                   running    
+35f6c95d843a12f506e3d18c94dfffab   stats/ac98664623a74f029506ec10701387c1/0   2 minutes ago       -                   running    
+fd5b8623ca2556e0da4b71fc205c6f52   stats/f7ebb735f2fa46b894d3ce81e8cb8855/0   2 minutes ago       -                   running    
+16f1108c71e6a0da6dca4712e54d4ddb   stats/ff7a262a03ea4f279e92c6d54c7e8129/0   2 minutes ago       -                   running    
+4c4f53668e46c20fdeb1286ca971ea1f   stats/930e29b046a948649176b04225a547d9/0   2 minutes ago       -                   running   
+```
+
+Eventually these will complete, and we will see a number of commits to our output data repository `stats`:
+
+```
+$ pachctl list-commit stats
+BRANCH                             REPO/ID                                    PARENT              STARTED             FINISHED            SIZE                
+46b8270e1e2c4fdd990d89eaa4b4351b   stats/46b8270e1e2c4fdd990d89eaa4b4351b/0   <none>              27 minutes ago      59 seconds ago      183 B               
+65e0d4edaca7483fa06c7c2443133774   stats/65e0d4edaca7483fa06c7c2443133774/0   <none>              27 minutes ago      3 minutes ago       151 B               
+930e29b046a948649176b04225a547d9   stats/930e29b046a948649176b04225a547d9/0   <none>              27 minutes ago      23 minutes ago      27 B                
+ac98664623a74f029506ec10701387c1   stats/ac98664623a74f029506ec10701387c1/0   <none>              27 minutes ago      3 minutes ago       116 B               
+cd309fd23a3745b68dafe56b581d63bf   stats/cd309fd23a3745b68dafe56b581d63bf/0   <none>              27 minutes ago      22 seconds ago      208 B               
+f7ebb735f2fa46b894d3ce81e8cb8855   stats/f7ebb735f2fa46b894d3ce81e8cb8855/0   <none>              27 minutes ago      3 minutes ago       94 B                
+ff7a262a03ea4f279e92c6d54c7e8129   stats/ff7a262a03ea4f279e92c6d54c7e8129/0   <none>              27 minutes ago      5 minutes ago       64 B
+```
+
+Finally, we can examine our output file to see all of the nice metrics for the Go projects we were interested in:
+
+```
+$ pachctl get-file stats cd309fd23a3745b68dafe56b581d63bf /results
+docker/docker, 559, 798232
+kubernetes/kubernetes, 1459, 2801166
+hashicorp/consul, 127, 357396
+spf13/hugo, 15, 39430
+prometheus/prometheus, 298, 889665
+influxdata/influxdb, 68, 126163
+coreos/etcd, 157, 407630
+```
+
+Yay for data versioning, pipelining, and analysis in Go!  Be sure to try this out on your own and replace the projects above with the ones that are interesting to you.
 
 **Resources**
 
-[Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands]() locally.  Also be sure to:
+[Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html).  Also be sure to:
 
 - [Join our Slack team](http://slack.pachyderm.io/) for questions, discussions, deployment help, nerdy jokes, etc.
 - Read [our Pachyderm docs](http://docs.pachyderm.io/en/latest/).
