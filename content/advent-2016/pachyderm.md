@@ -6,7 +6,7 @@ title = "Data Pipelines and Versioning with the Pachyderm Go Client"
 series = ["Advent 2016"]
 +++
 
-**What is Pachyderm?**
+# I know about Gophers, but what is a Pachyderm?
 
 [Pachyderm](http://pachyderm.io/) is an open source framework, written in Go, for reproducible data processing.  With Pachyderm, you can create [language agnostic data pipelines](http://pachyderm.io/pps.html) where the data input and output of each stage of your pipeline are versioned controlled in [Pachyderm's File System (PFS)](http://pachyderm.io/pfs.html).  Think "git for data."  You can view diffs of your data and collaborate with teammates using Pachyderm commits and branches. Moreover, if your data pipeline generates a surprising result, you can debug or validate it by understanding its historical processing steps (or even reproducing them exactly).
 
@@ -16,7 +16,7 @@ As mentioned, you can build your Pachyderm data pipelines using any languages or
 
 For more information visit [Pachyderm's website](http://pachyderm.io/) and look through [the docs](http://docs.pachyderm.io/en/latest/). 
 
-**Some Simple Data Processing for This Post**
+# A data processing example for this post
 
 In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. This data processing will gather some statistics about Go projects posted to [Github](github.com).  We will:
 
@@ -53,7 +53,7 @@ myusername/anotherprojectname, 8, 427
 
 The output of the pipeline is version controlled by Pachyderm as well.  This is pretty cool, because, if we wanted to, we could see back in time to what our stats were at any commit.  Further we could deduce the provenance of the results (i.e., what data and calculations led to those results) and reproduce them exactly.  For more about 
 
-**Step 1: Deploying Pachyderm**
+## Step 1: Deploying Pachyderm
 
 Our Pachyderm pipeline will run in, where else, but a Pachyderm cluster.  Thus, let's get our Pachyderm cluster running.  Thankfully, this can be done in [just a few commands](http://docs.pachyderm.io/en/latest/getting_started/local_installation.html) locally, or via one of a number of [deploy commands](http://docs.pachyderm.io/en/latest/deployment/deploying_on_the_cloud.html) for Google, Amazon, or Azure cloud platforms.
 
@@ -67,7 +67,7 @@ pachctl             1.3.0
 pachd               1.3.0
 ```
 
-**Step 2a: Creating a Pachyderm Pipeline**
+## Step 2a: Creating a Pachyderm Pipeline
 
 To create a pachyderm pipeline we need:
 
@@ -162,7 +162,7 @@ Note the following about what we are telling Pachyderm in this pipeline specific
 
 In essense, when new data is committed to a data repository call `projects`, this pipeline will be triggered and process the data using the specified image, cmd, and stdin.  
 
-**Step 2b: Run and Test the Pachyderm Pipeline**
+## Step 2b: Run and Test the Pachyderm Pipeline
 
 Now we have the following:
 
@@ -262,7 +262,7 @@ Sweet! We can keep committing new files and the results will keep getting update
 $ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /resultsdocker/docker, 559, 798271
 ```
 
-**Step 3a: Write a Go program that uses the Pachyderm client**
+## Step 3a: Write a Go program that uses the Pachyderm client
 
 Using the `pachctl` CLI is good, but let's use Pachyderm's Go client to stream a series of Github Go project names into the `projects` repo and, in turn, calculate our stats for each of the committed projects.  
 
@@ -435,7 +435,7 @@ func main() {
 }
 ```
 
-**Step 3b: Runnning our Go program and examining the results**
+## Step 3b: Runnning our Go program and examining the results
 
 The above `feed.go` program will do everything we did in steps 2a and 2b, but directly from Go itself.  Moreover, it allows us to automate the commits of input data.  
 
@@ -496,7 +496,7 @@ coreos/etcd, 157, 407630
 
 where, as a reminder, the first number in each row is the number of dependencies in the project and the second number is the number of lines of Go code in the project (at least at the time of writing this post).  Yay for data versioning, pipelining, and analysis in Go!  Be sure to try this out on your own and replace the projects above with the ones that are interesting to you.
 
-**Resources**
+# Resources
 
 All the code and files for this example can be found [here](https://github.com/dwhitena/pachyderm-go-stats).
 
