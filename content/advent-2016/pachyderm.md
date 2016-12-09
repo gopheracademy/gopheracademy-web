@@ -242,15 +242,31 @@ $ pachctl list-commit stats
 BRANCH                             REPO/ID                                    PARENT              STARTED             FINISHED            SIZE                
 9c8c1ad2667d44d586818306ec19f1ec   stats/9c8c1ad2667d44d586818306ec19f1ec/0   <none>              About an hour ago   About an hour ago   27 B                
 e1a8a83729d64ebeb9d8549ae9581e3f   stats/e1a8a83729d64ebeb9d8549ae9581e3f/0   <none>              3 minutes ago                           0 B
+$ pachctl list-commit stats
+BRANCH                             REPO/ID                                    PARENT              STARTED             FINISHED            SIZE                
+9c8c1ad2667d44d586818306ec19f1ec   stats/9c8c1ad2667d44d586818306ec19f1ec/0   <none>              2 hours ago         2 hours ago         27 B                
+e1a8a83729d64ebeb9d8549ae9581e3f   stats/e1a8a83729d64ebeb9d8549ae9581e3f/0   <none>              10 minutes ago      3 minutes ago       64 B
+```
+
+Now if we get the results file, we will see that the new commit was processed:
+
+```
+dwhitena@dirac:pachyderm-go-stats$ pachctl get-file stats e1a8a83729d64ebeb9d8549ae9581e3f /results
+docker/docker, 559, 798232
+kubernetes/kubernetes, 1459, 2800450
+```
+
+Sweet! We can keep committing new files and the results will keep getting updated.  Not only that, because everything is versioned, we can still access the state the results at any point in history.  For example, we can still access the `results` file at the previous commit:
+
+```
+$ pachctl get-file stats 9c8c1ad2667d44d586818306ec19f1ec /resultsdocker/docker, 559, 798271
 ```
 
 **Resources**
 
-The official docs for the Go assembler at https://golang.org/doc/asm.  They're
-useful to read, but remember that PeachPy will be taking care of the many of
-the details for you regarding the syntax and calling convention.
+[Get started with Pachyderm](http://docs.pachyderm.io/en/latest/getting_started/getting_started.html) now by installing it in [just a few commands]() locally.  Also be sure to:
 
-The [PeachPy sources](https://github.com/Maratyszcza/PeachPy)
-
-Finally, at GolangUK 2016, Michael Munday gave a talk on [Dropping Down: Go Functions in
-Assembly](https://www.youtube.com/watch?v=9jpnFmJr2PE).
+- Join our Slack team for questions, discussions, deployment help, nerdy jokes, etc.
+- Read our docs.
+- Check out example Pachyderm pipelines.
+- Connect with us on Twitter.
