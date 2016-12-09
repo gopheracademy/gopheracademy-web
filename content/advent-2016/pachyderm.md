@@ -1,7 +1,7 @@
 +++
 linktitle = "Pachyderm"
 date = "2016-12-13T00:00:00"
-author = [ "Daniel Whitenack" ]
+author = [ "Daniel Whitenack (@dwhitena)" ]
 title = "Data Pipelines and Versioning with the Pachyderm Go Client"
 series = ["Advent 2016"]
 +++
@@ -510,3 +510,10 @@ All the code and files mentioned in this post can be found [here](https://github
 - Read [the godocs](https://godoc.org/github.com/pachyderm/pachyderm/src/client) for the Pachyderm Go client.
 - Check out [example Pachyderm pipelines](http://docs.pachyderm.io/en/latest/examples/readme.html).
 - Connect with Pachyderm [on Twitter](https://twitter.com/pachydermIO).
+
+Also, more generally, make sure to get involved in the Go data science community:
+
+- Join the `#data-science` channel on [Gophers Slack](https://invite.slack.golangbridge.org/).
+- Check out the [gopherds org on Github](https://github.com/gopherds).  Specifically, visit the [resources repo](https://github.com/gopherds/resources) for [a list of Go data science packages](https://github.com/gopherds/resources/tree/master/tooling) and [community updates](https://github.com/gopherds/resources/tree/master/community).
+- Join the [GopherDS mailing list](https://groups.google.com/forum/#!forum/gopherds).
+- Attend community events and workshops, such as data-related talks at Gopher conferences and meetups or public [Ardan Labs](https://www.ardanlabs.com/) [Ultimate Data Science](https://www.ardanlabs.com/ultimate-data-science) courses.
