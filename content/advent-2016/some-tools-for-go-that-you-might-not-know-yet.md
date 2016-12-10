@@ -3,7 +3,6 @@ author = ["Christoph Berger"]
 date = "2016-12-10T00:00:00+01:00"
 title = "Some Tools For Go That You Might Not Know Yet"
 series = ["Advent 2016"]
-draft = true
 +++
 
 Year's end is coming closer. Time to clean up repositories and 
