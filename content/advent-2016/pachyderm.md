@@ -10,19 +10,19 @@ series = ["Advent 2016"]
 
 [Pachyderm](http://pachyderm.io/) is an open source framework, written in Go, for reproducible data processing.  With Pachyderm, you can create [language agnostic data pipelines](http://pachyderm.io/pps.html) where the data input and output of each stage of your pipeline are versioned controlled in [Pachyderm's File System (PFS)](http://pachyderm.io/pfs.html).  Think "git for data."  You can view diffs of your data and collaborate with teammates using Pachyderm commits and branches. Also, if your data pipeline generates an unexpected result, you can debug or validate it by understanding the historical processing steps leading to the result (or even reproducing them exactly).
 
-Pachyderm leverages the container ecosystem ([Kubernetes](http://kubernetes.io/) and [Docker](https://www.docker.com/)) to enable this functionality and to distribute your data processing.  It can parallize your computation by only showing a subset of your data to each container within a Pachyderm cluster. A single node either sees a slice of each file (a map job) or a whole single file (a reduce job). The data itself can live in an object store of your choice (usually S3 or GCS), and Pachyderm smartly assigns different pieces of data to be processed by different containers.
+Pachyderm leverages the container ecosystem ([Kubernetes](http://kubernetes.io/) and [Docker](https://www.docker.com/)) to enable this functionality and to distribute your data processing.  It can parallelize your computation by only showing a subset of your data to each container within a Pachyderm cluster. A single node either sees a slice of each file (a map job) or a whole single file (a reduce job). The data itself can live in an object store of your choice (usually S3 or GCS), and Pachyderm smartly assigns different pieces of data to be processed by different containers.
 
-As mentioned, you can build your Pachyderm data pipelines using any languages or frameworks (Go, python, Tensorflow, Spark, Rust, etc.), but Pachyderm does have a nice [Go client](https://godoc.org/github.com/pachyderm/pachyderm/src/client) that will let you launch pipelines, put data into data versioning, pull data out of data versioning, etc. directly from your Go applications.  For example, you could commit metrics from your Go backend service directly to Pachyderm and, on every commit, have Pachyderm automatically update predictive analysis (written in Go, Tensorflow, python, or whatever you might prefer) to detect fraudulent activity based on those metrics.
+As mentioned, you can build your Pachyderm data pipelines using any languages or frameworks (Go, Python, Tensorflow, Spark, Rust, etc.), but Pachyderm does have a nice [Go client](https://godoc.org/github.com/pachyderm/pachyderm/src/client) that will let you launch pipelines, put data into data versioning, pull data out of data versioning, etc. directly from your Go applications.  For example, you could commit metrics from your Go backend service directly to Pachyderm and, on every commit, have Pachyderm automatically update predictive analysis (written in Go, Tensorflow, python, or whatever you might prefer) to detect fraudulent activity based on those metrics.
 
 To read more about the Pachyderm project, visit [Pachyderm's website](http://pachyderm.io/) and look through [the docs](http://docs.pachyderm.io/en/latest/). 
 
 # A data processing example for this post
 
-In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. The goal of the data processing will be to generate statistics about Go projects posted to [Github](github.com).  We will:
+In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. The goal of the data processing will be to generate statistics about Go projects posted to [GitHub](github.com).  We will:
 
 1. Deploy Pachyderm.
 
-2. Create a Pachyderm pipeline that takes Go repository names (e.g., `github.com/docker/docker`) as input and outputs as couple of stats/metrics about those repositories.  
+2. Create a Pachyderm pipeline that takes Go repository names (e.g., `github.com/docker/docker`) as input and outputs a couple of stats/metrics about those repositories.  
 
 3. Write a Go program that commits a series of repository names one at a time into Pachyderm's data versioning.  For each commit, we will automatically trigger the pipeline created in step 2 to update our stats.
 
@@ -115,7 +115,7 @@ golines=`( find $pkgPath -name '*.go' -print0 | xargs -0 cat ) | wc -l`
 echo $REPONAME, $deps, $golines
 ```
 
-This includes the `wc -l` and `go list` commands along with some clean up and things to support [Godep](https://github.com/tools/godep).  The script will output our metrics given a Github Go project name input to the variable `REPONAME`.  Note, the metrics are output to `/pfs/out`, which is a way of telling Pachyderm to output something to the output data repository of a pipeline stage (which will be explained further below).  Our Docker image is simply the `golang` image plus this script:
+This includes the `wc -l` and `go list` commands along with some clean up and things to support [Godep](https://github.com/tools/godep).  The script will output our metrics given a GitHub Go project name input to the variable `REPONAME`.  Note, the metrics are output to `/pfs/out`, which is a way of telling Pachyderm to output something to the output data repository of a pipeline stage (which will be explained further below).  Our Docker image is simply the `golang` image plus this script:
 
 ```
 FROM golang
@@ -168,7 +168,7 @@ In essense, when new data is committed to a data repository call `projects`, thi
 
 At this point, we have the following:
 
-- A script called `stats.sh` that calculates metrics for a Go project given a Github repository name.
+- A script called `stats.sh` that calculates metrics for a Go project given a GitHub repository name.
 - A docker image `dwhitena/stats` containing the script.
 - A pipeline spec called `pipeline.json` that runs the script on data committed to a `projects` data repository.
 
@@ -198,7 +198,7 @@ stats               projects            stats               running
 
 Notice that an output repository (with the name of our pipeline) has also been created.  The output of our `stats` pipeline will be versioned there.  
 
-Now, let's commit some data into the input data repository called `projects`.  Specifically we will commit a first file `one.txt` into the `projects` repository on the `master` branch, where `one.txt` includes the Github repository name that we want to analyze (`docker/docker`):
+Now, let's commit some data into the input data repository called `projects`.  Specifically we will commit a first file `one.txt` into the `projects` repository on the `master` branch, where `one.txt` includes the GitHub repository name that we want to analyze (`docker/docker`):
 
 ```
 echo "docker/docker" | pachctl put-file projects master one.txt -c
@@ -295,18 +295,10 @@ func main() {
 }
 ```
 
-Then add a loop that commits files to `projects`, where each successive file includes the name of a different Go project on Github:
+Then add a loop that commits files to `projects`, where each successive file includes the name of a different Go project on GitHub:
 
 ```go
-package main
-
-import (
-	"log"
-	"strconv"
-	"strings"
-
-	"github.com/pachyderm/pachyderm/src/client"
-)
+// ...
 
 // projects includes a list of example Go projects on Github.
 var projects = []string{
@@ -321,16 +313,7 @@ var projects = []string{
 
 func main() {
 
-	// Connect to Pachyderm.
-	c, err := client.NewFromAddress("0.0.0.0:30650")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create a repo called "projects."
-	if err := c.CreateRepo("projects"); err != nil {
-		log.Fatal(err)
-	}
+	// ...
 
 	// Loop over the projects.
 	for idx, project := range projects {
@@ -357,60 +340,11 @@ func main() {
 Finally, let's add the functionality to create the `stats` pipeline:
 
 ```go
-package main
-
-import (
-	"log"
-	"strconv"
-	"strings"
-
-	"github.com/pachyderm/pachyderm/src/client"
-	"github.com/pachyderm/pachyderm/src/client/pps"
-)
-
-// projects includes a list of example Go projects on Github.
-var projects = []string{
-	"docker/docker",
-	"kubernetes/kubernetes",
-	"hashicorp/consul",
-	"spf13/hugo",
-	"prometheus/prometheus",
-	"influxdata/influxdb",
-	"coreos/etcd",
-}
+// ...
 
 func main() {
 
-	// Connect to Pachyderm.
-	c, err := client.NewFromAddress("0.0.0.0:30650")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create a repo called "projects."
-	if err := c.CreateRepo("projects"); err != nil {
-		log.Fatal(err)
-	}
-
-	// Loop over the projects.
-	for idx, project := range projects {
-
-		// Start a commit in our "projects" data repo on the "master" branch.
-		commit, err := c.StartCommit("projects", "master")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Put a file containing the respective project name.
-		if _, err := c.PutFile("projects", commit.ID, strconv.Itoa(idx), strings.NewReader(project)); err != nil {
-			log.Fatal(err)
-		}
-
-		// Finish the commit.
-		if err := c.FinishCommit("projects", commit.ID); err != nil {
-			log.Fatal(err)
-		}
-	}
+	// ...
 
 	// Define the stdin for our pipeline.
 	stdin := []string{
@@ -437,6 +371,8 @@ func main() {
 	}
 }
 ```
+
+The entire `feed.go` program with all of these pieces can be found [here](https://github.com/dwhitena/pachyderm-go-stats/blob/master/feed.go).
 
 ## Step 3b: Runnning our Go program and examining the results
 
@@ -470,7 +406,7 @@ fd5b8623ca2556e0da4b71fc205c6f52   stats/f7ebb735f2fa46b894d3ce81e8cb8855/0   2 
 4c4f53668e46c20fdeb1286ca971ea1f   stats/930e29b046a948649176b04225a547d9/0   2 minutes ago       -                   running   
 ```
 
-Eventually these will finish, and we will see a each corresponding commit to our output data repository `stats`:
+Eventually these will finish, and we will see each corresponding commit to our output data repository `stats`:
 
 ```
 $ pachctl list-commit stats
@@ -514,6 +450,6 @@ All the code and files mentioned in this post can be found [here](https://github
 Also, more generally, make sure to get involved in the Go data science community:
 
 - Join the `#data-science` channel on [Gophers Slack](https://invite.slack.golangbridge.org/).
-- Check out the [gopherds org on Github](https://github.com/gopherds).  Specifically, visit the [resources repo](https://github.com/gopherds/resources) for [a list of Go data science packages](https://github.com/gopherds/resources/tree/master/tooling) and [community updates](https://github.com/gopherds/resources/tree/master/community).
+- Check out the [gopherds org on GitHub](https://github.com/gopherds).  Specifically, visit the [resources repo](https://github.com/gopherds/resources) for [a list of Go data science packages](https://github.com/gopherds/resources/tree/master/tooling) and [community updates](https://github.com/gopherds/resources/tree/master/community).
 - Join the [GopherDS mailing list](https://groups.google.com/forum/#!forum/gopherds).
 - Attend community events and workshops, such as data-related talks at Gopher conferences and meetups or public [Ardan Labs](https://www.ardanlabs.com/) [Ultimate Data Science](https://www.ardanlabs.com/ultimate-data-science) courses.
