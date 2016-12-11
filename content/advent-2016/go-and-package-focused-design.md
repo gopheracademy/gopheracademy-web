@@ -4,8 +4,7 @@ author = [
 ]
 title = "Go and a Package Focused Design"
 linktitle = "Go and a Package Focused Design"
-date = "2016-12-07T21:28:16-08:00"
-
+date = "2016-12-11T00:00:00"
 +++
 
 Developers often tend to think about designing software in terms of using logical layers of abstractions. I have seen many Go projects with layers of abstractions that reflect grouping of all common things together such as types (model), handlers for all services (api or controllers), and even multi-purpose packages (util). These ways of organizing code are not putting Go package features to good use. With Go offering purposeful tools for designing code, its long-term success rests on our ability to make good use of these features so that we end up with software that is well designed and durable. To quote [Dave Cheney](https://twitter.com/davecheney) in his Golang UK 2016 keynote talk:
