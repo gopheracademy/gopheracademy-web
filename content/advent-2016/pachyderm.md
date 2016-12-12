@@ -1,6 +1,6 @@
 +++
 linktitle = "Pachyderm"
-date = "2016-12-13T00:00:00"
+date = "2016-12-12T00:00:00"
 author = [ "Daniel Whitenack (@dwhitena)" ]
 title = "Data Pipelines and Versioning with the Pachyderm Go Client"
 series = ["Advent 2016"]
