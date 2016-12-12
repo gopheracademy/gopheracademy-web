@@ -18,7 +18,9 @@ To read more about the Pachyderm project, visit [Pachyderm's website](http://pac
 
 # A data processing example for this post
 
-In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. The goal of the data processing will be to generate statistics about Go projects posted to [GitHub](github.com).  We will:
+In this post, we are going to illustrate some distributed data processing and data versioning with a few simple Go programs and some Pachyderm configuration. If this piques your interest, stay tuned to [GoingGo.net](https://www.goinggo.net/) for a more detailed series of posts about the Pachyderm Go client, contact @dwhitena on [Gophers Slack](https://invite.slack.golangbridge.org/) with questions, and/or participate in an [Ultimate Data Science](https://www.ardanlabs.com/ultimate-data-science) course.
+
+The goal of the data processing here will be to generate statistics about Go projects posted to [GitHub](github.com).  We will: 
 
 1. Deploy Pachyderm.
 
