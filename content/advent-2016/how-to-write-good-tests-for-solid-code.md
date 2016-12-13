@@ -27,14 +27,14 @@ Let's look at a simplified example of Go code that would use interfaces for its 
 We are building a struct to manage users in our application. We will call it `UserManager`.
 
 ```go
-// UseManager
+// UserManager
 type UserManager struct {
     notifier UserNotifier // Used to schedule emails
     store    UserStore    // Used to persist users
 }
 
 // SignUp creates user account pending activation and sends the activation email.
-// It will return an error if creating the user failed  due to invalid details or problems with the UserStore.
+// It will return an error if creating the user failed due to invalid details or problems with the UserStore.
 func (um *UserManager) SignUp(ctx context.Context, user User) (*User, error) {
     // [...]
 }
@@ -45,13 +45,13 @@ func (um *UserManager) SignUp(ctx context.Context, user User) (*User, error) {
 As we can see, `UserManager` is dependent on the following two interfaces:
 
 ```go
-// UserNotifier specifies the methods to schedule emails to be sent to certain user
+// UserNotifier schedules emails to be sent to certain user.
 type UserNotifier interface {
     RequestActivation(ctx context.Context, id string) error
     RecoverPassword(ctx context.Context, id string) error
 }
 
-// UserStore specifies the methods required to manage user accounts
+// UserStore stores and retrieves user accounts.
 type UserStore interface {
     Find(ctx context.Context, id string) (*User, error)
     Update(context.Context, User) error
@@ -75,30 +75,33 @@ func (um *UserManager) SignUp(ctx context.Context, user User) (*User, error) {
     if err != nil {
         return nil, err
     }
-    um.notifier.RequestActivation(ctx, u.ID)
+    err = um.notifier.RequestActivation(ctx, u.ID)
+    if err != nil {
+        um.logError(ctx, err)
+    }
     return u, nil
 }
 ```
 
 ## What should we test?
 
-When testing an object, it receiving and sending messages:
+When testing an object, you can think of it as sending and receiving messages:
 
 - **Incoming messages** refer to calls to methods on the tested object.
-- **Outgoing messages** refers to method calls the tested object does ot it's dependencies.
+- **Outgoing messages** refers to calls from the tested object on its dependencies.
 
 Following with our example, if we were to test the `SignUp` method, `SignUp` would be the incoming message while the calls to `um.store.Create` and `um.notifier.RequestActivation` would be outgoing messages.
 
 Furthermore, a message can be a Query or a Command:
 
-- Query messages return data without changing anything. e.g.: `UserStore.Find(id string) (*User, error)` would return a user without making any changes in the store.
-- Command messages modify data without returning any data. e.g.: `UserStore.Update(User) error` would make changes in the store without returning any new data.
-- Some commands might return some data, but we should be careful, cautious messages that return data and make modifications. We must ensure the changes are never hidden side-effects but required business logic. e.g.: `UserStore.Create(User) (*User, error)` will add a user to the store and must return the information about such user so we can get the ID of the user.
+- **Query** messages return data without changing anything. e.g.: `UserStore.Find(id string) (*User, error)` would return a user without making any changes in the store.
+- **Command** messages modify data without returning any data. e.g.: `UserStore.Update(User) error` would make changes in the store without returning any new data.
+- Some commands might return some data, but we should be careful and cautious of messages that return data and make modifications. We must ensure the changes are never hidden side-effects but required business logic. e.g.: `UserStore.Create(User) (*User, error)` will add a user to the store and must return information so we can get the ID of the user.
 
 This classification will help us guide what we need to test based on the types of messages affected:
 
 - **Incoming queries**: send the message and assert the response.
-- **Incoming commands**: send the message and assert the public changes. e.g.: call `UserStore.Delete` on an existing user id
+- **Incoming commands**: send the message and assert the public changes. e.g.: call `UserStore.Delete` on an existing user ID.
 - **Outgoing queries**: nothing to assert.
 - **Outgoing commands**: assert the message sent.
 
@@ -145,11 +148,9 @@ Integration tests provide you end to end checks. But are much more expensive tha
 - You might not be able to run tests in parallel. e.g.: if you were clearing the same database for each test, running them in parallel could result in false failures due to race conditions preparing the database.
 - With outgoing queries, you need to provision test data before each test. e.g.: if we were to test a `UserManager.Find` method; we would need to add an entry to the `UserStore` before calling `UserManager.Find`.
 - With outgoing commands, you must assert the side effects on your dependency instead of the outgoing commands. e.g.: if you wanted to test `um.notifier.RequestActivation`, you would have to read the queue to make sure `u.ID` got queued up.
-- If your method depends on external services such as third party APIs, they can take seconds to respond and could have downtime. Which would
+- If your method depends on external services such as third party APIs, they can take seconds to respond and could have downtime. Which would make your suite slow and unstable. Furthermore, there are many services you would want to avoid calling every time you run your tests such as APIs that would have a cost per request.
 
 Luckily, when since we follow a SOLID design, our dependencies are defined as interfaces, so we can implement a unit test.
-
-Let's look at that next:
 
 ### Developing a unit test
 
@@ -199,14 +200,14 @@ Main differences:
 - It is easy to mock any dependency, including calls to third party APIs.
 - We are using [github.com/ernesto-jimenez/goautomock][goautomock] to automatically generate the mocks based on the interface using `go generate`. Zero boilerplate required.
 
-As you can see, the benefits are many, specially for dependencies that are harder than databases to setup/teardown.
+As you can see, the benefits are many, especially for dependencies that are harder than databases to setup/teardown.
 
 ## Should we still create integration tests?
 
 Definitely, but we just have to be aware of the testing pyramid:
 
 - Start with a foundation of unit tests since they are the cheapest ones to create, run and maintain.
-- Add other types of testing on top of the unit tests: integration, end to end, ui, manual... The most expensive a kind of test is, the higher up in the pyramid it should be.
+- Add other types of testing on top of the unit tests: integration, end to end, UI, manual... The most expensive a kind of test is, the higher up in the pyramid it should be.
 
 ### Have any questions or feedback?
 
