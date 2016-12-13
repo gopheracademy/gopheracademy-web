@@ -13,11 +13,11 @@ For those who haven't been following closely - or, honestly, even for those who 
 
 ## The road so far
 
-Anyone who takes a stroll down the memory lane of Go package management will find ample clumps of ripped-out hair strewn about. The process has been long and frustrating, and there's far too much to cover in detail here. But the history is important to where we are now, so a high-level timeline is worth it.
+Anyone who takes a stroll down the memory lane of Go package management will find ample clumps of ripped-out hair strewn about. The process has been long and frustrating, and there's far too much to cover in detail here. But the history is important to where we are now.
 
-`go get` was, and is, the only official tooling for retrieving Go code and placing it on disk. It has served Go users and developers alike since the release of Go 1.0. Hand-in-hand with `go get` has been the general recommendation from the Go Team on how to keep everything working well: "write backwards-compatible code." That's a slightly-rephrased version of the Go 1 guarantee. This pairs well with `go get`, as `go get`'s behavior could only be correct if the following were true:
+`go get` was, and is, the only official tooling for retrieving Go code and placing it on disk. Since the release of Go 1.0, it has served Go users and developers alike. `go get` also has a companion, in the form of the Go team's recommendation to "write backwards-compatible code." That's a slightly-rephrased version of the [Go 1 promise](https://golang.org/doc/go1compat), and it pairs well with `go get`, as `go get`'s behavior is only correct when the following are true:
 
-1. All code is always backwards compatible
+1. Code is backwards compatible
 2. There are no fixed points/releases
 
 _(to be clear, the authors of `go get` do not necessarily believe this is good or right - just that when these things aren't true, it's not `go get`'s problem.)_
@@ -38,7 +38,7 @@ With `vendor` on by default, though, the stakes changed. Before, those of us who
 
 Everything came to a head at Gophercon in July, where upwards of a hundred Gophers assembled to discuss shortcomings with `vendor/` and the ecosystem in general. Go team members, including Rob Pike, also went, which gave a distinctly different tone to the meeting. Up to this point, the Go team had largely treated dependency management as a problem for the community to resolve. After the meeting, though, there was a clear mandate to seriously address the problem.
 
-Mandate notwithstanding, it wasn’t clear to leaders in the community how we’d take the first step. So, Peter Bourgon stepped up to break the collective paralysis: he offered to convene a committee that would work out a proposal for an official, unified tool. That became [a committee plus an advisory group](https://docs.google.com/document/d/18tNd8r5DV0yluCR7tPvkMTsWD_lYcRO7NhpNSDymRr8). Between the two, perspectives and experience from all the major tools have been on hand.
+This mandate breathed new life into ongoing discussions, but it still wasn't clear what the first big step should be. So, Peter Bourgon stepped up to break the collective paralysis: he offered to convene a committee that would work out a proposal for an official, unified tool. That became [a committee plus an advisory group](https://docs.google.com/document/d/18tNd8r5DV0yluCR7tPvkMTsWD_lYcRO7NhpNSDymRr8). Between the two, perspectives and experience from all the major tools have been on hand.
 
 ## The package management committee
 
@@ -75,9 +75,9 @@ Because we see this as merely the first phase of work, the committee has punted 
 * Supporting anything other than the upstream source types (git, bzr, hg, svn) that `go get` supports today
 * Use metadata from other tools where possible (this is a toss-up, we may actually need it in the first iteration)
 
-The committee's goal is for this to tool to become official. "Official," as in, it's distributed as part of the standard `go` tooling. Of course, that entails code review and approval from the Go team itself. But it would be horribly unwise to make anything official without having solidly kicked its tires beforehand. Thus, we expect there to be at least six months from when we feel the basic requirements of the new tool are met, to when it becomes part of the Go toolchain.
+The committee's goal is for this tool to be distributed as part of the standard `go` toolchain. But it would be horribly unwise to make anything official without having solidly kicked the tires beforehand. Thus, we expect there to be at least six months from when we feel the basic requirements of the new tool have been met, to when it becomes part of the Go toolchain.
 
-A single dependency management tool is the most important step to healing a fractured ecosystem. This is why we want the tool to _be_ official, capable of replacing existing community tools. Now, deprecating community tools in favor of the new tool will, necessarily, be a choice for each tool's author. But there's general consensus amongst existing tool authors that deprecation in favor of an official tool is ideal. It'll still be a delicate process, of course, but we're doing everything we know how to [avoid making the problem worse](https://xkcd.com/927/).
+A single dependency management tool is the most important step to healing a fractured ecosystem. This is why it's important both that the tool _be_ official, and that it's capable of replacing existing community tools. Now, deprecating community tools in favor of the new tool will, necessarily, be a choice for each tool's author. But there's general consensus amongst existing tool authors that deprecation in favor of an official tool is ideal. It'll still be a delicate process, of course, but we're doing everything we know how to [avoid making the problem worse](https://xkcd.com/927/).
 
 ## What this portends for you, fellow Gopher
 
