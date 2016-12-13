@@ -5,17 +5,13 @@ title = "Goroutree: A tree-based set made of coordinating goroutines"
 series = ["Advent 2016"]
 +++
 
-This was one of thoe projects that sat in the back of my mind for quite a while. It was destined to
+This was one of those projects that sat in the back of my mind for quite a while. It was destined to
 join the many others in my side project graveyard unless I had a good reason to finish it, like a
 date for a blog post.
 
-This post is an axplanation and exploration of the goroutree data structure. The structure itself is
+This post is an explanation and exploration of the goroutree data structure. The structure itself is
 composed of many separate but coordinating goroutines that make up the tree itself. It has only a
 few operations and can't self-balance, but it's a decent proof of concept.
-
-I show a bit of code, but most of my descriptions are in prose because code would make the post get
-quite long. if you want to follow along in the code, then open the link at the bottom to the GitHub
-repository that hold the package.
 
 # Example
 
@@ -74,7 +70,7 @@ There's actually a hidden "super root" node that takes the initial requests and 
 as needed to the root node. This is to support things like having an empty tree or deleting the root
 node. For example, when checking if the tree contains a number, if the root node is null the answer
 is always false. For deleting the root node, someone has to be notified of the new root's handle
-(read: input channel). THe manager goroutine is there to play that role.
+(read: input channel). The manager goroutine is there to play that role.
 
 Introducing the manager also made the synchronous interface be completely separated from the tree
 instead of sometimes requiring a new goroutine to be spawned just to respond to the request.
@@ -131,6 +127,9 @@ This is probably a pattern that will make some cringe. I use a `typ()` function 
 type of the command instead of doing a type switch. I do it because I like it. There's no real
 reason to do it that way over using a type switch.
 
+The command structs are fairly boring, so they are elided for a bit of brevity. They all hold
+mostly obvious things.
+
 ## Insert
 
 The `Insert` function will add a new value to the set if it does not already exist. In effect, it
@@ -141,20 +140,147 @@ existed.
 Internally, an insert command message is sent through the tree. The manager will create the root if
 needed. From there, the nodes will pass down to the left for values less than them and to the right
 for greater until the child channel is nil. It then spawns a child goroutine to own the value and
-return true to the caller. If the value is equal ot the node's value at any point, it will return a
+return true to the caller. If the value is equal to the node's value at any point, it will return a
 false to the caller.
+
+The API code to send the initial message:
+
+```go
+func (g *Goroutree) Insert(reschan chan bool, val int) {
+    g.cmdchan <- insertCmd{
+        reschan: reschan,
+        val:     val,
+    }
+}
+```
+
+The manager code, which deals with the nil main channel:
+
+```go
+case ctInsert:
+    if cmdchan == nil {
+        ic := c.(insertCmd)
+        cmdchan = spawn(ic.val, main)
+        ic.reschan <- true
+        continue
+    }
+
+    cmdchan <- c
+```
+
+The node code, which deals with two children:
+
+```go
+case ctInsert:
+    c := cm.(insertCmd)
+
+    if c.val == val {
+        c.reschan <- false
+        continue
+    }
+
+    // left branch
+    if c.val < val {
+        // if the left node exists, send it down.
+        if left != nil {
+            left <- c
+            continue
+        }
+
+        left = spawn(c.val, cmdchan)
+        c.reschan <- true
+        continue
+    }
+
+    // right branch
+    if right != nil {
+        right <- c
+        continue
+    }
+
+    right = spawn(c.val, cmdchan)
+    c.reschan <- true
+```
 
 ## Contains
 
 The `Contains` function tells whether a value exists in the set. This is safe to use concurrently.
-The caller's channel with either get a true if the value exists or a false if it doesn't. It does
-not modify the tree at all. THe internals are very simple, with a contains command getting sent down
-the tree until a node can respond difinitively.
+The caller's channel will either get a true if the value exists or a false if it doesn't. It does
+not modify the tree at all. The internals are very simple, with a contains command getting sent down
+the tree until a node can respond definitively.
+
+The API code:
+
+```go
+func (g *Goroutree) Contains(reschan chan bool, val int) {
+    g.cmdchan <- containsCmd{
+        reschan: reschan,
+        val:     val,
+    }
+}
+```
+
+The manager code:
+
+```go
+case ctContains:
+    if cmdchan == nil {
+        cc := c.(containsCmd)
+        cc.reschan <- false
+        continue
+    }
+
+    cmdchan <- c
+```
+
+The node code:
+
+```go
+case ctContains:
+    c := cm.(containsCmd)
+
+    if c.val == val {
+        c.reschan <- true
+        continue
+    }
+
+    // Go right if the value is bigger,
+    // left if smaller
+    if c.val > val && right != nil {
+        right <- c
+        continue
+    }
+
+    if left != nil {
+        left <- c
+        continue
+    }
+
+    // if we get here, the value does not exist in the tree
+    c.reschan <- false
+```
 
 ## Delete
 
 `Delete` is by far the most complicated operation. It has a couple simple cases. If the value isn't
 equal it will pick the proper side. If that side is nil, a false will be sent back to the caller.
+
+```go
+if c.val > val && right != nil {
+    c.left = false
+    right <- c
+    continue
+}
+
+if left != nil {
+    c.left = true
+    left <- c
+    continue
+}
+
+// if we get here, the value does not exist in the tree
+c.reschan <- false
+```
 
 If the value is equal, things get interesting. The node has to figure out how to extract itself from
 the tree. In a normal binary tree, this is relatively simple because you can hold on to references
@@ -176,10 +302,62 @@ command to replace itself with nil. In order to tell which child is to be replac
 each node on the way down will modify the command with direction it is sending downward. The only
 thing left at that point is to return.
 
+```go
+// if this is a leaf node with no children, it just returns
+if left == nil && right == nil {
+    // send death message to parent
+    parentchan <- newChildCmd{
+        left:      c.left,
+        childchan: nil,
+    }
+    
+    c.reschan <- true
+    return
+}
+```
+
+The parent will receive the new child command, which has a simple handler:
+
+```go
+case ctNewChild:
+    c := cm.(newChildCmd)
+
+    if c.left {
+        left = c.childchan
+        continue
+    }
+
+    right = c.childchan
+```
+
 ### One child.
 
 This is very similar to the case above, but instead of sending nil as a replacement it send the only
 child it has to the parent and then returns.
+
+```go
+// one child, promote it to current position by sending parent a message
+// we know at this point that one is not nil, so this checks if we have
+// one and only one not nil child.
+if left == nil || right == nil {
+
+    var childchan chan cmd
+    if left != nil {
+        childchan = left
+    } else {
+        childchan = right
+    }
+
+    // promote child
+    parentchan <- newChildCmd{
+        left:      c.left,
+        childchan: childchan,
+    }
+
+    c.reschan <- true
+    return
+}
+```
 
 ### Two children
 
@@ -188,12 +366,88 @@ replacement. When there are two children, there are two choices: the left subtre
 right subtree's minimum. To simplify things, I elected to always find the minimum value of the right
 subtree.
 
+```go
+// At this point, we need to substitute the current node with either the
+// maximum node on the left subtree or the minimum node on the right subtree.
+// For simplicity, this implementation always chooses to pull the minimum node
+// out of the right subtree.
+// The pattern is to send a message down the right subtree to find the minimum
+// node. Once it's found, it will have either one child or none. In this special
+// case, the node that is found will take care of removing itself and send its
+// value back to this node. TO make things simpler, this node will simply take
+// the value and assign it as its owned value. I could do some trickery with
+// reassigning channels all over the place to physically transplant that other
+// node to this position, but that just seems silly to do if I can get away with
+// just taking ownership of that value.
+
+reschan := make(chan subtreeMinResponse)
+right <- extractMinCmd{
+    reschan: reschan,
+    first:   true,
+}
+
+res := <-reschan
+val = res.val
+
+if res.newchild {
+    right = res.childchan
+}
+
+c.reschan <- true
+continue
+```
+
 To do this, there's a special internal-only command to find the minimum value. This command is first
 passed right by the node being deleted and then left as far as possible. At the end of the leftward
 movement, it has one or zero children and can be deleted according to the first two cases above.
+This actually got a little bit complicated because there's special cases for when the minimum child
+of the right subtree is the right child of the current node. This is a different action than if it
+is found farther down the tree.
+
+```go
+case ctExtractMin:
+    c := cm.(extractMinCmd)
+
+    // The first node might be the one that we want, in which case
+    // we need to know. That node will be the right child and not
+    // the left like all others
+    if left != nil {
+        if c.first {
+            c.first = false
+        }
+        left <- c
+        continue
+    }
+
+    // this is the right child of the node that is being deleted
+    // it needs special attention here because there can be a race
+    // between the parentchan message below and an external command.
+    // The same place we're trying to send the parentchan message is
+    // waiting on the reschan, so this special message takes care of
+    // both at once.
+    if c.first {
+        c.reschan <- subtreeMinResponse{
+            val:       val,
+            newchild:  true,
+            childchan: right,
+        }
+    }
+
+    // then replace self at parent with whatever is at the right
+    // nil is fine here, so no check
+    parentchan <- newChildCmd{
+        left:      !c.first,
+        childchan: right,
+    }
+
+    // send back the min value for this subtree
+    c.reschan <- subtreeMinResponse{val: val}
+
+    return
+```
 
 Now in order to delete the initial requested value out of the tree, I cheat a little bit here. It
-was probably possible to surgically move the minimum right subtree value in to place, but it's far
+was probably possible to surgically move the minimum right subtree value into place, but it's far
 easier to just return the found value and delete that minimum value node. Then we take the value and
 replace the value in the running node that was to be deleted. We move only the value instead of the
 goroutine connections but gain the same effect.
@@ -203,10 +457,34 @@ search, so no other commands will end up coming through. This should guarantee t
 in some weird inconsistent state, but like I said before I haven't done any testing for high
 concurrency situations.
 
+The final pieces of the delete functionality are the API code:
+
+```go
+func (g *Goroutree) Delete(reschan chan bool, val int) {
+    g.cmdchan <- deleteCmd{
+        reschan: reschan,
+        val:     val,
+    }
+}
+```
+
+And the manager code:
+
+```go
+case ctDelete:
+    if cmdchan == nil {
+        dc := c.(deleteCmd)
+        dc.reschan <- false
+        continue
+    }
+
+    cmdchan <- c
+```
+
 ## Print
 
 The print command prints the tree in an in-order representation left to right, but puts newlines
-between each noe and prints the number of levels down in spaces before each number. This output
+between each node and prints the number of levels down in spaces before each number. This output
 allows visual and programmatic verification of structure of the tree. 
 
 This command is actually implemented as a synchronous printing of the entire tree. The node will
@@ -214,6 +492,62 @@ send the print command down the left subtree and wait for it to return before pr
 sending the message down the right subtree. This means that a print is a blocking operation for the
 entire tree, whereas many other operations could be done in parallel, e.g. two Contains commands may
 be able to go down different branches concurrently.
+
+The print API code:
+
+```go
+func (g *Goroutree) Print(reschan chan struct{}, w io.Writer) {
+    g.cmdchan <- printCmd{
+        reschan: reschan,
+        w:       w,
+    }
+}
+```
+
+The manager code:
+
+```go
+case ctPrint:
+    if cmdchan == nil {
+        pc := c.(printCmd)
+        pc.w.Write([]byte("\n"))
+        pc.reschan <- struct{}{}
+    }
+
+    cmdchan <- c
+```
+
+And the node implementation:
+
+```go
+case ctPrint:
+    // Inorder printing traversal of the tree
+    c := cm.(printCmd)
+
+    // make a new command for the children. FOR THE CHILDREN.
+    // Each child gets the command and a chance to finish its work before
+    // this node mvoes on. This means that printing the tree is basically
+    // a blocking operation in which no other operations can be done.
+    childcmd := c
+    childcmd.reschan = make(chan struct{})
+    childcmd.level++
+
+    if left != nil {
+        left <- childcmd
+        <-childcmd.reschan
+    }
+
+    // no this is not very efficient, but this is for debugging
+    indent := bytes.Repeat([]byte(" "), c.level)
+    fmt.Fprintf(c.w, "%s%d\n", indent, val)
+
+    if right != nil {
+        right <- childcmd
+        <-childcmd.reschan
+    }
+
+    c.reschan <- struct{}{}
+```
 
 # Tests
 
@@ -265,7 +599,7 @@ Insert/Levels/100Deep-8  44.0µs ± 2%    2^100 - 1
 
 # Future Work
 
-If I do continue hacking on this (or if anyone else wants to fork) there's a couple things I would
+If I do continue hacking on this (or if anyone else wants to fork) there are a couple things I would
 definitely consider:
 
 1. Add the ability to shut down the tree. This shouldn't be too hard, just send a kill message down
@@ -274,7 +608,7 @@ the tree recursively.
    - Current testing is single-threaded, there may be some deadlocks waiting to happen
 1. Rotations to keep the tree balanced
    - This would require augmented nodes and for the depth information to be kept in sync
-   - THe messages to do this are already in place
+   - The messages to do this are already in place
 1. The implementation could instead take an interface that implements a `Compare()` function that
 returns -1, 0, or 1 instead of just using ints.
 
