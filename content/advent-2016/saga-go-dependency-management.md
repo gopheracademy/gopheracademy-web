@@ -1,6 +1,6 @@
 +++
 date = "2016-12-13T00:00:00"
-author = [ "Sam Boyer (@sdboyer)" ]
+author = [ "Sam Boyer" ]
 title = "The Saga of Go Dependency Management"
 series = ["Advent 2016"]
 +++
