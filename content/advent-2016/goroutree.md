@@ -96,7 +96,7 @@ situations where a child will message a parent, but mostly the commands go downw
 There's three main operations on the set: `Insert`, `Contains`, and `Delete`. There is a fourth,
 `Print`, that is mainly used for debugging.
 
-The operations all follow the basic binary search tree patterns. There's no facny rotations that
+The operations all follow the basic binary search tree patterns. There's no fancy rotations that
 happen in the middle, but there are a couple somewhat complicated interactions during deletion of a
 node. There's some extra commands that are only used internally that I will show as well.
 
