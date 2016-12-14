@@ -1,6 +1,6 @@
 +++
 author = ["Scott Mansfield"]
-date = "2016-12-17T05:26:58-05:00"
+date = "2016-12-14T00:00:00"
 title = "Goroutree: A tree-based set made of coordinating goroutines"
 series = ["Advent 2016"]
 +++
