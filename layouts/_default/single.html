@@ -5,21 +5,21 @@
 					<div class="row">
 						<div class="col-md-8 col-md-offset-2 interior-header">
 
-              <a href="http://www.gophercon.com"><img src="/images/gc-banner-ad.png" alt="GopherCon 2016" title="GopherCon 2016"  /></a>
-						
+              <a href="http://www.gophercon.com"><img src="/images/gc-banner.png" alt="GopherCon 2016" title="GopherCon 2016"  /></a>
+
 						</div><!-- col-md-8 -->
 					</div><!-- row -->
 				</div><!-- container -->
 			</div><!-- header-content -->
   <div id="article-body">
-  
+
 
    <div class="article-title">{{ .Title }}
  </div>
    <p class="meta">Contributed by <mark>
 <script type="text/javascript">
  var arr = [];
- {{range .Params.author }} 
+ {{range .Params.author }}
  arr.push({{ . }})
  {{ end }}
  document.write(arr.join(" & "));
@@ -41,9 +41,9 @@
 	Other posts in this series:</p>
 {{ $name := $name | urlize }}
 	{{ $series := index .Site.Taxonomies.series $name }}
-	<ul class="series"> 
+	<ul class="series">
 	{{ range $series.Pages }}
-		<li>{{.Date.Format "Jan 02, 2006"}} - 
+		<li>{{.Date.Format "Jan 02, 2006"}} -
 		{{ if eq .Permalink $link }}
 			{{.LinkTitle}}
 		{{else}}
@@ -52,12 +52,12 @@
 		</li>
 	{{end}}
 	</ul>
-{{end}} 
+{{end}}
 
 
- <p>		
-{{ template "_internal/disqus.html" . }}		
- </p> 
+ <p>
+{{ template "_internal/disqus.html" . }}
+ </p>
  </div>
 
 
