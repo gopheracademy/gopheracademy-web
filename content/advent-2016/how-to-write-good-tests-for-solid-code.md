@@ -125,7 +125,7 @@ func TestSignUpSuccessful(t *testing.T) {
     um := NewUserManager(us, un)
 
     // 2. Send incoming command-query
-    u, err := us.SignUp(User{Email: "ernesto@slackline.io", Password: "secret"})
+    u, err := um.SignUp(User{Email: "ernesto@slackline.io", Password: "secret"})
 
     // 3. Since it was a query, asssert result
     assert.NoError(t, err)
@@ -180,7 +180,7 @@ func TestSignUpSuccessful(t *testing.T) {
     um := NewUserManager(us, un)
 
     // 2. Send incoming command-query
-    u, err := us.SignUp(user)
+    u, err := um.SignUp(user)
 
     // 3. Since it was a query, assert the result
     assert.NoError(t, err)
