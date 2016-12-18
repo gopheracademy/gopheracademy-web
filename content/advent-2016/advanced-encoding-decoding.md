@@ -1,6 +1,6 @@
 +++
 linktitle = "Advanced Encoding and Decoding Techniques in Go"
-date = "TBD"
+date = "2016-12-18T00:00:00"
 author = ["Jon Calhoun"]
 title = "Advanced Encoding and Decoding Techniques in Go"
 series = ["Advent 2016"]
