@@ -1,6 +1,6 @@
 +++
 author = ["Adam Glassman (@abglassman)"]
-date = "2016-12-16T0:00:00-08:00"
+date = "2016-12-17T0:00:00-08:00"
 title = "Abusing Go Syntax to Create a Domain-Specific Language"
 series = ["Advent 2016"]
 +++
@@ -137,7 +137,7 @@ Go incorporates some concepts from functional programming that are invaluable
 for creating expressive, declarative APIs. Go offers the ability to assign
 functions to variables, to pass a function as an argument to another function,
 and to create anonymous functions and
-[closures](https://en.wikipedia.org/wiki/Closure_(computer_programming)). Using
+[closures](https://en.wikipedia.org/wiki/Closure_%28computer_programming%29). Using
 *higher-order functions* that create, modify, or compose the behavior of other
 functions, you can easily combine pieces of logic and functionality into a more
 sophisticated whole with just a few statements, rather than by duplicating code
