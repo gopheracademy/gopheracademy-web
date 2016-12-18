@@ -1,9 +1,8 @@
 +++
-author = [
-  "Edward Medvedev",
-]
 title = "Engima emulator in Go"
-date = "2016-12-19T05:34:27+07:00"
+date = "2016-12-20T00:00:00"
+author = [ "Edward Medvedev" ]
+series = [ "Advent 2016" ]
 +++
 
 
