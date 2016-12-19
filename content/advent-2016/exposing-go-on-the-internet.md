@@ -6,7 +6,7 @@ linktitle = "Exposing Go on the Internet"
 series = ["Advent 2016"]
 +++
 
-Back when `crypto/tls` was slow and `net/http` young, the general wisdom was to always put Go servers behind a reverse proxy like Nginx. That's not necessary anymore!
+Back when `crypto/tls` was slow and `net/http` young, the general wisdom was to always put Go servers behind a reverse proxy like NGINX. That's not necessary anymore!
 
 However, the Internet is the deep end of the pool when it comes to networks, and there are a few things you have to do to teach your server to swim before throwing it in.
 
@@ -160,11 +160,11 @@ Between this and the inclusion of idle time in `ReadTimeout`, my recommendation 
 
 #### TCP Keep-Alives
 
-If you use `ListenAndServe` (as opposed to passing a `net.Listener` to `Serve`, which offers zero protection by default) a TCP Keep-Alive period of 3 minutes [will be set automatically][tcpKeepAliveListener]. That *will* help with clients that disappear completely off the face of the earth leaving a connection open forever, but I’ve learned not to trust that, and to set timeouts anyway.
+If you use `ListenAndServe` (as opposed to passing a `net.Listener` to `Serve`, which offers zero protection by default) a TCP Keep-Alive period of three minutes [will be set automatically][tcpKeepAliveListener]. That *will* help with clients that disappear completely off the face of the earth leaving a connection open forever, but I’ve learned not to trust that, and to set timeouts anyway.
 
-To begin with, 3 minutes might be too high, which you can solve by implementing your own [`tcpKeepAliveListener`][tcpKeepAliveListener].
+To begin with, three minutes might be too high, which you can solve by implementing your own [`tcpKeepAliveListener`][tcpKeepAliveListener].
 
-More importantly, a keep-alive only makes sure that the client is still responding, but does not place an upper limit on how long the connection can be held. A single malicious client can just open as many connections as your server has file descriptors, hold them half-way through the headers, respond to the rare keep-alives, and effectively take down your service.
+More importantly, a Keep-Alive only makes sure that the client is still responding, but does not place an upper limit on how long the connection can be held. A single malicious client can just open as many connections as your server has file descriptors, hold them half-way through the headers, respond to the rare keep-alives, and effectively take down your service.
 
 Finally, in my experience connections tend to leak anyway until [timeouts are in place][heartbleed].
 
@@ -177,7 +177,7 @@ Package level functions like `http.Handle[Func]` (and maybe your web framework) 
 
 Any package you import, directly or through other dependencies, has access to `http.DefaultServeMux` and might register routes you don't expect. 
 
-For example if any package somewhere in the tree imports `net/http/pprof` clients will be able to get CPU profiles for your application. You can still use `net/http/pprof` by registering [its handlers][pprof] manually.
+For example, if any package somewhere in the tree imports `net/http/pprof` clients will be able to get CPU profiles for your application. You can still use `net/http/pprof` by registering [its handlers][pprof] manually.
 
 Instead, instantiate an `http.ServeMux` yourself, register handlers on it, and set it as `Server.Handler`. Or set whatever your web framework exposes as `Server.Handler`.
 
@@ -206,7 +206,7 @@ If you need to investigate a leak, you can use the `Server.ConnState` hook to ge
 
 ## Conclusion
 
-The days of needing Nginx in front of all Go services are gone, but you still need to take a few more precautions on the open Internet, and probably want to upgrade to the shiny, new Go 1.8.
+The days of needing NGINX in front of all Go services are gone, but you still need to take a few precautions on the open Internet, and probably want to upgrade to the shiny, new Go 1.8.
 
 Happy serving!
 
