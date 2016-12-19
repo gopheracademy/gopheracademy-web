@@ -18,7 +18,7 @@ At [Cloudflare][cf] we recently experimented with exposing pure Go services to t
 
 You're not running an insecure HTTP server on the Internet in 2016. So you need `crypto/tls`. The good news is that it's [now really fast][gap] (as you've seen in a [previous article on this blog][bench]), and its security track record so far is excellent.
 
-The default settings resemble the *Intermediate* recommended configuration of the [Mozilla guidelines][mozilla]. However, you should still set `PreferServerCipherSuites` to ensure safer and faster ciphersuites are preferred, and `CurvePreferences` to avoid unoptimized curves: a client using `CurveP384` would cause up to a second of CPU to be consumed on our machines.
+The default settings resemble the *Intermediate* recommended configuration of the [Mozilla guidelines][mozilla]. However, you should still set `PreferServerCipherSuites` to ensure safer and faster cipher suites are preferred, and `CurvePreferences` to avoid unoptimized curves: a client using `CurveP384` would cause up to a second of CPU to be consumed on our machines.
 
 ```go
 &tls.Config{
@@ -33,7 +33,7 @@ The default settings resemble the *Intermediate* recommended configuration of th
 }
 ```
 
-IF you can take the compatibility loss of the [*Modern* profile][mozilla], you should then also set `MinVersion` and `CipherSuites`.
+If you can take the compatibility loss of the *Modern* configuration, you should then also set `MinVersion` and `CipherSuites`.
 
 ```go
 	MinVersion: tls.VersionTLS12,
@@ -52,7 +52,7 @@ IF you can take the compatibility loss of the [*Modern* profile][mozilla], you s
 	},
 ```
 
-Be aware that the Go implementation of the CBC ciphersuites (the ones we disabled in *Modern* mode above) is vulnerable to the [Lucky13 attack][lucky13], even if [partial countermeasures were merged in 1.8][patch].
+Be aware that the Go implementation of the CBC cipher suites (the ones we disabled in *Modern* mode above) is vulnerable to the [Lucky13 attack][lucky13], even if [partial countermeasures were merged in 1.8][patch].
 
 Final caveat, all these recommendations apply only to the amd64 architecture, for which [fast, constant time implementations][gap] of the crypto primitives (AES-GCM, ChaCha20-Poly1305, P256) are available. Other architectures are probably not fit for production use.
 
@@ -162,7 +162,11 @@ Between this and the inclusion of idle time in `ReadTimeout`, my recommendation 
 
 If you use `ListenAndServe` (as opposed to passing a `net.Listener` to `Serve`, which offers zero protection by default) a TCP Keep-Alive period of 3 minutes [will be set automatically][tcpKeepAliveListener]. That *will* help with clients that disappear completely off the face of the earth leaving a connection open forever, but I’ve learned not to trust that, and to set timeouts anyway.
 
-To begin with, 3 minutes might be too high, which you can solve by implementing your own [`tcpKeepAliveListener`][tcpKeepAliveListener]. More importantly, a keep-alive only makes sure that the client is still responding, but does not place an upper limit on how long the connection can be held. A single malicious client can just open as many connections as your server has file descriptors, hold them half-way through the headers, respond to the rare keep-alives, and effectively take down your service. Finally, in my experience connections tend to leak anyway until [timeouts are in place][heartbleed].
+To begin with, 3 minutes might be too high, which you can solve by implementing your own [`tcpKeepAliveListener`][tcpKeepAliveListener].
+
+More importantly, a keep-alive only makes sure that the client is still responding, but does not place an upper limit on how long the connection can be held. A single malicious client can just open as many connections as your server has file descriptors, hold them half-way through the headers, respond to the rare keep-alives, and effectively take down your service.
+
+Finally, in my experience connections tend to leak anyway until [timeouts are in place][heartbleed].
 
 [heartbleed]: https://github.com/FiloSottile/Heartbleed/commit/4a3332ca1dc07aedf24b8540857792f72624cdf7
 [tcpKeepAliveListener]: https://github.com/golang/go/blob/61db2e4efa2a8f558fd3557958d1c86dbbe7d3cc/src/net/http/server.go#L3023-L3039
@@ -196,9 +200,9 @@ To abort from inside a Handler without logging a stack trace you can either `pan
 
 A metric you'll want to monitor is the number of open file descriptors. [Prometheus does that by using the `proc` filesystem][proc].
 
-If you need to investigate a leak, you can use the `Server.ConnState` hook to get more detailed metrics of what stage the connections are in. However, note that there is no way to keep a correct count of Active connections without state, so you'll need to maintain a `map[net.Conn]ConnState`.
+If you need to investigate a leak, you can use the `Server.ConnState` hook to get more detailed metrics of what stage the connections are in. However, note that there is no way to keep a correct count of `StateActive` connections without keeping state, so you'll need to maintain a `map[net.Conn]ConnState`.
 
-[proc]: https://github.com/prometheus/client_golang/blob/master/prometheus/process_collector.go
+[proc]: https://github.com/prometheus/client_golang/blob/575f371f7862609249a1be4c9145f429fe065e32/prometheus/process_collector.go
 
 ## Conclusion
 
