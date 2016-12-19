@@ -1,6 +1,6 @@
 +++
 author = ["Mat Ryer"]
-date = "2016-12-19T06:00:00+00:00"
+date = "2016-12-26T06:00:00+00:00"
 title = "A little bit of Machine Learning: Playing with Google's Prediction API"
 series = ["Advent 2016"]
 draft = true
