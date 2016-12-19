@@ -8,9 +8,9 @@ series = ["Advent 2016"]
 
 Back when `crypto/tls` was slow and `net/http` young, the general wisdom was to always put Go servers behind a reverse proxy like NGINX. That's not necessary anymore!
 
-However, the Internet is the deep end of the pool when it comes to networks, and there are a few things you have to do to teach your server to swim before throwing it in.
+At [Cloudflare][cf] we recently experimented with exposing pure Go services to the hostile wide area network. With the Go 1.8 release, `net/http` and `crypto/tls` proved to be stable, performant and flexible.
 
-At [Cloudflare][cf] we recently experimented with exposing pure Go services to the hostile wide area network. Here are some hard-learned lessons.
+However, the defaults are tuned for local services. In this articles we'll see how to tune and harden a Go server for Internet exposure.
 
 [cf]: https://blog.cloudflare.com/tag/go/
 
@@ -28,7 +28,7 @@ The default settings resemble the *Intermediate* recommended configuration of th
 	// Only use curves which have assembly implementations
 	CurvePreferences: []tls.CurveID{
 		tls.CurveP256,
-                tls.X25519, // Go 1.8 only
+		tls.X25519, // Go 1.8 only
 	},
 }
 ```
@@ -41,7 +41,7 @@ If you can take the compatibility loss of the *Modern* configuration, you should
 		tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 		tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305, // Go 1.8 only
-		tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305, // Go 1.8 only
+		tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,   // Go 1.8 only
 		tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 
@@ -153,7 +153,7 @@ HTTP/2 has a slightly different meaning since the same connection can be serving
 
 Sadly, `ReadTimeout` breaks HTTP/2 connections in Go 1.7. Instead of being reset for each request it's set once at the beginning of the connection and never reset, breaking all HTTP/2 connections after the `ReadTimeout` duration. [It's fixed in 1.8][16450].
 
-Between this and the inclusion of idle time in `ReadTimeout`, my recommendation is to upgrade to 1.8 as soon as possible.
+Between this and the inclusion of idle time in `ReadTimeout`, my recommendation is to **upgrade to 1.8 as soon as possible**.
 
 [15908]: https://github.com/golang/go/issues/15908
 [16450]: https://github.com/golang/go/issues/16450
