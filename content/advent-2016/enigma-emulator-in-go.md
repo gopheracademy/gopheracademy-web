@@ -239,7 +239,7 @@ type Rotor struct {
 	Ring   int
 }
 
-type Rotors []*Rotor
+type Rotors []Rotor
 ```
 
 Note that letter sequences are `[26]int`: inside the library, we are going to be
@@ -289,21 +289,21 @@ func NewRotor(mapping string, id string, turnovers string) *Rotor {
 func (rs *Rotors) GetByID(id string) *Rotor {
 	for _, rotor := range *rs {
 		if rotor.ID == id {
-			return rotor
+			return &rotor
 		}
 	}
 	return nil
 }
 
 var HistoricRotors = Rotors{
-	NewRotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "I", "Q"),
-	NewRotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", "II", "E"),
-	NewRotor("BDFHJLCPRTXVZNYEIWGAKMUSQO", "III", "V"),
-	NewRotor("ESOVPZJAYQUIRHXLNFTGKDCMWB", "IV", "J"),
-	NewRotor("VZBRGITYUPSDNHLXAWMJQOFECK", "V", "Z"),
-	NewRotor("JPGVOUMFYQBENHZRDKASXLICTW", "VI", "ZM"),
-	NewRotor("NZJHGRCXMYSWBOUFAIVLPEKQDT", "VII", "ZM"),
-	NewRotor("FKQHTLXOCBJSPDZRAMEWNIUYGV", "VIII", "ZM")
+	*NewRotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "I", "Q"),
+	*NewRotor("AJDKSIRUXBLHWTMCQGZNPYFVOE", "II", "E"),
+	*NewRotor("BDFHJLCPRTXVZNYEIWGAKMUSQO", "III", "V"),
+	*NewRotor("ESOVPZJAYQUIRHXLNFTGKDCMWB", "IV", "J"),
+	*NewRotor("VZBRGITYUPSDNHLXAWMJQOFECK", "V", "Z"),
+	*NewRotor("JPGVOUMFYQBENHZRDKASXLICTW", "VI", "ZM"),
+	*NewRotor("NZJHGRCXMYSWBOUFAIVLPEKQDT", "VII", "ZM"),
+	*NewRotor("FKQHTLXOCBJSPDZRAMEWNIUYGV", "VIII", "ZM"),
 }
 ```
 
@@ -312,16 +312,15 @@ current position and the ring settings — this is one of the examples where
 thinking of letters as their indexes helps us avoid unnecessary conversions:
 
 ```
-func (r *Rotor) Step(letter *int, invert bool) {
-	l := *letter
-	l = (l - r.Ring + r.Offset + 26) % 26
+func (r *Rotor) Step(letter int, invert bool) int {
+	letter = (letter - r.Ring + r.Offset + 26) % 26
 	if invert {
-		l = r.ReverseSeq[l]
+		letter = r.ReverseSeq[letter]
 	} else {
-		l = r.StraightSeq[l]
+		letter = r.StraightSeq[letter]
 	}
-	l = (l + r.Ring - r.Offset + 26) % 26
-	*letter = l
+	letter = (letter + r.Ring - r.Offset + 26) % 26
+	return letter
 }
 ```
 
@@ -345,8 +344,8 @@ the constructor accept it:
 
 ```
 type Reflector struct {
-	ID          string
-	Sequence []int
+	ID       string
+	Sequence [26]int
 }
 
 func NewReflector(mapping string, id string) *Reflector {
@@ -366,8 +365,8 @@ almost unused), were used in the M3 machines:
 
 ```
 var HistoricReflectors = Reflectors{
-	NewReflector("YRUHQSLDPXNGOKMIEBFZCWVJAT", "B"),
-	NewReflector("FVPJIAOYEDRZXWGCTKUQSBNMHL", "C"),
+	*NewReflector("YRUHQSLDPXNGOKMIEBFZCWVJAT", "B"),
+	*NewReflector("FVPJIAOYEDRZXWGCTKUQSBNMHL", "C"),
 }
 ```
 
@@ -489,7 +488,7 @@ func (e *Enigma) EncodeChar(letter byte) byte {
 
 	// 3. Step into each rotor (right to left).
 	for i := len(e.Rotors) - 1; i >= 0; i-- {
-		e.Rotors[i].Step(&letterIndex, false)
+		letterIndex = e.Rotors[i].Step(letterIndex, false)
 	}
 
 	// 4. Step into the reflector.
@@ -497,7 +496,7 @@ func (e *Enigma) EncodeChar(letter byte) byte {
 
 	// 5. Step into each rotor (left to right).
 	for i := 0; i < len(e.Rotors); i++ {
-		e.Rotors[i].Step(&letterIndex, true)
+		letterIndex = e.Rotors[i].Step(letterIndex, true)
 	}
 
 	// 6. Swap the result if there is a plugboard pair.
