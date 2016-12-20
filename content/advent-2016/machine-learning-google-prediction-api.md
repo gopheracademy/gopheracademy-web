@@ -8,18 +8,19 @@ draft = true
 
 Before we get started, let's begin by making clear that this isn't going to be a deep dive on
 TensorFlow, neural networks, inductive logic, Bayesian networks, genetic algorithms or any other sub-heading
-from the [Machine Learning wikipedia article](https://en.wikipedia.org/wiki/Machine_learning). Nor is this
+from the [Machine Learning Wikipedia article](https://en.wikipedia.org/wiki/Machine_learning). Nor is this
 really a Go-heavy article, but rather an introduction to machine learning via a simple consumption of the 
 Google Prediction API.
 
 ## How the Google Prediction API works
 
-The Google Prediction API attempts to predict answers to questions by either predicting a numeric value for that item
-based on similar valued examples in its training data ("regression"), or choosing a category that describes it
+The Google Prediction API attempts to guess answers to questions by either predicting a numeric value between 0 and 1
+for that item based on similar valued examples in its training data ("regression"), or choosing a category that describes it
 given a set of similar categorized items in its training data ("categorical").
 
 The training data is used to generate a model, and it is the model that attempts to provide answers to
-future questions we ask via the Google Prediction API.
+future questions we ask via the Google Prediction API. In this context, *questions* refers to any input into the 
+model, and *answers* refers to the expected outputs.
 
 For example, imagine we have trained a model with the following data:
 
@@ -28,10 +29,10 @@ For example, imagine we have trained a model with the following data:
 "This is awful", "Sad"
 "I love this",   "Happy"
 "I hate this",   "Sad"
-(plus lots more questions/answers)
+(plus lots more correct examples)
 ```
 
-We could then to ask the Google Prediction API to tell us whether each of the following phrases we either happy, or sad:
+We could then to ask the Google Prediction API to tell us whether each of the following phrases are either happy or sad:
 
 * "Awful performance"
 * "Great job"
@@ -42,7 +43,7 @@ training data, it is possible to teach a machine to do it too with impressive re
 
 ## Training the Prediction API
 
-Creating training data isn't easy, and is often the most delecate part of the process.
+Creating training data isn't easy and is often the most delicate part of the process.
 Luckily Google has provided us with a set of data that we can use.
 
 The Language Identification dataset attempts to train a model that will allow the machine to predict
@@ -57,7 +58,7 @@ The data is in CSV format, and looks something like this:
 ...
 ```
 
-* Have a quick [look at the entire dataset](https://cloud.google.com/prediction/docs/language_id.txt)
+Have a quick [look at the entire dataset](https://cloud.google.com/prediction/docs/language_id.txt)
 
 As you can see, there are hundreds of examples of each language. The first column is the answer, and the
 second column is an example of a question that we might ask it.
@@ -93,7 +94,7 @@ language the `"Please predict which language this is"` sentence is in.
 
 We will write a little command line tool that lets us query the model from the terminal. 
 
-As the example project for this article was being put together, it became clear that the lion share of the work
+As the example project for this article was being put together, it became clear that the bulk of the work
 was actually in authorising the requests via OAuth. And the experience for a terminal app was less than desirable; you 
 had to copy and paste a URL into a browser, log in (or create an account), click Accept to allow access to the API, 
 then copy the access code from the query parameters of a failed redirect and paste it into the terminal.
@@ -135,7 +136,7 @@ func main() {
 }
 ```
 
-* You can copy and paste the flags from here if you like :)
+You can copy and paste the flags from here if you like :)
 
 This code uses a `bufio.Scanner` to read a line at a time from `os.Stdin`, which allows us to type a sentence, and
 hit return which will unblock the `Scan` method and execute the `for` block.
@@ -177,6 +178,7 @@ func do(query string) (*response, error) {
 		return nil, err
 	}
 	var result response
+	defer res.Body.Close()
 	err = json.NewDecoder(res.Body).Decode(&result)
 	if err != nil {
 		return nil, err
@@ -211,10 +213,10 @@ Try some more:
   ^^ That looks like 🇪🇸 Spanish to me
 ```
 
-Thank you to my multi-lingual European friends for their generousity in helping me translate this phrase
+Thank you to my multi-lingual European friends for their generosity in helping me translate this phrase
 in spite of Brexit.
 
-## Conslusion 
+## Conclusion 
 
 This article only really touches the surface of what can be achieved with machine learning, 
 but it does get the old brains working on what other kinds of predictive capabilities could be
