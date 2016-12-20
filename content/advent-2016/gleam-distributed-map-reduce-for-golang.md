@@ -1,6 +1,6 @@
 +++
 author = ["Chris Lu"]
-date = "2016-12-19T12:11:25-08:00"
+date = "2016-12-20T00:00:00"
 series = ["Advent 2016"]
 title = "Gleam: Distributed Map Reduce for Golang"
 
