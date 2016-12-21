@@ -1,6 +1,6 @@
 +++
 title = "Enigma emulator in Go"
-date = "2016-12-20T00:00:00"
+date = "2016-12-21T00:00:00"
 author = [ "Edward Medvedev" ]
 series = [ "Advent 2016" ]
 +++
