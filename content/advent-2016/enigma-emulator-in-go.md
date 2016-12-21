@@ -18,8 +18,8 @@ right?
 
 Then I remembered. I emptied out my suitcase and found the cause of the
 uneasiness: two stickers with goofy cartoon gophers on them. The first one was
-really enjoying his beer. The other one has just put on a wizard hat — possibly
-matched with a robe. They were looking right into my eyes.
+really enjoying their beer. The other one has just put on a wizard hat —
+possibly matched with a robe. They were looking right into my eyes.
 
 The first rule of IT conferences is simple: if someone gives you a sticker, you
 must try the product. Everyone knows that. People place great trust in you by
