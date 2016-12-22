@@ -50,6 +50,18 @@ The `-fm` flag specifies the filename with the test set data, akin to the `-trai
 
 # The AFM format
 
+We've talked about the input files for the training set and the test set but we haven't discussed in which format these files are expected. CloudForest expects input files to be in Annotated Feature Matrix (.afm) format. It also supports .libsvm and .arff formats, but the standard is .afm.
+
+AFM, as the name implies, is a matrix. The file is a tsv, a sequence of columns separated by tabs. In this tsv, either the first row or the first column is a set of headers describing each feature present in the dataset. By default the columns represent entries in the dataset and the rows represent features. The opposite is also supported, and is often easier to work with.
+
+Each row/column header includes a prefix to the name of the feature. The presence of these prefixes is what determines if the file is oriented by column or row. There are three prefixes:
+
+- N: Numerical feature.
+- C: Categorical feature.
+- B: Boolean feature.
+
+Every feature has to be mapped to one of these prefixes. Numerical features can be both integers and floating point numbers. Categorical and boolean features are represented by strings.
+
 # Feature importance
 
 # Extra options for growforest
