@@ -39,7 +39,7 @@ Here's the overview of functional-tester:
 
 ![etcd-functional-tester](/postimages/advent-2016/etcd-functional-tester.png)
 
-etcd functional test suite has two components: etcd-agent and etcd-tester. etcd-agent runs on every test machine to control the state of target etcd node: starts, stops, restarts, manipulate network configurations, etc.. etcd-tester runs on a single machine to control the flow of functional tests: trigger agents to stop and start etcd nodes, inject various failure cases, verify the correctness of etcd under failures.
+etcd functional test suite has two components: etcd-agent and etcd-tester. etcd-agent runs on each test machine to control the state of target etcd node: start, stop, restart, manipulate network configurations, and so on. etcd-tester runs on a single machine to control the flow of functional tests: trigger agent to stop, start etcd node, inject various failure cases, verify the correctness of etcd under failures.
 
 Some of the failures are:
 
