@@ -9,13 +9,7 @@ series = ["Advent 2016"]
 
 Random Forests are a machine learning algorithm based around the construction of many single classification trees, each splitting both the training set and the features available to train the model randomly. Each single tree is different from the others due to this random split and the ensemble of all the trees together is able to classify the data better than any single tree could do by itself. We won't go deep on how Random Forests work internally, you can learn more [here](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#intro).
 
-# CloudForest
-
-CloudForest is a swiss army knife of options for how a model can be built. It supports not only the original ideas from Breiman and Cutler's but also boosting, class weighted classification, feature selection with artificial constrasts, support for missing values and many more features.
-
-The list of flags for all these options can feel daunting when you're not familiar with the terms, but hang on, we'll explore most of it.
-
-![CloudForest options](/postimages/advent-2016/cloudforest/controlpanel.png)
+CloudForest is a swiss army knife of options for how a model can be built. It supports not only the original ideas from Breiman and Cutler's algorithm but also boosting, class weighted classification, feature selection with artificial constrasts, support for missing values and many more features.
 
 # Growing a forest
 
@@ -72,12 +66,18 @@ Some of these metrics deal with how many trees chose to use a feature, others sh
 
 # Extra options for growforest
 
-maxDepth
-mTry
-nTrees
-blacklist
-progress
-test
+To support all of the different ways CloudForest can build classification models, there are dozens of flags. The list of flags for all the options can feel daunting when you're not familiar with some of the terms, much like this:
+
+![CloudForest options](/postimages/advent-2016/cloudforest/controlpanel.png)
+
+However, some of the flags are of particular importance to any kind of model:
+
+- `nTrees`: the number of trees. By default, if you don't specify anything for this option, the forest will be built with `-nTrees=100`. A hundred trees if often a good enough number, but there is no one number of trees that will be appropriate for every situation.
+- `progress`: report the tree number and the running error. With `-progress`, it is possible to follow the construction of the forest. The first trees usually have high errors but the model quickly adjusts itself towards smaller and smaller errors as more trees are built. `-progress` is a good companion to `-nTrees`, it can be used to find out empirically how many trees are a good fit for your model. If the forest construction converges early, there is little benefit to increasing the number of trees.
+- `mTry`: the number of candidate features to be selected with each tree. Not every tree in a forest is build the same. Each classification tree is built with a subset of the features. `-mTry` determines how many features are available for selection during the construction of each tree. Lower values yield trees with less correlation and higher values allow more opportunities for important features to be selected. If not specified, `-mTry` is the square root of the number of features. This value is common across many implementations of Random Forests, and it's one of the parameters that has the highest impact on the accuracy of the final model. You may want to experiment with bigger values for `-mTry`. We've had success with much higher ratios, such as .5 (50% of the features available for each tree), but your mileage may vary.
+- `blacklist`
+- `test`
+- `maxDepth`
 
 # Importing and using CloudForest directly from other Go programs
 
