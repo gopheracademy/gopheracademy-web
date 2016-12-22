@@ -64,6 +64,12 @@ Every feature has to be mapped to one of these prefixes. Numerical features can 
 
 # Feature importance
 
+One of the most interesting aspects of building classification models with CloudForest is finding out which features have the biggest impact on your model. Not every feature impacts the model in the same way, some are highly correlated with what you're trying to predict and some not so much. Knowing which features are important can help you iterate and build better models.
+
+When you're running `growforest`, if you specify the flag `-importance=filename.tsv`, the `growforest` command will create a second output file along with the `.sf` file. This new file is a tsv file that lists every feature along with several metrics.
+
+Some of these metrics deal with how many trees chose to use a feature, others show how a feature impacted the accuracy of the whole model. The full list of metrics can be found [here](https://github.com/ryanbressler/CloudForest#importance).
+
 # Extra options for growforest
 
 maxDepth
