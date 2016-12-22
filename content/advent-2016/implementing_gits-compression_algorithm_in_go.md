@@ -1,6 +1,6 @@
 +++
 author = ["Aditya Mukerjee"]
-date = "2016-12-17T18:52:48-05:00"
+date = "2016-12-22T00:00:00"
 linktitle = "Implementing Git's Compression in Go"
 title = "Implementing Git's Compression In Go"
 series = ["Advent 2016"]
