@@ -33,7 +33,7 @@ End-to-end test configures the whole system locally and simulate the real-world 
 
 ### etcd’s "distributed" functional tester
 
-[functional-tester](https://github.com/coreos/etcd/tree/master/tools/functional-tester) verifies the correct behavior of etcd under various system and network malfunctions. It sets up an etcd cluster under high pressure loads and continuously injects failures into the cluster. Then it expects the etcd cluster to recover within a short amount of time. This has been extremely helpful to find critical bugs, *before anyone else*. See [GitHub issues](https://github.com/coreos/etcd/issues?q=is%3Aissue+label%3Acomponent%2Ffunctional-tester+is%3Aopen) for more.
+[functional-tester](https://github.com/coreos/etcd/tree/master/tools/functional-tester) verifies the correct behavior of etcd under various system and network malfunctions. It sets up an etcd cluster under high pressure loads and continuously injects failures into the cluster. Then it expects the etcd cluster to recover within a short amount of time. This has been extremely helpful to find critical bugs, *before anyone else*; see a list of bugs that it has found at [GitHub issues](https://github.com/coreos/etcd/issues?q=is%3Aissue+label%3Acomponent%2Ffunctional-tester+is%3Aopen) for more.
 
 Here's the overview of functional-tester:
 
