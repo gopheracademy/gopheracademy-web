@@ -1,9 +1,8 @@
 +++
 author = ["Natalie Pistunovich"]
-date = "2016-12-22T06:00:00+00:00"
-title = "Teaching Go  to complete beginners"
+date = "2016-12-23T00:00:00+00:00"
+title = "Teaching Go to complete beginners"
 series = ["Advent 2016"]
-draft = false
 +++
 
 # TL;DR
