@@ -83,7 +83,7 @@ While there is no consensus about Go being the best language for beginners, ther
 
 **What are the plans for 2017?**
 
-The newest addition to the material database is the course for complete beginners. This workshop, in addition to several other Go workshops will be taught in lot’s of events. See them all [here](https://www.bridgetroll.org/)
+The newest addition to the material database is the course for complete beginners. This workshop, in addition to several other Go workshops will be taught in lot’s of events. See them all [here](https://www.bridgetroll.org/).
 
 **What’s in it for me?**
 
