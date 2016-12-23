@@ -76,7 +76,7 @@ It starts with covering programming principles, going through the Go basics usin
 
 **Is Go a good language to start with?**
 
-While there is no consensus about Go being the best language for beginners, there is also no consensus it’s the worse. When you start learning with Go, there are no habits you need to unlearn, and proceeding to teaching advanced and needed subjects like concurrency and parallelism is fairly smooth.
+While there is no consensus about Go being the best language for beginners, there is also no consensus it’s the worst. When you start learning with Go, there are no habits you need to unlearn, and proceeding to teaching advanced and needed subjects like concurrency and parallelism is fairly smooth.
 
  ![](/postimages/advent-2016/gobridge-beginners-221216/gopher_ok_no.png)
 
