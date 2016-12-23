@@ -85,4 +85,5 @@ However, some of the flags are of particular importance to any kind of model:
 
 # Conclusion
 
-community, google group
+- community
+- google group
