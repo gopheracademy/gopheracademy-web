@@ -81,6 +81,67 @@ However, some of the flags are of particular importance to any kind of model:
 
 # Importing and using CloudForest directly from other Go programs
 
+CloudForest was built as a Go package. We've seen only command line utilities so far, but these command line utilities are just `main` packages that import the base package and use its functions. Any other Go program can do the same.
+
+For example, loading an AFM file into memory can be done like this:
+
+
+```
+import (
+	"os"
+	"github.com/ryanbressler/CloudForest
+)
+
+func main() {
+	file, err := os.Open("file.afm")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	matrix, err := CloudForest.LoadAFM(*fm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	(...)
+}
+```
+
+Loading a forest:
+
+
+```
+forestFile, err := os.Open("forest.sf")
+if err != nil {
+	log.Fatal(err)
+}
+defer forestFile.Close()
+forestReader := CloudForest.NewForestReader(forestFile)
+forest, err := forestreader.ReadForest()
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+To apply a forest onto a set of data a `VoteTallyer` is necessary. There are a few `VoteTallyer` implementations ready to use in the CloudForest package, such as `CatBallotBox`, which is appropriate for categorical classification and `NumBallotBox`, which is useful to average predictions for numerical features.
+
+Combining the data matrix from our first snippet and the forest from our second, we could apply the forest over all the cases in the matrix, tallying the results as a boolean prediction:
+
+```
+var ballotBox CloudForest.VoteTallyer
+ballotBox = CloudForest.NewCatBallotBox(matrix.Data[0].Length())
+
+for _, tree := range forest.Trees {
+	tree.Vote(matrix, ballotBox)
+}
+
+for i := range matrix.CaseLabels {
+	tally := ballotBox.Tally(i)
+	prediction, _ := strconv.ParseBool(tally)
+}
+```
+
+Binary (boolean) classification is only one possibility. With different vote tallyers, different target features and options, several other kinds of classifications can be done.
+
 # Real-world use case: predicting mutations that cause diseases
 
 # Conclusion
