@@ -144,7 +144,7 @@ Binary (boolean) classification is only one possibility. With different vote tal
 
 # Real-world use case: predicting mutations that cause diseases
 
-At [Mendelics](https://github.com/mendelics) in Brazil, we've been using CloudForest for almost 3 years in the field of genetics (spoilers: the last code snippet was from a real system). We've started using CloudForest almost at the same time as we've started using Go, with impressive results from both.
+At [Mendelics](https://github.com/mendelics) in Brazil, we've been using CloudForest for almost 3 years in the field of genetics (spoilers: the last code snippet was from a real system). We've started using CloudForest almost at the same time as we've started using Go, with [impressive results](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0144820) from both.
 
 The human genome is over 3 billion nucleotides long. Every person has thousands of mutations (the term _variant_ is technicaly more correct, but we'll keep using _mutation_), defining their distinct features, the characteristics that make them unique. Unfortunately, some of these mutations, instead of changing the color of your eyes, cause diseases.
 
