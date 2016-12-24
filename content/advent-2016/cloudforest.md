@@ -144,6 +144,107 @@ Binary (boolean) classification is only one possibility. With different vote tal
 
 # Real-world use case: predicting mutations that cause diseases
 
+At [Mendelics](https://github.com/mendelics) in Brazil, we've been using CloudForest for almost 3 years in the field of genetics (spoilers: the last code snippet was from a real system). We've started using CloudForest almost at the same time as we've started using Go, with impressive results from both.
+
+The human genome is over 3 billion nucleotides long. Every person has thousands of mutations (the term _variant_ is technicaly more correct, but we'll keep using _mutation_), defining their distinct features, the characteristics that make them unique. Unfortunately, some of these mutations, instead of changing the color of your eyes, cause diseases.
+
+Determining which mutations cause diseases in the middle of this sea of mutations is not straightforward. Not every mutation is covered by scientific publications, and many disease causing mutations have never been seen even in huge databases of human mutations such as [ExAC](http://exac.broadinstitute.org/) or [gnomAD](http://gnomad.broadinstitute.org/) (thanks, natural selection). To solve this problem, researchers in genetics have [often](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3154091/) turned to machine learning models built with Random Forests.
+
+## Turning mutations into AFM rows
+
+A mutation can cross many genes and [exons](https://en.wikipedia.org/wiki/Exon). Some of its features can be determined for the entire mutation and others depend on which _segment_ we're working with. Therefore, it makes sense to model a mutation as a struct with several slices and a somewhat deep hierarchy.
+
+
+```
+type Mutation struct {
+	Chromosome  string
+	Start       int
+	End         int
+	Reference   string
+	Alternative string
+	Annotations []Segment
+}
+
+type Segment struct {
+	GeneName        string
+	ExonNumber      string
+	MaxConservation float64
+	AminoacidsTotal int
+	(...)
+}
+```
+
+This deep hierarchy does not translate well into a simple tsv row. Another problem is how to select which features we want to use. In this example, we probably don't want to use the `Chromosome` field in the classification model, the structural characteristics of the mutation are the real driving factors to whether it causes a disease or not, so we might as well completely ignore it when dealing with CloudForest.
+
+To solve both of these issues, we turned to reflection and struct tags.
+
+```
+type Mutation struct {
+	Chromosome  string
+	Start       int
+	End         int
+	Reference   string
+	Alternative string
+	Annotations []Segment `AFM:"true"`
+}
+
+type Segment struct {
+	GeneName        string
+	ExonNumber      string
+	MaxConservation float64 `AFM:"true"`
+	AminoacidsTotal int     `AFM:"true"`
+	(...)
+}
+```
+
+With reflection, we traverse `Mutation`s in memory, creating tsv rows for each `Segment` and repeating the common values shared by each segment. The `AFM` struct tag determines if a feature is used or discarded. The end result is a complete afm file built in memory during execution of the program.
+
+```
+// afmTags checks if a struct field has the AFM tag
+func afmTags(v reflect.StructField) bool {
+	return v.Tag.Get("AFM") != ""
+}
+
+// afmPrefix translates Go types into the prefixes CloudForest expects on the AFM header
+func afmPrefix(k reflect.Kind) string {
+	switch k {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8,
+		reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128:
+		return "N"
+	case reflect.Bool:
+		return "B"
+	case reflect.String:
+		return "C"
+	}
+	return ""
+}
+
+// processHeader iterates over all of the Mutation fields translating the field into the format expected
+// for the AFM header. Processing a segment is equivalent, using the struct field value instead of its name.
+func processHeader(mutation Mutation) []string {
+	reflection := reflect.ValueOf(mutation)
+	reflectionType := reflection.Type()
+	fields := make([]string, 0, reflection.NumField())
+	for i := 0; i < reflection.NumField(); i++ {
+		structValue := reflection.Field(i)
+		structField := reflectionType.Field(i)
+		isAFM := afmTags(structField)
+		if isAFM {
+			// omitting treatment for slices and nested structs
+			prefix := afmPrefix(structValue.Kind())
+			name := strings.ToLower(structField.Name)
+			field := fmt.Sprintf("%s:%s", prefix, name)
+			fields = append(fields, field)
+		}
+	}
+	return fields
+}
+```
+
+Forest construction is still done in the command line with `growforest`. Application of the model to new, unknown mutations, is done entirely in memory, as the system receives new files for processing. At the time this was originally built, without much experience in Go, we did not realize that all of this work was actually the construction of an encoding library. It does not conform to the encoding interfaces in the standard library due to that oversight and has never seen the light of open source, sadly.
+
+In production, we've had multiple models built with `growforest` and applied this way, always achieving more than 90% accuracy accross all of our tests. The system can't predict by itself every single mutation that causes a disease in real patients but serves as a powerful tool for the geneticists to quickly find what really matters.
+
 # Conclusion
 
 - community
