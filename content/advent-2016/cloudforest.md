@@ -247,5 +247,8 @@ In production, we've had multiple models built with `growforest` and applied thi
 
 # Conclusion
 
-- community
-- google group
+Random Forests are a general purpose algorithm suited for many applications and CloudForest has been around for many years, proving itself one of the most robust Machine Learning libraries built with Go so far.
+
+Try it for yourself and get in touch with the community at [the Google Group](https://groups.google.com/forum/#!forum/cloudforest-dev)!
+
+Bonus points: if you can understand Portuguese, the story of the construction of the genetics system was the talk that opened the second day of GopherCon Brazil's first edition. The video is up at https://youtu.be/KkQpT7acNFc.
