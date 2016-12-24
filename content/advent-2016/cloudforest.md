@@ -9,7 +9,7 @@ series = ["Advent 2016"]
 
 Random Forests are a machine learning algorithm based around the construction of many single classification trees, each splitting both the training set and the features available to train the model randomly. Each single tree is different from the others due to this random split and the ensemble of all the trees together is able to classify the data better than any single tree could do by itself. We won't go deep on how Random Forests work internally, you can learn more [here](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#intro).
 
-CloudForest is a swiss army knife of options for how a model can be built. It supports not only the original ideas from Breiman and Cutler's algorithm but also boosting, class weighted classification, feature selection with artificial constrasts, support for missing values and many more features.
+CloudForest is a swiss army knife of options for how a model can be built. It supports not only the original ideas from Breiman and Cutler's algorithm but also boosting, class weighted classification, feature selection with [artificial constrasts](http://www.jmlr.org/papers/volume10/tuv09a/tuv09a.pdf), support for missing values and many more features.
 
 # Growing a forest
 
