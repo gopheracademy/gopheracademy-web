@@ -86,10 +86,10 @@ CloudForest was built as a Go package. We've seen only command line utilities so
 For example, loading an AFM file into memory can be done like this:
 
 
-```
+```go
 import (
 	"os"
-	"github.com/ryanbressler/CloudForest
+	"github.com/ryanbressler/CloudForest"
 )
 
 func main() {
@@ -109,7 +109,7 @@ func main() {
 Loading a forest:
 
 
-```
+```go
 forestFile, err := os.Open("forest.sf")
 if err != nil {
 	log.Fatal(err)
@@ -126,7 +126,7 @@ To apply a forest onto a set of data a `VoteTallyer` is necessary. There are a f
 
 Combining the data matrix from our first snippet and the forest from our second, we could apply the forest over all the cases in the matrix, tallying the results as a boolean prediction:
 
-```
+```go
 var ballotBox CloudForest.VoteTallyer
 ballotBox = CloudForest.NewCatBallotBox(matrix.Data[0].Length())
 
@@ -155,7 +155,7 @@ Determining which mutations cause diseases in the middle of this sea of mutation
 A mutation can cross many genes and [exons](https://en.wikipedia.org/wiki/Exon). Some of its features can be determined for the entire mutation and others depend on which _segment_ we're working with. Therefore, it makes sense to model a mutation as a struct with several slices and a somewhat deep hierarchy.
 
 
-```
+```go
 type Mutation struct {
 	Chromosome  string
 	Start       int
@@ -178,7 +178,7 @@ This deep hierarchy does not translate well into a simple tsv row. Another probl
 
 To solve both of these issues, we turned to reflection and struct tags.
 
-```
+```go
 type Mutation struct {
 	Chromosome  string
 	Start       int
@@ -199,7 +199,7 @@ type Segment struct {
 
 With reflection, we traverse `Mutation`s in memory, creating tsv rows for each `Segment` and repeating the common values shared by each segment. The `AFM` struct tag determines if a feature is used or discarded. The end result is a complete afm file built in memory during execution of the program.
 
-```
+```go
 // afmTags checks if a struct field has the AFM tag
 func afmTags(v reflect.StructField) bool {
 	return v.Tag.Get("AFM") != ""
