@@ -30,7 +30,7 @@ Back to our workshop. As we took it slow, the group of already-developers didn�
 ![](/postimages/advent-2016/gobridge-beginners-221216/flying_gopher.jpg)
 
 
-As the meetings went on, we covered simpler concepts like variables, and more complex one like json marshaling. We spotted an interesting behaviour: when the instructor leading the workshop asked “all clear?” there awere no questions from the crowd. But, when s/he’d then say “let’s do this exercise” - not much happened. This implied that everything wasn't clear to the students, but students still weren't raising their hands. Having taught beginner groups in the past, this was not new. Challenge #2: Get your crowd to actually understand. This can be broken down to 2 challenges:
+As the meetings went on, we covered simpler concepts like variables, and more complex one like json marshaling. We spotted an interesting behaviour: when the instructor leading the workshop asked “all clear?” there were no questions from the crowd. But, when s/he’d then say “let’s do this exercise” - not much happened. This implied that everything wasn't clear to the students, but students still weren't raising their hands. Having taught beginner groups in the past, this was not new. Challenge #2: Get your crowd to actually understand. This can be broken down to 2 challenges:
 Challenge #2a - Have the participants ask questions
 Challenge #2b - Explain the answer in a clear way. 
 The best practice I can offer to part 1 is approach each student at least once and ask “what are your questions?”. Answering with questions is way easier than having the initiative to ask them. The best practice for the second? I’d like to refer you to the Feynman Technique, which you should do in advance of course.
@@ -64,11 +64,11 @@ WWG are the women of the Go community and their allies. GoBridge is about advoca
 
 **Can men attend the workshops?**
 
-If you are surprised from this question - you are not alone. Yet, we have seen this question several times. The anser is yes. People of all backgrounds, including all genders, not just women and men, are welcome, as both participants and instructors. Here's our [Code of Conduct](http://bridgefoundry.org/code-of-conduct/).
+If you are surprised from this question - you are not alone. Yet, we have seen this question several times. The answer is yes. People of all backgrounds, including all genders, not just women and men, are welcome, as both participants and instructors. Here's our [Code of Conduct](http://bridgefoundry.org/code-of-conduct/).
 
 **What is the session format?**
 
-Meeting, usually every other week, and following the course outline and lots of independant work. You can also adjust this to your schedule, and offer a shorter or a longer workshop.
+Meeting, usually every other week, and following the course outline and lots of independent work. You can also adjust this to your schedule, and offer a shorter or a longer workshop.
 
 **What is the Go for Complete Beginners course about**
 
@@ -76,14 +76,14 @@ It starts with covering programming principles, going through the Go basics usin
 
 **Is Go a good language to start with?**
 
-While there is no consensus about Go being the best language for beginners, there is also no consensus it’s the worse. When you start learning with Go, there are no habits you need to unlearn, and proceeding to teaching advanced and needed subjects like concurrency and parallelism is fairly smooth.
+While there is no consensus about Go being the best language for beginners, there is also no consensus it’s the worst. When you start learning with Go, there are no habits you need to unlearn, and proceeding to teaching advanced and needed subjects like concurrency and parallelism is fairly smooth.
 
  ![](/postimages/advent-2016/gobridge-beginners-221216/gopher_ok_no.png)
 
 
 **What are the plans for 2017?**
 
-The newest addition to the material database is the course for complete beginners. This workshop, in addition to several other Go workshops will be taught in lot’s of events. See them all [here](https://www.bridgetroll.org/)
+The newest addition to the material database is the course for complete beginners. This workshop, in addition to several other Go workshops will be taught in lot’s of events. See them all [here](https://www.bridgetroll.org/).
 
 **What’s in it for me?**
 
