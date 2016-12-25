@@ -1,8 +1,6 @@
 +++
-author = [
-  "Kevin Burke",
-]
-date = "2016-11-06T06:40:42Z"
+author = [ "Kevin Burke" ]
+date = "2016-12-25T00:00:00"
 linktitle = "Writing an API Client in Go"
 title = "Writing an API Client in Go"
 series = ["Advent 2016"]
