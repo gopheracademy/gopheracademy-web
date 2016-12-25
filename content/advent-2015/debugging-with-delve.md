@@ -7,15 +7,15 @@ series = ["Advent 2015"]
 
 Tracking down bugs in your code can be a very frustrating experience. This is even more true of highly parallel code. Having a good debugger at your disposal can make all the difference when it comes to tracking down a difficult, or hard to reproduce bug in your code. Throughout this post I will discuss [Delve](https://www.github.com/derekparker/delve), which is a debugger specifically built for Go.
 
-[Delve](https://www.github.com/derekparker/delve) aims to solve the various issues felt by developers when debugging their Go code with traditional tools such as [GDB](https://www.gnu.org/software/gdb/). For more information on why existing tools fall short see the introduction paragraph on the [Go gdb documentation](https://golang.org/doc/gdb) and feel free to check out my [Gophercon 2015 talk](htt://www.youtube.com/watch?v=InG72scKPd4) where I discuss some of the technical details.
+[Delve](https://www.github.com/derekparker/delve) aims to solve the various issues felt by developers when debugging their Go code with traditional tools such as [GDB](https://www.gnu.org/software/gdb/). For more information on why existing tools fall short see the introduction paragraph on the [Go gdb documentation](https://golang.org/doc/gdb) and feel free to check out my [Gophercon 2015 talk](http://www.youtube.com/watch?v=InG72scKPd4) where I discuss some of the technical details.
 
 For the remainder of this post we will introduce [Delve](https://www.github.com/derekparker/delve) a bit more and walk through some usage examples.
 
 ## Getting set up
 
-*Delve is only available on Linux and OSX, with Windows support [coming soon](https://github.com/derekparker/delve/pull/276).*
+*Delve is only available on 64-bit systems, with 32-bit support [coming soon](https://github.com/derekparker/delve/issues/20).*
 
-If you haven't already installed [Delve](https://www.github.com/derekparker/delve), check out the [installation instructions](https://github.com/derekparker/delve/wiki/Building) to get started. Note that if you're on OSX you must follow the instructions to codesign the binary. Once you're finished you will have everything you need to begin debugging Go programs.
+If you haven't already installed [Delve](https://www.github.com/derekparker/delve), check out the [installation instructions](https://github.com/derekparker/delve/tree/master/Documentation/installation#installation) to get started. Note that if you're on OSX you must follow the instructions to codesign the binary. Once you're finished you will have everything you need to begin debugging Go programs.
 
 ## Debugging a program
 
