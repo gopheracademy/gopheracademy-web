@@ -6,11 +6,11 @@ series = ["Advent 2016"]
 draft = true
 +++
 
-So your open source project is on Github. It has tests, an awesome logo, probably a few stars, and maybe even a few other contributors. To spread awareness, it might be shared on the relevant subreddit, Twitter, Hacker News, etc.
+So your open source project is on GitHub. It has tests, an awesome logo, probably a few stars, and maybe even a few other contributors. To spread awareness, it might be shared on the relevant subreddit, Twitter, Hacker News, etc.
 
 While exposure is one of the most effective ways to promote a project, there are various steps that can be taken to ensure that its growth is positive and that the community it revolves around thrives.
 
-This posts includes suggestions which promote code confidence and collaboration. They are:
+This post includes suggestions which promote code confidence and collaboration. They are:
 
 1. [Gitter](#1-gitter)
 2. [Go Report Card](#2-go-report-card)
@@ -36,7 +36,7 @@ Creating a Gitter community for your repo can be done right from the front page 
 
 There is an option to attach the new community to a Github Organization or Repo (a selection based on the login credentials used) towards the bottom of the same page.
 
-In addition to autocompletion of the community name and link, one benefit is an option to automagically create a PR to update the README with a badge. Sadly, this didn't work for me in the multiple communities I've created.
+In addition to autocompletion of the community name and link, another benefit is an option to automagically create a PR to update the README with a badge. Sadly, this didn't work for me in the multiple communities I've created.
 
 Invites to join your community can be sent by email or from a list of Github followers. After the community is created, an invite can be sent via other platforms such as Facebook, Twitter, LinkedIn, and Google+.
 
@@ -44,14 +44,14 @@ Invites to join your community can be sent by email or from a list of Github fol
 
 ![](https://img.shields.io/gitter/room/nwjs/nw.js.svg)
 
-[Shields](https://shields.io) provides a slick Gitter badge (repo [here](https://github.com/badges/shields)). Make the necessary substitution below, then update a README to include this badge which directs users to any desired Gitter community:
+[Shields](https://shields.io) provides a slick Gitter badge (repo [here](https://github.com/badges/shields)). Make the necessary substitution below, then update the README to include this badge which directs users to any desired Gitter community:
 ```
 [![](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](<YOUR GITTER COMMUNITY URL HERE>)
 ```
 
 **Notable Gitter Communities**
 
-Gitter's Suggestions of new communities to join has been pretty useful to me. I was able to find a surprising number of communities for tools, projects, and packages that I consider myself pretty familiar with. Here's a few:
+Gitter's recommended communities has been pretty useful to me. I was able to find a surprising number of communities for tools, projects, and packages that I consider myself pretty familiar with. Here's a few:
 
 - [vscode-go](https://gitter.im/Microsoft/vscode-go)
 - [gvt](https://gitter.im/FiloSottile/gvt)
@@ -62,13 +62,13 @@ Gitter's Suggestions of new communities to join has been pretty useful to me. I 
 
 ![](/postimages/advent-2016/promoting-the-quality-and-collaboration-of-your-open-source-project/report_card_cover_page.png)
 
-[Go Report Card](http://goreportcard.com) is a product of the 2015 [Gopher Gala](http://gophergala.com/blog/gopher/gala/2015/02/03/winners/) hackathon. Created by [Shaun Smith](https://github.com/shawnps) and [Herman Schaaf](https://github.com/hermanschaaf) of [gojp](https://github.com/gojp), the Go Report Card is a convenient and powerful tool which validates an open source repo in multiple aspects, from running Go specific tools against the repo such as [go vet](https://golang.org/cmd/vet/), [go lint](https://github.com/golang/lint), and [ineffassign](https://github.com/gordonklaus/ineffassign) to important but.
+[Go Report Card](http://goreportcard.com) is a product of the 2015 [Gopher Gala](http://gophergala.com/blog/gopher/gala/2015/02/03/winners/) hackathon. Created by [Shaun Smith](https://github.com/shawnps) and [Herman Schaaf](https://github.com/hermanschaaf) of [gojp](https://github.com/gojp), the Go Report Card is a convenient and powerful tool which validates an open source repo in multiple aspects, from running Go specific tools against the repo such as [go vet](https://golang.org/cmd/vet/), [go lint](https://github.com/golang/lint), and [ineffassign](https://github.com/gordonklaus/ineffassign), to general details such as checking misspelling errors and the inclusion of a license.
 
 Adding a Go Report Card badge to a project and seeing the `A+` is pretty satisfying, and it makes a strong statement for a repo's quality and credibility.
 
 Individuals familiar with the badge are incentivized to do more digging than just scrolling through the README. There's more of a serious interest to inspect the code and play around, which leads to usage, and best of all, contributions!
 
-**Creating a Reportcard**
+**Creating a Report Card**
 
 _To add a badge and generate a Report Card in one step, skip to the next section._
 
@@ -79,20 +79,21 @@ https://goreportcard.com/report/<YOUR GO GET PATH HERE>
 
 **Adding a Badge**
 
-![Go Reporcard Badge](https://goreportcard.com/badge/github.com/xercoy/blobs)
+![Go Report Card Badge](https://goreportcard.com/badge/github.com/xercoy/blobs)
 
-Make the necessary substitution to the following Markdown content which adds a badge, then click on the link to be redirected to the repo's Report Card page:
+Make the necessary substitution to the following markdown content which adds a badge:
 ```
 [![Go Report Card](https://goreportcard.com/badge/<YOUR GO GET PATH HERE>](https://goreportcard.com/report/<YOUR GO GET PATH HERE>)
 ```
 
+Once the markdown content has been added to a desired README or markdown page, the badge will redirect anyone who clicks on it to the repo's Report Card page.
 ---
 
 # 3. GoDoc
 
 ![](/postimages/advent-2016/promoting-the-quality-and-collaboration-of-your-open-source-project/godoc_cover_page.png)
 
-[GoDoc](https://godoc.org/-/about) hosts and generates documentation from Go source code on Bitbucket, Github, Google Project Hosting, and Launchpad. This resource makes unfamiliar code much more digestible, a detail that is paramount to anyone who is using a package or just trying one out. The effectiveness of the page generated by Godoc is similar to the package documentation from [golang.org](https://golang.org/pkg/fmt).
+[GoDoc](https://godoc.org/-/about) hosts and generates documentation from Go source code on Bitbucket, Github, Google Project Hosting, and Launchpad. This resource makes unfamiliar code much more digestible, a detail that is paramount to anyone who is using a package or just trying one out. The effectiveness of the page generated by GoDoc is similar to the package documentation from [golang.org](https://golang.org/pkg/fmt).
 
 Since the documentation is generated directly from source code, there are [guidelines](https://blog.golang.org/godoc-documenting-go-code) which should be followed to ensure proper output.
 
