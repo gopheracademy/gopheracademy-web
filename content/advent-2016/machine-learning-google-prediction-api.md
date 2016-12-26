@@ -3,7 +3,7 @@ author = ["Mat Ryer"]
 date = "2016-12-26T06:00:00+00:00"
 title = "A little bit of Machine Learning: Playing with Google's Prediction API"
 series = ["Advent 2016"]
-draft = true
+draft = false
 +++
 
 Before we get started, let's begin by making clear that this isn't going to be a deep dive on
