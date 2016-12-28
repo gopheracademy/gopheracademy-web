@@ -3,7 +3,6 @@ author = ["Corey Prak"]
 date = "2016-12-28T00:00:00-08:00"
 title = "Promoting the Quality and Collaboration of Your Open Source Project"
 series = ["Advent 2016"]
-draft = true
 +++
 
 So your open source project is on GitHub. It has tests, an awesome logo, probably a few stars, and maybe even a few other contributors. To spread awareness, it might be shared on the relevant subreddit, Twitter, Hacker News, etc.
