@@ -80,10 +80,12 @@ tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
 tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
 ```
 
+If `CipherSuites` is nil, [ChaCha or AES will be preferred automatically based on hardware support availability](https://go-review.googlesource.com/c/32871/).
+
 Maturity is not just features, but flexibility as well. 1.8 introduces a few
 callbacks like the existing [GetCertificate](https://tip.golang.org/pkg/crypto/tls/#Config.GetCertificate) that allow a lot of custom extensions.
 
-[GetConfigForClient](https://tip.golang.org/pkg/crypto/tls/#Config.GetConfigCertificate) is
+[GetConfigForClient](https://tip.golang.org/pkg/crypto/tls/#Config.GetConfigForClient) is
 run for every server connection, and allows customizing all fields of the
 `Config` based on the information in the [ClientHelloInfo](https://tip.golang.org/pkg/crypto/tls/#ClientHelloInfo),
 which has been expanded. This allows all kinds of things, like enabling client
@@ -132,12 +134,7 @@ fixed in OpenSSL, but full countermeasures are extremely complex, so they
 haven't been ported to the Go library since better cipher suites are available.
 1.8 introduces [partial mitigation](https://github.com/golang/go/commit/f28cf8346c4ce7cb74bf97c7c69da21c43a78034), which make the attack harder.
 
-Finally, AES-GCM cipher suites will automatically be preferred when hardware
-support is present in the default `crypto/tls`, see [this change](https://go-review.googlesource.com/c/32871/).
-
 Here's the [full changelog](https://tip.golang.org/doc/go1.8#crypto_tls) with some other minor improvements.
-
-[GetConfigForClient]: https://tip.golang.org/pkg/crypto/tls/#Config. GetConfigForClient
 
 `database/sql` was already covered in a [previous article](https://blog.gopheracademy.com/advent-2016/database_sql/) by Daniel Theophanes.
 
