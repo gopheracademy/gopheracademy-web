@@ -21,7 +21,7 @@ It still rings true.  Go is not just an amazing language, but it is a community 
 
 The December Blog Series was a tremendous success with over 155,000 page views so far.  That's 50k more than last year!! I'd like to personally thank each author for taking the time to share their knowledge with the Go community.  Reading the blog every day was like opening a new present.
 
-This year's Advent series was curated and coordinated by Damien Gryski (@dgryski).  We're indebted to him for his tireless work behind the scenes coordinating the editing and publishing of 30 posts.  Thanks Damien.  You're a Gopher Hero.  Thank you to all the editors who helped make each article more accurate, readable, and generally more awesome.
+This year's Advent series was curated and coordinated by Damian Gryski (@dgryski).  We're indebted to him for his tireless work behind the scenes coordinating the editing and publishing of 30 posts.  Thanks Damian.  You're a Gopher Hero.  Thank you to all the editors who helped make each article more accurate, readable, and generally more awesome.
 
 ## GopherCon 2017
 
