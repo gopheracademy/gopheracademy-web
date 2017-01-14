@@ -29,6 +29,8 @@ For workshops, you have the whole day to instruct a small group of people who wa
 # Keep it relevant
 
 GopherCon is not a general programming conference, the GopherCon audience are expecting to hear about Go.
+This doesn't have to be just Go the language, there's an entire ecosystem of libraries, services, projects, and companies who are using Go to solve problems.
+
 If your proposal doesn't mention Go at all, or a reader could substitute the name of another programming language for Go without changing the message of your proposal, you need to dig deeper to find the relevance for a Go programming audience.
 
 # Keep it fresh
