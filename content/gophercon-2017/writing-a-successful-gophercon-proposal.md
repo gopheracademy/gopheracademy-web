@@ -7,7 +7,7 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to pass on advice to potential speakers who are planning to submit a proposal but may be unsure how to go about it.
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give some specific advice to potential speakers about what to include in your proposal. 
 
 # Consider your audience.
 
@@ -95,6 +95,6 @@ So please, do not wait until the last day to submit your proposals as we cannot 
 
 If you have questions, or want advice, you can contact the organisers [gophercon@gopheracademy.org](mailto:gophercon@gopheracademy.org) or in the [#gophercon-denver](https://gophers.slack.com/messages/gophercon-denver/) slack channel (If you need an invite to the Gophers' slack, [use this link](https://invite.slack.golangbridge.org/)).
 
-See you all in July.
+See you all in July!
 
 David Cheney (on behalf of the proposal committee)
