@@ -42,31 +42,32 @@ If you've presented a talk at a meetup or other conference and plan to propose i
 # Writing a good GopherCon proposal
 
 The review team have no access to any other information about you, or your proposal save what you have written in the title, abstract, and details fields.
-Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation.
+Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation using only those three fields.
 
 ## Title
 
-Keep it short, pithy, and to the point. Maybe it could be a little punny, or a little cryptic, but please avoid 8 terrible things that make your proposal read like a Buzzfeed headline.
+Keep it short, pithy, and to the point.
+Maybe it could be a little punny, or a little cryptic, but please avoid 8 shocking things that make your proposal read like a Buzzfeed headline.
 
 ## Abstract
 
 Just the facts.
 One sentence that describes the topic that you'll be talking about, and one sentence that describes what the audience will take away from listening to your talk or partipating in your workshop, is all you need.
-But, just like a tweet, make those two sentences count.
+But, just like a tweet, make those sentences count.
 
 ## Detail
 
 The details section is where many proposals have traditionally come up short.
-To be blunt, many proposals across the years do not include enough detail for the reviewers to judge it according to the selection criteria.
+To be blunt, many proposals across the years have not included enough detail for the reviewers to judge them according to the selection criteria.
 
-What we encourage speakers to do every year is including in their proposal.
+What we encourage speakers to do every year is including in their proposal:
 
 1. A paragraph or two of introduction, ideally the introduction you plan to use in your talk.
 2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is twofold, to demonstrate to the readers that you've thought about how your talk will flow from the questions you pose in your introduction, to the answers in your conclusion.
 3. A paragraph or two of conclustion, again ideally this would be the conclustion you plan to use in your talk.
 
 There is no required word limit, but if you haven't writen at least 400-500 words, you're probably selling your talk short and putting yourself at a disadvantage. 
-Simply put, proposals will less detail are rarely chosen over proposals with a lot of detail, I cannot stress this enough.
+Simply put, proposals will less detail are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
 
 # Addressing the selection criteria
 
@@ -94,6 +95,6 @@ So please, do not wait until the last day to submit your proposals as we cannot 
 
 If you have questions, or want advice, you can contact the organisers [gophercon@gopheracademy.org](mailto:gophercon@gopheracademy.org) or in the [#gophercon-denver](https://gophers.slack.com/messages/gophercon-denver/) slack channel (If you need an invite to the Gophers' slack, [use this link](https://invite.slack.golangbridge.org/)).
 
-See you all in July
+See you all in July.
 
 David Cheney (on behalf of the proposal committee)
