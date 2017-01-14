@@ -7,7 +7,7 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers specific advice when writing their proposals.
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers some specific advice when writing their proposals.
 
 # Consider your audience
 
