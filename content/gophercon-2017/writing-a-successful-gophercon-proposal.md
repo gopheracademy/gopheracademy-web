@@ -81,7 +81,7 @@ The review team score each proposal according to the following review criteria:
 
 The reviewers will be looking to answer each of these questions when scoring your proposal -- make it easy for them. 
 
-# Don't wait til the last minute
+# Don't wait till the last minute
 
 Look, I understand, if I had a bill due on the 31st, then I wouldn't dream of paying it ahead of time, but submitting a conference proposal is different.
 
