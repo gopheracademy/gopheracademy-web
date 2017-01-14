@@ -81,7 +81,7 @@ The review team score each proposal according to the following review criteria:
 
 The reviewers will be looking to answer each of these questions when scoring your proposal -- make it easy for them. 
 
-# Don't wait til the last minute.
+# Don't wait til the last minute
 
 Look, I understand, if I had a bill due on the 31st, then I wouldn't dream of paying it ahead of time, but submitting a conference proposal is different.
 
@@ -91,7 +91,7 @@ So please, do not wait until the last day to submit your proposal, we cannot off
 
 # Questions
 
-If you have questions, or want advice, you can contact the organisers [gophercon@gopheracademy.org](mailto:gophercon@gopheracademy.org) or in the [#gophercon-denver](https://gophers.slack.com/messages/gophercon-denver/) slack channel (If you need an invite to the Gophers' slack, [use this link](https://invite.slack.golangbridge.org/)).
+If you have questions, or want advice, you can contact the organisers at [gophercon@gopheracademy.org](mailto:gophercon@gopheracademy.org) or in the [#gophercon-denver](https://gophers.slack.com/messages/gophercon-denver/) slack channel (If you need an invite to the Gophers' slack, [use this link](https://invite.slack.golangbridge.org/)).
 
 See you all in July!
 
