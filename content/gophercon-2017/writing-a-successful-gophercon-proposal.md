@@ -7,7 +7,7 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give some specific advice to potential speakers about what to include in your proposal. 
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers some specific advice to consider when writing their proposals.
 
 # Consider your audience.
 
@@ -34,8 +34,7 @@ If your proposal doesn't mention Go at all, or a reader could substitute the nam
 # Keep it fresh
 
 Our audience invests a lot in attending the conference and they expect GopherCon to continue its tradition of featuring new speakers and new ideas.
-The reality of our online connected world is many talks are recorded and widely circulated.
-Our audience will not be happy to attend a conference composed of talks they think they've already seen.
+This doesn't mean you shouldn't propose a talk that's been covered in previous GopherCon's, but if you can think of a new angle on an existing subject, that is new knowledge you could share with the audience.
 
 If you've presented a talk at a meet-up or other conference and plan to propose it for GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
 
@@ -66,7 +65,7 @@ What we encourage speakers to do every year is including in their proposal:
 2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is twofold, to demonstrate to the readers that you've thought about how your talk will flow from the questions you pose in your introduction, to the answers in your conclusion.
 3. A paragraph or two of conclusion, again ideally this would be the conclusion you plan to use in your talk.
 
-There is no required word limit, but if you haven't written at least 200-300 words, you're probably selling your talk short and putting yourself at a disadvantage. 
+There is no minumum word count for this section, but if you haven't written at least 200-300 words, you're probably selling your talk short and putting yourself at a disadvantage. 
 Simply put, less detailed proposals are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
 
 # Addressing the selection criteria
@@ -80,7 +79,6 @@ The review team score each proposal according to the following review criteria:
 - **Organization**: Is the proposal well organized? Will the audience tune into the narrative? Will the speaker use their time effectively?
 - **Bottom Line**: What’s the takeaway of your talk? How will the presentation improve attendees’ knowledge, outlook, and inspiration?
 
-Each of the six criteria are equally important.
 The reviewers will be looking to answer each of these questions when scoring your proposal -- make it easy for them. 
 
 # Don't wait til the last minute.
@@ -89,7 +87,7 @@ Look, I understand, if I had a bill due on the 31st, then I wouldn't dream of pa
 
 If your proposal is interesting to the reviewers, and it's clear you've made an effort to write a proposal that addresses the selection criteria, but something is missing, then we'll tell you what's missing and encourage you to update your proposal.
 But after the 31st of January what's in your proposal is final.
-So please, do not wait until the last day to submit your proposals as we cannot offer feedback after the CFP is closed.
+So please, do not wait until the last day to submit your proposal, we cannot offer feedback after the CFP is closed.
 
 # Questions
 
