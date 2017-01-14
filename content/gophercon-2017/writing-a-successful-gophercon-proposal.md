@@ -7,17 +7,17 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to pass on some advice to potential speakers who are planning to submit proposals but may be unsure of how to go about it.
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to pass on advice to potential speakers who are planning to submit a proposal but may be unsure how to go about it.
 
 # Consider your audience.
 
 This year we're asking for proposals for three different kinds of talks; keynotes, tutorials, and workshops.
-The audience for each of these are different.
+The audience for each kind of talk is different.
 
 For keynotes, you'll be speaking to the entire audience, 1500 people whose experience with Go will span everything from beginners, to long time GopherCon attendees, to the Go team themselves.
-This means you have to keep your topic relevant for a wide audience.
+This means your topic should be relevant to a wide audience.
 
-But, this does not mean pitching to the loweset common denominator and trying to sell the audience on the benefits of using Go.
+This does not mean pitching to the loweset common denominator and trying to sell the audience on the benefits of using Go.
 The audience have already invested time and money in flying to Denver to visit the conference -- they already think Go is pretty great.
 Instead, you want to inspire the audience to convince _other_ people that Go is great, and do that by presenting information that is relevant to Go programmers today.
 
@@ -29,16 +29,15 @@ For workshops, again you have more time, the whole day, to instruct students who
 # Keep it relevent
 
 GopherCon is not a general programming conference, the GopherCon audience are expecting to hear about Go.
-Your proposal _must_ be relevant to an audience of Go programmers.
 If your proposal doesn't mention Go at all, or a reader could substitute the name of another programming language for Go without changing the message of your proposal, you need to dig deeper to find the relevance for a Go programming audience.
 
 # Keep it fresh
 
 Our audience invests a lot in attending the conference and they expect GopherCon to continue its tradition of featuring new speakers and new ideas.
-The sad reality of our online connected word is many talks are recorded and widely circulated.
+The reality of our online connected world is many talks are recorded and widely circulated.
 Our audience will not be happy to attend a conference composed of talks they think they've already seen.
 
-If you've presented a talk at a meetup or smaller conference and plan to propose it at GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
+If you've presented a talk at a meetup or other conference and plan to propose it for GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
 
 # Writing a good GopherCon proposal
 
