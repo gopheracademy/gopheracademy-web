@@ -17,7 +17,7 @@ The audience for each kind of talk is different.
 For keynotes, you'll be speaking to the entire audience, 1500 people whose experience with Go will span everything from beginners, to long time GopherCon attendees, to the Go team themselves.
 This means your topic should be relevant to a wide audience.
 
-This does not mean pitching to the loweset common denominator and trying to sell the audience on the benefits of using Go.
+This does not mean pitching to the lowest common denominator and trying to sell the audience on the benefits of using Go.
 The audience have already invested time and money in flying to Denver to visit the conference -- they already think Go is pretty great.
 Instead, you want to inspire the audience to convince _other_ people that Go is great, and do that by presenting information that is relevant to Go programmers today.
 
@@ -26,7 +26,7 @@ You can afford to present in depth on a topic and be prepared to take questions.
 
 For workshops, again you have more time, the whole day, to instruct students who have chosen to attend your specific workshop.
 
-# Keep it relevent
+# Keep it relevant
 
 GopherCon is not a general programming conference, the GopherCon audience are expecting to hear about Go.
 If your proposal doesn't mention Go at all, or a reader could substitute the name of another programming language for Go without changing the message of your proposal, you need to dig deeper to find the relevance for a Go programming audience.
@@ -37,7 +37,7 @@ Our audience invests a lot in attending the conference and they expect GopherCon
 The reality of our online connected world is many talks are recorded and widely circulated.
 Our audience will not be happy to attend a conference composed of talks they think they've already seen.
 
-If you've presented a talk at a meetup or other conference and plan to propose it for GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
+If you've presented a talk at a meet-up or other conference and plan to propose it for GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
 
 # Writing a good GopherCon proposal
 
@@ -52,7 +52,7 @@ Maybe it could be a little punny, or a little cryptic, but please avoid 8 shocki
 ## Abstract
 
 Just the facts.
-One sentence that describes the topic that you'll be talking about, and one sentence that describes what the audience will take away from listening to your talk or partipating in your workshop, is all you need.
+One sentence that describes the topic that you'll be talking about, and one sentence that describes what the audience will take away from listening to your talk or participating in your workshop, is all you need.
 But, just like a tweet, make those sentences count.
 
 ## Detail
@@ -64,9 +64,9 @@ What we encourage speakers to do every year is including in their proposal:
 
 1. A paragraph or two of introduction, ideally the introduction you plan to use in your talk.
 2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is twofold, to demonstrate to the readers that you've thought about how your talk will flow from the questions you pose in your introduction, to the answers in your conclusion.
-3. A paragraph or two of conclustion, again ideally this would be the conclustion you plan to use in your talk.
+3. A paragraph or two of conclusion, again ideally this would be the conclusion you plan to use in your talk.
 
-There is no required word limit, but if you haven't writen at least 400-500 words, you're probably selling your talk short and putting yourself at a disadvantage. 
+There is no required word limit, but if you haven't written at least 400-500 words, you're probably selling your talk short and putting yourself at a disadvantage. 
 Simply put, proposals will less detail are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
 
 # Addressing the selection criteria
