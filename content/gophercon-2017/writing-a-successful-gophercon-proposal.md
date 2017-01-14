@@ -42,7 +42,7 @@ This doesn't mean you shouldn't propose a talk that's been covered in previous G
 
 If you've presented a talk at a meet-up or other conference and plan to propose it for GopherCon, by all means do so, but think about how you can incorporate the feedback you received and how the landscape may have changed since you gave your presentation last.
 
-# Writing a good GopherCon proposal
+# Writing a GopherCon proposal
 
 The review team have no access to any information about you, or your proposal, save what you have written in the title, abstract, and details fields.
 Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation using just those three fields.
