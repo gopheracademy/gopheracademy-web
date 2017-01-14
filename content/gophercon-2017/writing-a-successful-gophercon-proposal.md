@@ -7,7 +7,7 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers specific advice to consider when writing their proposals.
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers some specific advice to consider when writing their proposals.
 
 # Consider your audience
 
@@ -29,7 +29,9 @@ For workshops, you have the whole day to instruct a small group of people who wa
 # Keep it relevant
 
 GopherCon is not a general programming conference, the GopherCon audience are expecting to hear about Go.
-This doesn't have to be just Go the language, there's an entire ecosystem of libraries, services, projects, and companies who are using Go to solve problems.
+
+This doesn't mean we're only seeking talks about Go, the language.
+There's an entire ecosystem of libraries, services, projects, and companies who are using Go to solve problems, and that is just as, if not more, interesting than a talk about the internals of the Go runtime, or design best practices.
 
 If your proposal doesn't mention Go at all, or a reader could substitute the name of another programming language for Go without changing the message of your proposal, you need to dig deeper to find the relevance for a Go programming audience.
 
