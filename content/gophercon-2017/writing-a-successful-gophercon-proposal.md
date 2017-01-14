@@ -24,7 +24,7 @@ Instead, you want to inspire the audience to convince _other_ people that Go is 
 For tutorials, you have more time, up to 45 minutes, and an audience who are self selecting; they have chosen to come to your talk over the other two talks at the same time.
 You can afford to present in depth on a topic and be prepared to take questions.
 
-For workshops, again you have more time, the whole day, to instruct students who have chosen to attend your specific workshop.
+For workshops, you have the whole day to instruct a small group of people who want specialized knowledge.
 
 # Keep it relevant
 
@@ -66,8 +66,8 @@ What we encourage speakers to do every year is including in their proposal:
 2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is twofold, to demonstrate to the readers that you've thought about how your talk will flow from the questions you pose in your introduction, to the answers in your conclusion.
 3. A paragraph or two of conclusion, again ideally this would be the conclusion you plan to use in your talk.
 
-There is no required word limit, but if you haven't written at least 400-500 words, you're probably selling your talk short and putting yourself at a disadvantage. 
-Simply put, proposals will less detail are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
+There is no required word limit, but if you haven't written at least 200-300 words, you're probably selling your talk short and putting yourself at a disadvantage. 
+Simply put, less detailed proposals are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
 
 # Addressing the selection criteria
 
