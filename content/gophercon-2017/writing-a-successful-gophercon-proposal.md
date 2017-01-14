@@ -44,8 +44,8 @@ If you've presented a talk at a meet-up or other conference and plan to propose 
 
 # Writing a good GopherCon proposal
 
-The review team have no access to any other information about you, or your proposal save what you have written in the title, abstract, and details fields.
-Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation using only those three fields.
+The review team have no access to any information about you, or your proposal, save what you have written in the title, abstract, and details fields.
+Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation using just those three fields.
 
 ## Title
 
@@ -63,7 +63,7 @@ But, just like a tweet, make those sentences count.
 The details section is where many proposals have traditionally come up short.
 To be blunt, many proposals across the years have not included enough detail for the reviewers to judge them according to the selection criteria.
 
-What we encourage speakers to do every year is including in their proposal:
+What we encourage speakers to do each year is include with their proposal:
 
 1. A paragraph or two of introduction, ideally the introduction you plan to use in your talk.
 2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is to demonstrate to the reviewer that you've thought about how your talk will flow from the questions you pose in your introduction to the answers in your conclusion.
@@ -90,7 +90,7 @@ The reviewers will be looking to answer each of these questions when scoring you
 Look, I understand, if I had a bill due on the 31st, then I wouldn't dream of paying it ahead of time, but submitting a conference proposal is different.
 
 If your proposal is interesting to the reviewers, and it's clear you've made an effort to write a proposal that addresses the selection criteria, but something is missing, then we'll tell you what's missing and encourage you to update your proposal.
-But after the 31st of January what's in your proposal is final.
+But, after the 31st of January what's in your proposal is final.
 So please, do not wait until the last day to submit your proposal, we cannot offer feedback after the CFP is closed.
 
 # Questions
@@ -99,4 +99,4 @@ If you have questions, or want advice, you can contact the organisers at [gopher
 
 See you all in July!
 
-David Cheney (on behalf of the proposal committee)
+David Cheney (on behalf of the programme committee)
