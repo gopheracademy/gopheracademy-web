@@ -7,21 +7,21 @@ series = ["GopherCon 2017"]
 
 +++
 
-[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers some specific advice to consider when writing their proposals.
+[The GopherCon 2017 Call for Proposals](https://www.papercall.io/gophercon2017) has reached the halfway mark so I wanted to give potential speakers specific advice to consider when writing their proposals.
 
-# Consider your audience.
+# Consider your audience
 
 This year we're asking for proposals for three different kinds of talks; keynotes, tutorials, and workshops.
 The audience for each kind of talk is different.
 
-For keynotes, you'll be speaking to the entire audience, 1500 people whose experience with Go will span everything from beginners, to long time GopherCon attendees, to the Go team themselves.
-This means your topic should be relevant to a wide audience.
+For keynotes, you'll be speaking to the entire audience, 1500 people whose Go experience spans everything from beginners, to long time GopherCon attendees, to the Go team themselves.
+Your topic should be relevant to a wide audience.
 
-This does not mean pitching to the lowest common denominator and trying to sell the audience on the benefits of using Go.
+This doesn't mean pitching to the lowest common denominator and trying to sell the audience on the benefits of using Go.
 The audience have already invested time and money in flying to Denver to visit the conference -- they already think Go is pretty great.
 Instead, you want to inspire the audience to convince _other_ people that Go is great, and do that by presenting information that is relevant to Go programmers today.
 
-For tutorials, you have more time, up to 45 minutes, and an audience who are self selecting; they have chosen to come to your talk over the other two talks at the same time.
+For tutorials, you have more time, up to 45 minutes, and an audience who are self selecting; they have chosen to come to your talk over the other talks at the same time.
 You can afford to present in depth on a topic and be prepared to take questions.
 
 For workshops, you have the whole day to instruct a small group of people who want specialized knowledge.
@@ -62,10 +62,10 @@ To be blunt, many proposals across the years have not included enough detail for
 What we encourage speakers to do every year is including in their proposal:
 
 1. A paragraph or two of introduction, ideally the introduction you plan to use in your talk.
-2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is twofold, to demonstrate to the readers that you've thought about how your talk will flow from the questions you pose in your introduction, to the answers in your conclusion.
-3. A paragraph or two of conclusion, again ideally this would be the conclusion you plan to use in your talk.
+2. An outline of the presentation itself. Bullet points are fine. The goal of including an outline is to demonstrate to the reviewer that you've thought about how your talk will flow from the questions you pose in your introduction to the answers in your conclusion.
+3. A paragraph or two of conclusion, again, ideally this would be the conclusion you plan to use in your talk.
 
-There is no minumum word count for this section, but if you haven't written at least 200-300 words, you're probably selling your talk short and putting yourself at a disadvantage. 
+There is no minimum word count for this section, but if you haven't written at least 200-300 words, you're probably selling your talk short and putting yourself at a disadvantage. 
 Simply put, less detailed proposals are rarely chosen over proposals with a lot of detail, we cannot stress this enough.
 
 # Addressing the selection criteria
