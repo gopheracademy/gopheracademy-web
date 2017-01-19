@@ -11,7 +11,7 @@ series = ["GopherCon 2017"]
 
 # Writing a GopherCon proposal
 
-The review team have no access to any information about you, or your proposal, save what you have written in the title, abstract, and details fields.
+The review team have no access to any information about you, or your proposal, save what you have written in the title, abstract, and talk description fields.
 Your job is to convince the reviewers that you can deliver an engaging, relevant, and informative presentation using just those three fields.
 
 ## Title
@@ -25,9 +25,9 @@ Just the facts.
 One sentence that describes the topic that you'll be talking about, and one sentence that describes what the audience will take away from listening to your talk or participating in your workshop, is all you need.
 But, just like a tweet, make those sentences count.
 
-## Detail
+## Talk description
 
-The details section is where many proposals have traditionally come up short.
+The description section is where many proposals have traditionally come up short.
 To be blunt, many proposals across the years have not included enough detail for the reviewers to judge them according to the selection criteria.
 
 What we encourage speakers to do each year is include with their proposal:
