@@ -4,6 +4,7 @@ date = "2016-12-31T05:26:58-05:00"
 linktitle = "Conclusion"
 series = ["Advent 2016"]
 title = "2016 Wrap Up"
+tags = ["gophercon","community"]
 
 +++
 
