@@ -416,3 +416,8 @@ Gleam is being actively worked on. Some of the goals are:
 3. Later add a SQL layer on top of it.
 
 Lots of work to be done. Welcome any kind of contribution!
+
+# Updates Jan-16-2017
+
+1. The OnDisk() mode is speed up about 5 times faster.
+2. Added way to [Write pure Go mappers and reducers](https://github.com/chrislusf/gleam/wiki/Write-Mapper-Reducer-in-Go). 
