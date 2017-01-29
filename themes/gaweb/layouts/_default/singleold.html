@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="not-ie" lang="en">
+<!--<![endif]-->
+<head>
+
+  <!-- Basic meta tags -->
+  <meta charset="utf-8">
+  <title>GopherAcademy - Conferences, Training, and Community</title>
+  <meta name="description" content="GopherAcademy provides conferences, education, training, and community services to the Go programming language community.">
+  <meta name="keywords" content="golang, training, go training, gophercon, go conference, education">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- Styles -->
+  <link href="/css/style.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 7]>
+  <link href="/static/css/font-awesome/font-awesome-ie7.min.css" rel="stylesheet" />
+  <![endif]-->
+
+  <!-- Web Fonts  -->
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css' />
+
+  <!-- Javascript -->
+
+  <!-- Internet Explorer condition - HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+</head>
+
+{{ partial "header.html" . }}
+
+			<div class="header-content">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-8 col-md-offset-2 interior-header">
+
+              <a href="http://www.gophercon.com"><img src="/images/gc-banner.png" alt="GopherCon 2016" title="GopherCon 2016"  /></a>
+
+						</div><!-- col-md-8 -->
+					</div><!-- row -->
+				</div><!-- container -->
+			</div><!-- header-content -->
+  <div id="article-body">
+
+
+   <div class="article-title">{{ .Title }}
+ </div>
+   <p class="meta">Contributed by <mark>
+<script type="text/javascript">
+ var arr = [];
+ {{range .Params.author }}
+ arr.push({{ . }})
+ {{ end }}
+ document.write(arr.join(" & "));
+ </script>
+</mark>
+    &nbsp;<i class="fa fa-calendar-o"></i> {{ .Date.Format  "2006-01-02" }}</p>
+	<p class="meta"><small>{{ range .Params.tags }} <a href="/tags/{{ . | urlize }}"> {{.}}</a> &nbsp;{{end}}</p>
+	<hr/>
+   <div class="post"></br>
+   <div id="content-font">
+     {{ .Content }}
+     </div>
+ </div>
+{{ if .Params.series }}
+	{{ $link := .Permalink }}
+	{{ $name := index .Params.series 0 }}
+	<hr/>
+	<p id="series-meta">This is a post in the <mark>{{$name}}</mark> series.<br/>
+	Other posts in this series:</p>
+{{ $name := $name | urlize }}
+	{{ $series := index .Site.Taxonomies.series $name }}
+	<ul class="series">
+	{{ range $series.Pages }}
+		<li>{{.Date.Format "Jan 02, 2006"}} -
+		{{ if eq .Permalink $link }}
+			{{.LinkTitle}}
+		{{else}}
+			<a href="{{.Permalink}}">{{.LinkTitle}} </a>
+		{{end}}
+		</li>
+	{{end}}
+	</ul>
+{{end}}
+
+
+ <p>
+{{ template "_internal/disqus.html" . }}
+ </p>
+ </div>
+
+
+ <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+ <ul class="pager">
+     {{with .Prev}} &nbsp;<li class="previous"><a href="{{.Permalink}}"><<  {{.Title}}</a></li>{{end}}
+     {{with .Next}} &nbsp;<li class="next"><a href="{{.Permalink}}"> {{.Title}}  >></a></li>{{end}}
+</ul>
+
+    </ul>
+    </div>
+{{ partial "footer.html" . }}
+
