@@ -104,3 +104,4 @@ _Note: We make no pretense that this list is exhaustive!_
 
 Comments can be made right here, but may be more productive if channeled to Peter Bourgon, the #vendor channel on the Gopher slack, or the [go-pm](https://groups.google.com/forum/#!forum/go-package-management) mailing list.
 
+Update: In January 2017 [dep](https://github.com/golang/dep) was made public.
