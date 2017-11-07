@@ -15,7 +15,6 @@ We'd love blog posts of all types as long as they're related to Go.  Introduce u
 
 Brian 
 
-[The Blog](https://blog.gopheracademy.com/)
 [Github Repository](https://github.com/gopheracademy/gopheracademy-web)
 
 
