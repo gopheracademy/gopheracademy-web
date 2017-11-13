@@ -13,18 +13,18 @@ It's a fun process, and you'll have help and support from editors along the way.
 
 We'd love blog posts of all types as long as they're related to Go.  Introduce us to your new project or package!  Write a how-to on using your favorite package or tool!  Propose a radical new change for Go 2.0!  We can't wait to see what you'll write.
 
-Brian 
+Brian
 
 [Github Repository](https://github.com/gopheracademy/gopheracademy-web)
 
 
 
-Here are the articles from our previous three years:
+Here are the articles from our previous four years:
 
-[2015 Posts](https://blog.gopheracademy.com/series/advent-2015/) 
+[2016 Posts](https://blog.gopheracademy.com/series/advent-2016/)
 
-[2014 Posts](https://blog.gopheracademy.com/series/advent-2014/) 
+[2015 Posts](https://blog.gopheracademy.com/series/advent-2015/)
 
-[2013 Posts](https://blog.gopheracademy.com/series/advent-2013/) 
+[2014 Posts](https://blog.gopheracademy.com/series/advent-2014/)
 
-
+[2013 Posts](https://blog.gopheracademy.com/series/advent-2013/)
