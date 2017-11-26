@@ -90,7 +90,9 @@ it is no different:
 1. Use the generated code
 
 I'll now give a quick example of how to use the bindings, which should
-look extremely familiar if you've already used protobuf and gRPC.
+look extremely familiar if you've already used protobuf and gRPC. If
+you want to, you can following along these instructions after cloning
+[my boilerplate repo](https://github.com/johanbrandhorst/grpcweb-boilerplate).
 
 ### Define the interface
 
@@ -253,9 +255,14 @@ in use, you can dive into my
 [`grpcweb-example` repo](https://github.com/johanbrandhorst/grpcweb-example)
 and take a look at the [demo website](https://grpcweb.jbrandhorst.com).
 
+If you want to try it out for yourself, I would encourage you to clone
+[the boilerplate repo](https://github.com/johanbrandhorst/grpcweb-boilerplate)
+I set up to get going quickly.
+
 I hope this post has inspired you to try something new next time you're
 writing a webserver with a frontend client. If you have any questions
 or comments, please reach out to me
 [`@johanbrandhorst`](https://twitter.com/johanbrandhorst) or
-`jbrandhorst` on Gophers Slack, and check out the rest of
-[my blog](https://jbrandhorst.com).
+`jbrandhorst` on Gophers Slack, and check out my
+[my blog](https://jbrandhorst.com) for more stuff related to Go,
+GopherJS and gRPC.
