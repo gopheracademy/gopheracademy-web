@@ -1,6 +1,9 @@
-baseurl = "https://blog.gopheracademy.com"
+baseurl = "https://www.gopheracademy.com"
 languageCode = "en-us"
-title = "Gopher Academy Blog"
+title = "Gopher Academy | Home"
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
 disqusShortname = "gopheracademy"
 [taxonomies]
    author = "authors"
