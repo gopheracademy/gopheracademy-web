@@ -41,7 +41,7 @@ that it looks correct before submitting a pull request.
 To view the site on your local machine, you need to do the following:
 
 1. Clone the repo
-2. Install [Hugo](http://hugo.spf13.com)
+2. Install [Hugo](https://gohugo.io/)
 
 Once Hugo is installed, run it from the cloned repo using:
 

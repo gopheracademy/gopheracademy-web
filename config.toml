@@ -2,6 +2,7 @@ baseurl = "https://blog.gopheracademy.com"
 languageCode = "en-us"
 title = "Gopher Academy Blog"
 disqusShortname = "gopheracademy"
+theme = "gaweb"
 [taxonomies]
    author = "authors"
    series = "series"
