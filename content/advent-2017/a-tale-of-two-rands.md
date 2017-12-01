@@ -10,16 +10,16 @@ draft = true
 I had always been a bit confused as to how the `crypto/rand` package and the `math/rand` package were related, or how they were expected to work (together). Is this something that everyone else already grokked, or is that just my impostor syndrome talking? Well, one day I decided to see if I could defeat my ignorance, and this blog post is the result of that investigation.
 
 # The `math` One
-If you've every poked around in the [`math/rand`](https://golang.org/pkg/math/rand) package, you might agree that it presents a fairly convenient API. My favorite example is the `func Intn(n int) int`, a function that returns a random number within the range that you've given it. SUPER USEFUL!
+If you've ever poked around in the [`math/rand`](https://golang.org/pkg/math/rand) package, you might agree that it presents a fairly convenient API. My favorite example is the `func Intn(n int) int`, a function that returns a random number within the range that you've given it. SUPER USEFUL!
 
 You may be asking about the difference between the top-level functions and the functions hung off an instance of the `Rand` type. If you look at the [source code](https://golang.org/src/math/rand/rand.go), you'll see that the top-level functions are just convenience wrappers that refer to a globally instantiated package value called `globalRand`.
 
-There are a few gotchas when using this package, though. The basic usage of only provides __pseudo-random__ numbers, as a function of the seed. This means that if you create two `Rand` instances using a functionally equivalent seed, equivalent calls (in order and function) to the two instances will produce _parallel_ outputs. (I found this concept to be personally challenging to my understanding of "random", because I wouldn't expect to be able to anticipate a "random" result.) If the two `Rand` instances are seeded with different values, the parallel behavior will not be observed.
+There are a few gotchas when using this package, though. The basic usage only provides __pseudo-random__ numbers, as a function of the seed. This means that if you create two `Rand` instances using a functionally equivalent seed, equivalent calls (in order and function) to the two instances will produce _parallel_ outputs. (I found this concept to be personally challenging to my understanding of "random", because I wouldn't expect to be able to anticipate a "random" result.) If the two `Rand` instances are seeded with different values, the parallel behavior will not be observed.
 
 # The `crypto` One
-Now, let's look at [`crypto/rand`](https://golang.org/pkg/crypto/rand/). Okay, it's got a nice and concise API surface. The only thing is: HOW THE HECK DO I USE THIS?!? I see that I can generally get byte slices of random 1's and 0's, but what do I do with those?!? That's not nearly as useful as what `math/rand` provides, right?
+Now, let's look at [`crypto/rand`](https://golang.org/pkg/crypto/rand/). Okay, it's got a nice and concise API surface. My understanding is that it defers to the underlying OS's platform's random generator, which intends to be non-deterministic. The only thing is: HOW THE HECK DO I USE THIS?!? I see that I can generally get byte slices of random 1's and 0's, but what do I do with those?!? That's not nearly as useful as what `math/rand` provides, right?
 
-Hrm. Maybe the question is: How can I combine these two wildly different packages?
+Hrm. Is it possible to get the non-deterministic behavior of `crypto/rand`, but with the more approachable API of `math/rand`? Maybe the real question is: How can I combine these two wildly different packages?
 
 # Two Great Tastes That Taste Great Together
 (NB: https://www.youtube.com/watch?v=DJLDF6qZUX0)
