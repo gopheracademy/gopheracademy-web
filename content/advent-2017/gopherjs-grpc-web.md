@@ -1,6 +1,6 @@
 +++
 author = ["Johan Brandhorst"]
-date = "2017-12-02"
+date = "2017-12-01"
 linktitle = "Using GopherJS with gRPC-Web"
 series = ["Advent 2017"]
 title = "Using GopherJS with gRPC-Web"
