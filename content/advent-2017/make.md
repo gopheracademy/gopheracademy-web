@@ -1,6 +1,6 @@
 +++
 author = [ "Kevin Burke" ]
-date = "2017-11-02T00:00:00"
+date = "2017-12-02T00:00:00"
 linktitle = "Automating Go development with Make"
 title = "Automating Go development with Make"
 series = ["Advent 2017"]
