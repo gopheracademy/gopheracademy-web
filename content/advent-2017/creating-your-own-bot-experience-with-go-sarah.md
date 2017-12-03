@@ -17,28 +17,28 @@ To maximize that user experience, go-sarah has an idea of "conversational contex
 
 Think about when, like any other day on chat tool, you are talking with your colleagues about a critical issue reported by a user.
 Everybody agrees this must be fixed before Christmas holidays.
-In the extension of this conversation, on chat tool, you type in something like".todo Fix Sarah's issue #123 by 2017-12-20 12:00:00" to register schedule.
+In the extension of this conversation, on chat tool, you type in something like ".todo Fix Sarah's issue #123 by 2017-12-20 12:00:00" to register schedule.
 This is somewhat handy, but user still has to input command and its arguments at once.
-There is a room to improve.
+There is some room to improve.
 With go-sarah's "conversational context" feature, you can stash currently provided arguments and still prompt user to provide unfilled argument one at a time just like the image below:
 
 ![](/postimages/creating-your-own-bot-experience-with-go-sarah/conoversational_context.png)
 
-This is more "conversational" and user friendly. With this feature, not only bot can let user input arguments step by step, bot can validate partial user input and prompt user to re-input.
+This is more "conversational" and user friendly. With this feature, not only can the bot let the user input arguments step by step, the bot can also validate partial user input and prompt user to re-input.
 This can also be used in a way such as user and AI have conversation during when user inputs ".ai" command until user inputs something like "quit."
 
 ## Live Configuration Update
-Let's say you have a command that receive user input such as ".weather San Antonio, Texas" and respond local weather.
+Let's say you have a command that receives user input such as ".weather San Antonio, Texas" and respond local weather.
 A problem is that this command internally calls a third party web api with expirable token, and the token must be manually updated every once in a while. Do you update configuration file and reboot bot process?
 
-With proper settings, go-sarah reads configuration file when file is updated and applies change to corresponding command's configuration struct in a thread safe manner. So the bot process does not need to be rebooted just to update configuration value. Detail will be covered later on this post.
+With proper settings, go-sarah reads a configuration file when that file is updated and applies changes to corresponding command's configuration struct in a thread safe manner. So the bot process does not need to be rebooted just to update configuration value. Details will be covered later on this post.
 
 ## Scheduled Task
 There are two kinds of executable jobs in this project: command and scheduled task.
 
-Command is a job that is mathced against user input and, if matched, executed. For example, bot says "Hello, {user name}" when user input ".hello" on chat window. This is pretty basic.
+Command is a job that is matched against user input and, if matched, executed. For example, bot says "Hello, {user name}" when user input ".hello" on chat window. This is pretty basic.
 
-Scheduled task is the one executed in a scheduled manner without any user input. Output is sent to predefined destination or the output itself can designate its destination chat room. Examples can be a task that sends daily weather forecast to predefined room on every morning, and a task that sends statistical data to every project room defined in a configuration struct. Thanks to the live configuration update feature, the schedule or task-specific configuration values can be updated without process reboot.
+Scheduled task is the one executed in a scheduled manner without any user input. Output is sent to a predefined destination or the output itself can designate its destination chat room. Examples can be a task that sends daily weather forecast to predefined room on every morning, and a task that sends statistical data to every project room defined in a configuration struct. Thanks to the live configuration update feature, the schedule or task-specific configuration values can be updated without process reboot.
 
 ## Alerting Mechanism
 Developers can register as many `sarah.Alerter` implementations as wanted to notify bot's critical states to administrators.
@@ -91,9 +91,9 @@ runner.Run(context.TODO())
 
 ## Bot / Adapter
 `sarah.Bot` interface is responsible for actual interaction with chat services such as [LINE](https://github.com/oklahomer/go-sarah-line), Slack, gitter, etc...
-Or if two or more parties are messaging each other over pre-defined protocol and executing corresponding Command, such system can be created by providing one Bot for each party just like [go-sarah-iot](https://github.com/oklahomer/go-sarah-iot) does to support communication between IoT devices and a central server.
+Or if two or more parties are messaging each other over pre-defined protocol and executing corresponding Command, such a system can be created by providing one Bot for each party just like [go-sarah-iot](https://github.com/oklahomer/go-sarah-iot) does to support communication between IoT devices and a central server.
 
-Since `sarah.Bot` is merely an interface, anything that implement `sarah.Bot` can be passed to `sarah.Runner`.
+Since `sarah.Bot` is merely an interface, anything that implements `sarah.Bot` can be passed to `sarah.Runner`.
 To ease its implementation, however, common bot behaviors are already implemented by `sarah.defaultBot` and can be initialized as `sarah.Bot` by supplying `sarah.Adapter` to `sarah.NewBot`.
 In this way developers only have to implement chat-tool specific messaging part.
 It looks somewhat like below:
@@ -113,7 +113,7 @@ runner.Run(context.TODO())
 
 ## Command
 We already covered what command is.
-As a matter of fact anything that implement `sarah.Command` can be a Command and be passed to `sarah.Bot`.
+As a matter of fact anything that implements `sarah.Command` can be a Command and be passed to `sarah.Bot`.
 
 ```go
 type myCommand struct {
@@ -183,7 +183,7 @@ var SlackProps = sarah.NewCommandPropsBuilder().
 	MustBuild()
 ```
 
-Would like to reference some kind of configuration struct within command function, lazily initialize the configuration struct, and re-configure it when configuration file is updated?
+Would you like to reference some kind of configuration struct within command function, lazily initialize the configuration struct, and re-configure it when configuration file is updated?
 No problem. Use `ConfigurableFunc` instead of `Func`.
 ```go
 // When config is passed to ConfigurableFunc and if sarah.Config.PluginConfigRoot is defined,
@@ -205,8 +205,8 @@ var SlackProps = sarah.NewCommandPropsBuilder().
 ```
 
 On `CommandPropsBuilder.Build` or `CommandPropsBuilder.MustBuild`, this validates previous input and returns `sarah.CommandProps` that represents a non-contradicting set of arguments.
-To instantiate `sarah.Command` on the fly, this props can be passed to `sarah.Runner`.
-Not `sarah.Bot`. Remember all components' life cycles are managed by `sarah.Runner`.
+To instantiate `sarah.Command` on the fly, this props can be passed to `sarah.Runner`, not `sarah.Bot`.
+Remember all components' life cycles are managed by `sarah.Runner`.
 ```go
 var matchPattern = regexp.MustCompile(`^\.echo`)
 var props = sarah.NewCommandPropsBuilder().
@@ -238,4 +238,4 @@ The first one is handy because you can simply pass function that satisfies `func
 # Wrapping Up
 With introduced major components, many different bot experience can be achieved. To start with, runnable example code is located at [example codes](https://github.com/oklahomer/go-sarah/tree/master/examples).
 
-Documents are being covered in [project top page](https://github.com/oklahomer/go-sarah) and [wiki pages](https://github.com/oklahomer/go-sarah/wiki), but not completed yet. To improved that, I would appreciate your feedbacks: github star, issue, pull request, tweet, or whatever. [I named this project after my new born daughter](http://blog.oklahome.net/2017/08/parenting-software-engineer.html) and I am so into it, so any feedback would encourage me. Thanks.
+Documents are being covered in [project top page](https://github.com/oklahomer/go-sarah) and [wiki pages](https://github.com/oklahomer/go-sarah/wiki), but not completed yet. To improve that, I would appreciate your feedbacks: github star, issue, pull request, tweet, or whatever. [I named this project after my new born daughter](http://blog.oklahome.net/2017/08/parenting-software-engineer.html) and I am so into it, so any feedback would encourage me. Thanks.
