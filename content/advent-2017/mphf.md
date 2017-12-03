@@ -1,10 +1,9 @@
 +++
 author = ["Damian Gryski"]
-date = "2017-12-02T00:00:00-05:00"
+date = "2017-12-03T00:00:00-05:00"
 linktitle = "Minimal Perfect Hash Functions"
 series = ["Advent 2017"]
 title = "Minimal Perfect Hash Functions"
-draft = true
 +++
 
 A regular hash function turns a key (a string or a number) into an integer.
