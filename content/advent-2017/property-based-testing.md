@@ -32,7 +32,7 @@ To recap, a useful program has to:
 * Be robust to various inputs
 * Do the correct thing
 
-# Mo' Inputs Mo' Problems #
+## Mo' Inputs Mo' Problems ##
 
 We've established that inputs and outputs are what makes programs useful. For the rest of this post, I'll talk mostly about inputs. And to spare readers of the philosophical conundrum that may occur, I'll limit to talking about inputs of things that are controllable by the programmer. In practice, this means inputs to functions. 
 
@@ -64,7 +64,7 @@ func TestAdd(t *testing.T) {
 
 Then run `go test`. It just works.
 
-# The Case Of Perverse Incentives #
+## The Case Of Perverse Incentives ##
 
 Testing is great. It ensures that many people can work on the same project without stepping (much) on each others' toes. But blind insistence on testing can lead to poor software. 
 
@@ -120,7 +120,7 @@ So an idea emerges: why don't we test on all possible values? Or at least as man
 
 Enter the notion of [fuzz testing](https://en.wikipedia.org/wiki/Fuzzing): we feed the program random inputs, and then watch for it to fail. Fuzz testing often leads one to find subtle bugs you don't expect. Here's one that Chris Marshall discovered on my [skiprope](https://github.com/chewxy/skiprope) library. I have to this day, no idea what the correct fix is. Solutions welcome
 
-# A More Disciplined Approach #
+## A More Disciplined Approach ##
 
 Fuzz testing works by throwing everything at the wall and seeing what sticks. It's extremely useful for finding bugs you hadn't reasoned out yet. That typically falls under the purview of "be robust to various inputs" part of building useful programs. But it's not good enough to test what inputs work and what inputs cause a `panic`. You also want to test that those inputs are doing the correct things. 
 
@@ -128,7 +128,7 @@ Fuzz testing works by throwing everything at the wall and seeing what sticks. It
 
 Testing for results is tedious anyway - you have to know that the result of `1 + 2` is `3`. And that's for the simple stuff. Imagine having to know the answers ahead of time for random input for more complicated programs.
 
-# Properties #
+## Properties ##
 
 Instead of doing that, we can adopt a different approach to testing. Instead of asking "what is the expected result of this program given these example inputs?", we ask the question: "what is the property of the result and program that doesn't change given inputs?"
 
@@ -158,7 +158,7 @@ The point I'm trying to make here is that there are multiple properties to be te
 
 # How To Do Property Based Testing In Go #
 
-So, with the Whys out of the way, let's talk about how to do property testing in Go. Go actually comes with a built in property testing tool, `"testing/quick"`. Given that property based testing is based on Haskell's QuickCheck, naturally the testing function is called `quick.Check`. The gist of how it works is simple: write your property test as a function, pass it into the `quick.Check` function, and Bob's your uncle.
+So, with the Whys out of the way, let's talk about How to do property based testing in Go. Go actually comes with a built in property testing tool, `"testing/quick"`. Given that property based testing is based on Haskell's [QuickCheck](https://hackage.haskell.org/package/QuickCheck), naturally the testing function is called `quick.Check`. The gist of how it works is simple: write your property test as a function, pass it into the `quick.Check` function, and Bob's your uncle.
 
 Here's how to test for commutativity with `"testing/quick"`:
 
@@ -189,9 +189,9 @@ The package works for non-primitive types too. Further extensions to functionali
 
 So we've now been briefly introduced to the world of properties: there is now a notion that there are some properties that functions and programs have. Here are some properties that an addition function for numbers should have:
 
-* Commutativity: `Add(a, b) == Add(b, a)`
-* Associativity: `Add(a, Add(b, c)) == Add(Add(a, b), c)`
-* Identity: `Add(a, IDENTITY) == a`. 
+* **Commutativity**: `Add(a, b) == Add(b, a)`
+* **Associativity**: `Add(a, Add(b, c)) == Add(Add(a, b), c)`
+* **Identity**: `Add(a, IDENTITY) == a`. 
 
 Let's talk about the Identity property. The Identity property states that calling the function with any value and the identity will always yield the same value. When you think about that, the `IDENTITY` of `Add` is `0`. Conversely the `IDENTITY` value of `Mul` is `1` because any number multiplied by 1 will always be that number itself. This is what separates `Add` and `Mul`. 
 
@@ -205,14 +205,38 @@ For example, let's say you invented a new sort algorithm. What properties that a
 
 As another example, recently I wrote a parser. What are the properties of a parser? One thing I tested was that I was able to retrieve the input from the parser - that is to say, I'm able to make the input and output the same. That test found a bunch of bugs in the parsing logic that I have yet to fix.
 
-## Property Based Testing You Probably Already Do ##
+## Good Properties To Test ##
+Some properties are better than other properties. For example, let's go back to the `Add` example. We know from real life experience, that when you add two numbers together, the result is bigger than either operands. 
 
-One of the interesting things about property based testing is that you probably already do some of it. Take the `gob` package for example. The example in the gob package is a form of property based testing - granted it's not tested a large variety of inputs, but the example is an excellent starting point of a property based testing methodology.
+Except that isn't true. What if one of the operands were negative numbers? 
 
+OK, so we decide that our `Add` function will only work on positive numbers only. Certainly, adding two positive numbers will result in a number that is larger than either operand. 
+
+That is true for all positive numbers - we can consider this as a property of addition on unsigned integers. In real life though, we have to deal with machines and data types that have physical limitations. Consider this:
+
+```go
+func Add(a, b byte) byte { return a + b  }
+```
+
+What happens when you do this: `Add(255, 1)`? The result isn't larger! Because of overflows the result will be `1`. Now it can be quite difficult to figure out if an overflow has happened (unless if you are writing in assembly, then just check for the overflow flag). So, maybe this isn't a great property to test. 
+
+## PBT You Probably Already Do ##
+
+One of the interesting things about property based testing is that you probably already do some of it. Take the `encoding/gob` package for example. The [EncodeDecode example](https://golang.org/pkg/encoding/gob/#pkg-examples) in the gob package is a very restricted form of property based testing - it's not testing as many inputs as possible, but it wouldn't be difficult to add a generator to do that.
+
+Think about the properties that the `gob` package is trying to test. It's testing for the fact that the **data does not change** after the encoding/decoding process.
+
+## What Is Property Based Testing ##
+
+Given the descriptions of the above, it's easy to figure out what property-based testing, and what it isnt'. Property-based testing is all about testing that a program satisfies the specified properties, across a wide variety of input. Properties are usually abstract notions of something that is invariant. 
+
+Usually a property based testing library comes with generators to generate input values to test. But that's just a technical part. Theoretically you *could* do property-based testing if you provide your own corpus of test inputs. I once consulted for a media company. Because of the vast library available, we could just use those as inputs to test (videos make for good random inputs). 
+
+A notion many people get confused about is that property-based testing has to be exactly like what QuickCheck does. Anything that doesn't implement combinators and use a HM-type system therefore aren't property-based testing. While I will say that there are some nice things that exist in QuickCheck due to those, the idea of property-based testing does not require them. 
 
 # Real World Property Based Testing #
 
-All the text above is quite dry and hypothetical in nature. You might be thinking, "but I don't write functions that are commutative or associative". Rest assured that property based testing is useful in real life programming. 
+All the text above is quite dry and hypothetical in nature. You might be thinking, "but I don't write functions that are commutative or associative". Rest assured that property based testing is useful in real life programming. Real life property based testing is also a lot less strict in definition in what a property is.
 
 The [Gorgonia Tensor](https://gorgonia.org/tensor) package that provides fast-ish generic multidimensional slices. It has fairly complicated machinery to make it fast and generic enough for deep learning work (if you're interested, I laid out the foundations [in a separate post](https://blog.chewxy.com/2017/09/11/tensor-refactor/)). 
 
@@ -224,7 +248,7 @@ For that package I use property based testing to check the assumptions that I ha
 func TestLog10(t *testing.T) {
 	var r *rand.Rand
 
-	// default
+	// default function operation
 	invFn := func(q *Dense) bool {
 		a := q.Clone().(*Dense)
 		correct := a.Clone().(*Dense)
@@ -237,7 +261,9 @@ func TestLog10(t *testing.T) {
 			return true
 		}
 		ret, err := Log10(a)
-		if err, retEarly := qcErrCheck(t, "Log10", a, nil, we, err); retEarly {
+
+		// ok is a bool indicating it's ok to return early
+		if err, ok := qcErrCheck(t, "Log10", a, nil, we, err); ok {
 			if err != nil {
 				return false
 			}
@@ -246,7 +272,10 @@ func TestLog10(t *testing.T) {
 
 		ten := identityVal(10, a.Dtype())
 		Pow(ten, ret, UseUnsafe())
-		if !qcEqCheck(t, a.Dtype(), willFailEq, correct.Data(), ret.Data()) {
+
+		cd := correct.Data()
+		rd := ret.Data()
+		if !qcEqCheck(t, a.Dtype(), willFailEq, cd, rd) {
 			return false
 		}
 		return true
@@ -269,10 +298,10 @@ Because there are some helper functions, here's the line-by-line walkthrough:
 * `_, ok := q.Engine().(Log10er)` - if the associated execution engine cannot perform `Log10`, it will return an error. Again, more upfront information we'd need to know from what was generated.
 * `if err := typeclassCheck(a.Dtype(), floatTypes)` - because the `tensor` package is fairly generic, there would be data types of which `Log10` wouldn't make sense - `string` for example. In this case, we'd get rid of any generated `*Dense` tensors that aren't float types.
 * `ret, err := Log10(a)` - actually perform the `Log10` operation
-* `err, retEarly := qcErrCheck(t, "Log10", a, nil, we, err); retEarly` - check that if the operation errors as expected, or created no errors. If there were errors, and it's safe to return early (i.e. an error was indeed expected), the function will return early.
+* `err, ok := qcErrCheck(t, "Log10", a, nil, we, err); ok` - check that if the operation errors as expected, or created no errors. If there were errors, and it's safe to return early (i.e. an error was indeed expected), the function will return early.
 * `ten := identityVal(10, a.Dtype())` - create a value that is a representation of `10`, in the `Dtype` provided
 * `Pow(ten, ret, UseUnsafe())` - perform `10 ^ ret`
-* `if !qcEqCheck(t, a.Dtype(), willFailEq, correct.Data(), ret.Data())` - check that the result is the same.
+* `if !qcEqCheck(t, a.Dtype(), willFailEq, cd, rd)` - check that the result is the same.
 
 It should be noted that the code contains some bad practices - `willFailEq` will always be `True` in the code above. But in the checking code (`qcEqCheck`), if the data type is actually a float type (`float32`, `float64` etc), the `willFailEq` will be ignored, and a float [approximate-equality check](http://floating-point-gui.de/errors/comparison/) will be used instead.  Floats are treated differently - because floats are used a lot more in machine learning, and there is a greater imperative that they be tested more thoroughly.
 
@@ -283,7 +312,7 @@ As you can see there is quite a bit of set up for a fairly complex machinery. Th
 
 As with anything, there are some pitfalls to property based testing. For one, property based testing doesn't exist in a vacuum. I don't want readers walking away from the post thinking that property-based testing is the end-all of writing robust software. 
 
-Instead I think it's a combination of various types of testing (traditional unit-testing, fuzz testing, property based testing, integration testing), type systems and sound practices (code review, etc).
+Instead I think it's a combination of various types of testing (traditional unit testing, fuzz testing, property based testing, integration testing), type systems and sound practices (code review, etc).
 
 However, by itself, property based testing is not exhaustive. If you only test for one property of the function you are testing, you only test for that one property. When you test multiple properties of a function, you are approaching a more complete testing for the semantic correctness of the program. 
 
@@ -299,7 +328,8 @@ func TestDense_Eq(t *testing.T) {
 		}
 		a.Zero()
 
-		// Bools are excluded because the probability of having an array of all false is very high
+		// Bools are excluded because the probability 
+		// of having an array of all false is very high
 		if q.Eq(a) && a.len() > 3 && a.Dtype() != Bool {
 			t.Errorf("a %v", a.Data())
 			t.Errorf("q %v", q.Data())
@@ -308,7 +338,8 @@ func TestDense_Eq(t *testing.T) {
 		}
 		return true
 	}
-	if err := quick.Check(eqFn, &quick.Config{Rand: newRand(), MaxCount: quickchecks}); err != nil {
+	conf := &quick.Config{Rand: newRand(), MaxCount: 2000}
+	if err := quick.Check(eqFn, conf); err != nil {
 		t.Errorf("Failed to perform equality checks")
 	}
 }
@@ -316,7 +347,7 @@ func TestDense_Eq(t *testing.T) {
 
 Here we are doing two tests (which I rolled into one):
 
-1. Any clone of the `*Dense` *has* to be equal with its original. This test runs on the assumption that the `Clone` method works correctly. 
+1. Any clone of the `*Dense` *has* to be equal with its original. This test runs on the assumption that the `Clone` method works correctly - this is a very loose form of reflexitivity
 2. Any `*Dense` would be not be equal to a `*Dense` that is filled with its zero value (with the exception that the original is all zeroes).
 
 Here we run into the edge case of probabilities: it's highly probable that the generator generates `[]bool{False, False, False}` - so if that condition is met, then we just say the test passes.
@@ -325,16 +356,22 @@ This is a sign of poor thinking. I clearly didn't devote enough time and effort 
 
 * Transitivity - `a == b` and `b == c` implies `a == c`
 * Symmetry - `a == b` implies `b == a`
-* Reflexivity - `a == a`. This was originally done without using `Clone`, but at some point I decided that checking of object equivalence was trivially done in Go anyway, so decideed on the more laborious one.
-
+* Reflexivity - `a == a`. This was originally done without using `Clone`. Reflexivity is all about testing of values. If `a.Eq(a)` is done, the `Eq` function would note that they're the same object, and return `true`. Instead, a clone, which is a different object but has the same value is used.
 
 These tests were written for most of the comparison operators, but not for equality. 
 
 # Advanced Libraries # 
 
-TODO: GoPTer
+One of the nice things that Haskell's QuickCheck does that Go's built in `"testing/quick"` doesn't have is shrinking. Shrinking is the idea that the library is able to find the minimum reproductible test case for the test to fail. And as you can see with my real world example, I was pushing `"testing/quick"` to the limits, with a lot of weird looking escape hatches for my code.
+
+Enter [GOPTER](https://github.com/leanovate/gopter). It does shrinking, and has many helpers for stateful tests. It also comes with some code generators to help with writing tests.
+
+While I have played with GOPTER once or twice, I haven't had an opportunity to actually use GOPTER in a real world setting. The biggest benefit I see of GOPTER over `"testing/quick"` is shrinking. The problem is most of my code deals with mathematical primitives - when an error occurs, I don't need a shrinker, I can automatically deduce what went wrong in my head. I aim to actually use GOPTER a lot more than `"testing/quick"` in the coming year. 
 
 
+# Conclusion #
 
-# Concluding Thoughts On Property Based Testing #
+In this post, I introduced the notion of a useful program, how we would test for some correctness, and the different tools available before we come to the meat of the article: property based testing. I then gave an overview of how to do basic property testing, a real world example, and some pitfalls. Finally I showcased an advanced library for property based testing. If you would like to read more, here are some real world projects that use property based testing to good effect - it was very instructive for me to study them to see how other people do property based testing:
 
+* [time](https://golang.org/src/time/time_test.go) 
+* [miekg/dns](https://github.com/miekg/dns/blob/master/parse_test.go) 
