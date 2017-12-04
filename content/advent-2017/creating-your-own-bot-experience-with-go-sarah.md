@@ -3,6 +3,7 @@ author = ["Oklahomer"]
 title = "Creating Your Own Bot Experience with go-sarah"
 linktitle = "Creating Your Own Bot Experience with go-sarah"
 date = 2017-12-04T00:00:00Z
+series = ["Advent 2017"]
 +++
 
 Chat tools have been good friends of developers.
