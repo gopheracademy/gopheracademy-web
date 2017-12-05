@@ -4,7 +4,6 @@ title = "A Tale of Two `rand`s"
 linktitle = "two rands"
 date = 2017-12-05T00:40:42Z
 series = ["Advent 2017"]
-draft = true
 +++
 
 I had always been a bit confused as to how the `crypto/rand` package and the `math/rand` package were related, or how they were expected to work (together). Is this something that everyone else already grokked, or is that just my impostor syndrome talking? Well, one day I decided to see if I could defeat my ignorance, and this blog post is the result of that investigation.
