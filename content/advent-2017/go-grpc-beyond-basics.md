@@ -19,137 +19,154 @@ Note:*To minimise bloat this article assumes knowledge of [gRPC](https://grpc.io
 
 Before we begin, let's refresh our memory and do a quick recap of what a gRPC service and client look like and how it's defined in a protobuf definition file (.proto).
 
-We will create a basic user service with 2 methods, `Register` and `Login`.
+We will create a service to query Go releases with 2 methods, `GetReleaseInfo` and `ListReleases`.
 
 ``` proto
-syntax = "proto3";
-
-package proto;
-
-service UsersService {
-    rpc Register(RegisterRequest) returns (Empty) {}
-    rpc Login(LoginRequest) returns (LoginResponse) {}
+service GoReleaseService {
+    rpc GetReleaseInfo(GetReleaseInfoRequest) returns (ReleaseInfo) {}
+    rpc ListReleases(ListReleasesRequest) returns (ListReleasesResponse) {}
 }
 
-message RegisterRequest {
-    string username = 1;
-    string password = 2;
-    string email = 3;
+message GetReleaseInfoRequest {
+    string version = 1;
 }
 
-message Empty {}
+message ListReleasesRequest {} //empty
 
-message LoginRequest {
-    string username = 1;
-    string password = 2;
+message ListReleasesResponse {
+    repeated ReleaseInfo releases = 1;
 }
 
-message LoginResponse {
-    string sessionid = 1;
+message ReleaseInfo {
+    string version = 1;
+    string releaseDate = 2;
+    string releaseNotesURL = 3;
 }
 ```
 
-`Register` accepts a `RegisterRequest` message and returns an `Empty` message.
-`Login` accepts  a `LoginRequest` message and returns a `LoginResponse` message.
-
-Compiling this with the `protoc` tool with the [grpc plugin](https://github.com/golang/protobuf/protoc-gen-go) will create generated Go code to marshal/unmarshal the messages (i.e `RegisterRequest`) between Go code and the protocol buffer binary messages. The gRPC plugin will also generate code to register and implement service interface handlers as well as code to create a gRPC client to connect to the service and send messages.
+Compiling this with the `protoc` tool with the [grpc plugin](https://github.com/golang/protobuf/protoc-gen-go) will create generated Go code to marshal/unmarshal the messages (i.e `GetReleaseInfoRequest`) between Go code and the protocol buffer binary messages. The gRPC plugin will also generate code to register and implement service interface handlers as well as code to create a gRPC client to connect to the service and send messages.
 
 Let's look at a basic service and client implementation.
 
 ### Service
 
 ``` go
-    /* usersService implements UsersServiceServer as defined in the generated code:
-type UsersServiceServer interface {
-	Register(context.Context, *RegisterRequest) (*Empty, error)
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+type releaseInfo struct {
+    ReleaseDate     string `json:"releaseDate"`
+    ReleaseNotesURL string `json:"releaseNotesURL"`
+}
+
+/* goReleaseService implements GoReleaseServiceServer as defined in the generated code:
+// Server API for GoReleaseService service
+type GoReleaseServiceServer interface {
+    GetReleaseInfo(context.Context, *GetReleaseInfoRequest) (*ReleaseInfo, error)
+    ListReleases(context.Context, *ListReleasesRequest) (*ListReleasesResponse, error)
 }
 */
-type usersService struct{}
-
-func (u *usersService) Register(ctx context.Context, r *userspb.RegisterRequest) (*userspb.Empty, error) {
-
-	// code to do validation here i.e, check if user already exists
-	// return nil, status.Errorf(codes.AlreadyExists, "user %s already exists", r.GetUsername())
-
-	// code to add user to database
-
-	// success
-	return &userspb.Empty{}, nil
+type goReleaseService struct {
+    releases map[string]releaseInfo
 }
 
-func (u *usersService) Login(ctx context.Context, r *userspb.LoginRequest) (*userspb.LoginResponse, error) {
+func (g *goReleaseService) GetReleaseInfo(ctx context.Context, r *pb.GetReleaseInfoRequest) (*pb.ReleaseInfo, error) {
+    ri, ok := g.releases[r.GetVersion()]
+    if !ok {
+        return nil, status.Errorf(codes.NotFound, "release verions %s not found", r.GetVersion())
+    }
 
-	// code to validate user and credentials
+    // success
+    return &pb.ReleaseInfo{
+        Version:         r.GetVersion(),
+        ReleaseDate:     ri.ReleaseDate,
+        ReleaseNotesURL: ri.ReleaseNotesURL,
+    }, nil
+}
 
-	// create a session
+func (g *goReleaseService) ListReleases(ctx context.Context, r *pb.ListReleasesRequest) (*pb.ListReleasesResponse, error) {
+    var releases []*pb.ReleaseInfo
 
-	return &userspb.LoginResponse{
-		Sessionid: "this-will-be-the-unique-session-id",
-	}, nil
+    for k, v := range g.releases {
+        ri := &pb.ReleaseInfo{
+            Version:         k,
+            ReleaseDate:     v.ReleaseDate,
+            ReleaseNotesURL: v.ReleaseNotesURL,
+        }
+
+        releases = append(releases, ri)
+    }
+
+    return &pb.ListReleasesResponse{
+        Releases: releases,
+    }, nil
 }
 
 func main() {
-	flag.Parse()
-	svc := &usersService{}
+    // code redacted 
 
-	lis, err := net.Listen("tcp", *listenPort)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	log.Println("Listening on ", *listenPort)
-	server := grpc.NewServer()
+    lis, err := net.Listen("tcp", *listenPort)
+    if err != nil {
+        log.Fatalf("failed to listen: %v", err)
+    }
+    log.Println("Listening on ", *listenPort)
+    server := grpc.NewServer()
 
-	userspb.RegisterUsersServiceServer(server, svc)
+    pb.RegisterGoReleaseServiceServer(server, svc)
 
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+    if err := server.Serve(lis); err != nil {
+        log.Fatalf("failed to serve: %v", err)
+    }
 }
 
 ```
 
-### Login Client
+### Client
 
 ``` go
 func main() {
+    flag.Parse()
 
-	flag.Parse()
+    conn, err := grpc.Dial(*target, grpc.WithInsecure())
+    if err != nil {
+        log.Fatalf("grpc.Dial err: %v", err)
+    }
 
-	conn, err := grpc.Dial(*target, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("grpc.Dial err: %v", err)
-	}
+    client := pb.NewGoReleaseServiceClient(conn)
 
-	usersClient := userspb.NewUsersServiceClient(conn)
+    ctx := context.Background()
+    rsp, err := client.ListReleases(ctx, &pb.ListReleasesRequest{})
 
-	ctx := context.Background()
-	_, err = usersClient.Login(ctx, &userspb.LoginRequest{
-		Username: "scaramoucheX2",
-		Password: "Can-you-do-the-fandango?",
-	})
+    if err != nil {
+        log.Fatalf("ListReleases err: %v", err)
+    }
 
-	if err != nil {
-		log.Fatalf("usersClient.Login err: %v", err)
-	}
+    releases := rsp.GetReleases()
+    if len(releases) > 0 {
+        sort.Sort(byVersion(releases))
+
+        fmt.Printf("Version\tRelease Date\tRelease Notes\n")
+    } else {
+        fmt.Println("No releases found")
+    }
+
+    for _, ri := range releases {
+        fmt.Printf("%s\t%s\t%s\n",
+            ri.GetVersion(),
+            ri.GetReleaseDate(),
+            ri.GetReleaseNotesURL())
+    }
 }
 ```
 
 ## Go gRPC API
 
-After understanding the [why](https://grpc.io/faq/) and an introduction on the [how](https://grpc.io/docs/tutorials/basic/go.html) of gRPC the next step would be to familiarize yourself with the [official Go gRPC API](https://godoc.org/google.golang.org/grpc).
+After understanding the [why](https://grpc.io/faq/) and after doing an introduction on the [how](https://grpc.io/docs/tutorials/basic/go.html) of gRPC, the next step would be to familiarize yourself with the [official Go gRPC API](https://godoc.org/google.golang.org/grpc).
 
-The Go gRPC API uses functional options to control behaviour of connections, gRPC clients and gRPC servers.
+A client connections can be configured by supplying `DialOption` functional option values to the `grpc.Dial` function and server configuration is done by supplying `ServerOption` functional option values to the `grpc.NewServer` function.
 
-*It's not necessary for this article to understand what functional options are, but to read more about functional options look [here - Dave Cheney](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis) and [here - Rob Pike].(https://commandcenter.blogspot.co.za/2014/01/self-referential-functions-and-design.html)*
-
-A client connection can be configured by supplying `DialOption` values to the `grpc.Dial` function and server configuration is done by supplying `ServerOption` values to the `grpc.NewServer` function.
+*It's not necessary for this article to understand what functional options are, but to read more about functional options look [here - Dave Cheney](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis) and [here - Rob Pike](https://commandcenter.blogspot.co.za/2014/01/self-referential-functions-and-design.html)*.
 
 The API also has a concept called *interceptors* which basically makes it possible to add middleware functionality to both Unary (single request/response) and Streaming calls.
 
 Interceptors are very useful to wrap functionality around a RPC call. It helps to seperate things like logging/auth from the logic of the RPC service and can help to create a uniform way for something like logging for each call in one place.
-
-*link to article explaining http.Handler chaining to create middleware*
 
 Other functionality that the API offer are things like handling of messages with a different codec than Protocol Buffers (i.e FlatBuffers), enabling compression of message, control maximum message sizes, add headers and trailers, enabling tracing and even creating load balancing functionality (*the Load Balancing API is still experimental*)
 
@@ -162,25 +179,18 @@ To showcase the use of the API let's build on top of our basic example above.
 If we look at the `grpc.Server` definition (`func NewServer(opt ...ServerOption) *Server`) we will see that it is a [variadic function](https://blog.learngoprogramming.com/golang-variadic-funcs-how-to-patterns-369408f19085) that accepts a variable number of `grpc.ServerOption` values.
 
 To enable TLS for our service we will use the `grpc.Creds` function which returns a `grpc.ServerOption` to send to the `grpc.NewServer`.
+
 Let's look at the example.
 
-Server code:
+Service code:
 
 ```go
     creds := credentials.NewTLS(&tls.Config{
         // TLS config values here
     })
 
-    s := grpc.NewServer(grpc.Creds(creds))
-
     serverOption := grpc.Creds(credentials.NewTLS(tlsConfig))
     server := grpc.NewServer(serverOption)
-
-    userspb.RegisterUsersServiceServer(server, svc)
-
-    if err := server.Serve(lis); err != nil {
-        log.Fatalf("failed to serve: %v", err)
-    }
 ```
 
 The code to create a `tls.Config` is standard Go. The real lines of code that's of interest are the following:
@@ -190,18 +200,14 @@ The code to create a `tls.Config` is standard Go. The real lines of code that's 
     server := grpc.NewServer(serverOption)
 ```
 
-Now the gRPC server will accept TLS connections.
+Now the gRPC server will accept TLS connections based on the `tls.Config` supplied.
 
-Let's turn out focus to enabling TLS on the client side.
+Let's turn our focus to enabling TLS on the client side.
 
 In the basic example we supply a `grpc.WithInsecure()` value to the `grpc.Dial` function. The `grpc.Insecure()` function returns a `DialOption` value which disables transport security for the client connection. By default, transport security is required so to disable transport security we need to set `WithInsecure`.
 But we want to enable TLS transport security. This is done with the `grpc.WithTransportCredentials()` function. Just like the `grpc.Creds()` we used to enable transport security for the server `grpc.WithTransportCredentials()` also accepts a `credentials.TransportCredentials` but the difference is it returns a `DialOption` value and not a `ServerOption` value, and `grpc.Dial` function accepts `DialOption` values.
 
 ``` go
-func main() {
-
-    flag.Parse()
-
     creds := credentials.NewTLS(&tls.Config{
         //TLS Config values here
     })
@@ -210,42 +216,32 @@ func main() {
     if err != nil {
         log.Fatalf("grpc.Dial err: %v", err)
     }
-
-    usersClient := userspb.NewUsersServiceClient(conn)
-
-    ctx := context.Background()
-    _, err = usersClient.Login(ctx, &userspb.LoginRequest{
-        Username: "scaramoucheX2",
-        Password: "Can-you-do-the-fandango?",
-    })
-
-    if err != nil {
-        log.Fatalf("usersClient.Login err: %v", err)
-    }
-}
 ```
 
-There are many other options like message and buffer sizes and specifying a custom codec (something other than Protocol Buffer) available.T o see what other options are available the API docs are your friend.
+There are many other options like message and buffer sizes and specifying a custom codec (something other than Protocol Buffer) available.To see what other options are available the API docs are your friend.
 For more server side options , see [ServerOption](https://godoc.org/google.golang.org/grpc#ServerOption)
 For more client side options, see [DialOption](https://godoc.org/google.golang.org/grpc#DialOption)
 
 *Tip:* `DialOption` values all have a **With** prefix, i.e grpc.**With**TransportCredentials
 
-*More reading on TLS and authentication:*
+*See also:*
 
 [Using gRPC with Mutual TLS in Golang](http://krishicks.com/post/2016/11/01/using-grpc-with-mutual-tls-in-golang/)
 
 [Go Secure Hello World Example](https://github.com/kelseyhightower/helloworld)
 
+[Secure gRPC with TLS/SSL](https://bbengfort.github.io/programmer/2017/03/03/secure-grpc.html)
+
 [Go gRPC Auth Support](https://github.com/grpc/grpc-go/blob/master/Documentation/grpc-auth-support.md)
 
-## Adding middleware
+### Adding middleware
 
 Like I said previously, the gRPC API has a concept called interceptors which enables us to write middleware functionality to our calls.
-To illustrate the use  of interceptors we will write a interceptors to add logging and basic authentication to our calls.
+To illustrate the use of interceptors we will write a interceptors add logging and basic authentication to our calls.
 
 Interceptors can be created for both client and servers, and both support interceptors for Unary RPC calls as well as Streaming calls.
 To create an interceptor you would need to create a function with a definition that matches the relevant type of interceptor you want to create.
+For example, if you want to create an Unary interceptor for your server, then based on the definitions below we would need to create a function with the same definition as `UnaryServerInterceptor` and supply that function to `grpc.UnaryInterceptor()` to create a `ServerOption` value that will be used when creating the gRPC server with `grpc.NewServer()`
 
 ``` go
 // DialOptions to set interceptors on the client side
@@ -265,72 +261,124 @@ type UnaryServerInterceptor func(ctx context.Context, req interface{}, info *Una
 type StreamServerInterceptor func(srv interface{}, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error
 ```
 
-The API document every parameter but I want to quickly focus on how metadata is handled by interceptors.
+The API documents every parameter but I want to quickly focus on how metadata is handled by interceptors.
 Metadata can be accessed by each interceptor via the `context.Context` value (for Unary calls) and `ServerStream` value (for Streaming calls). This is useful if we need to access the metadata (i.e authorization details) set in the call to authorize a call for example.
 
-Enough with the theory, let's implement our logging middleware (client and server) as well as our authorization middleware (server).
+Enough with the theory, let's implement our logging and authorization middleware.
 
 Server:
 
 ``` go
+// general unary interceptor function to handle auth per RPC call as well as logging
 func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-    log.Printf("") //logging 
+    start := time.Now()
 
-    if err := authorize(ctx); err != nil {
-        return err
+    if info.FullMethod != "/proto.GoReleaseService/ListReleases" { //skip auth when ListReleases requested
+        if err := authorize(ctx); err != nil {
+            return nil, err
+        }
     }
 
-    return handler(ctx, req)
+    h, err := handler(ctx, req)
+
+    log.Printf("request - Method:%s\tDuration:%s\tError:%v\n", info.FullMethod, time.Since(start), err) //logging
+
+    return h, err
+}
+```
+
+This function will be called with each incoming request before the actual service method is called. We can add general logging and use the different parameter values that get passed in to make decisions of our own like using the `grpc.UnaryServerInfo` value to exclude authorization checks for certain requests or use the `context.Context` value to extract metadata to check authorization like this:
+
+``` go
+// extract from the authorize() function
+md, ok := metadata.FromIncomingContext(ctx)
+if !ok {
+    return status.Errorf(codes.InvalidArgument, "retrieving metadata failed")
 }
 
-// authorize function that is used by the interceptor functions.
-// warning: this is only for illustration purposes - don't implement authorization that is hardcoded!
-func authorize(ctx context.Context) error {
-    if md, ok := metadata.FromContext(ctx); ok {
-        if len(md["username"]) > 0 && md["username"][0] == "scaramoucheX2" &&
-            len(md["password"]) > 0 && md["password"][0] == "Can-you-do-the-fandango?" { 
-            return nil
-        }
-
-        return status.Errorf(codes.Unauthenticated, "auth failed")
-    }
-
+elem, ok := md["authorization"]
+if !ok {
     return status.Errorf(codes.InvalidArgument, "no auth details supplied")
 }
+```
 
-func main() {
-    // gRPC server setup code omitted to keep example code small
+To enable the interceptor on the server we supply a `ServerOption` that will set the server's unary inceptor to our function called `unaryInterceptor` using the `grpc.UnaryInterceptor()` function.
 
+``` go
 
     // supply Transport credentials and UnaryInterceptor options
     server := grpc.NewServer(
         grpc.Creds(credentials.NewTLS(tlsConfig)),
         grpc.UnaryInterceptor(unaryInterceptor)
     )
+```
+
+On the client side we will need to send the authorization details with the call. To do this we supply a  `DialOption` to the `grpc.Dial` function using the `grpc.WithPerRPCCredentials()` functional option which expects an implementation for the `credentials.PerRPCCredentials` interface:
+
+``` go
+// basicAuthCreds is an implementation of credentials.PerRPCCredentials
+// that transforms the username and password into a base64 encoded value similar
+// to HTTP Basic xxx
+type basicAuthCreds struct {
+    username, password string
+}
+
+// GetRequestMetadata sets the value for "authorization" key
+func (b *basicAuthCreds) GetRequestMetadata(context.Context, ...string) (map[string]string, error) {
+    return map[string]string{
+        "authorization": "Basic " + basicAuth(b.username, b.password),
+    }, nil
+}
+
+// RequireTransportSecurity should be true as even though the credentials are base64, we want to have it encrypted over the wire.
+func (b *basicAuthCreds) RequireTransportSecurity() bool {
+    return true
+}
+
+//helper function
+func basicAuth(username, password string) string {
+    auth := username + ":" + password
+    return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 ```
 
+We then create a value for `basicAuthCreds` and then supply it to the `grpc.WithPerRPCCredentials()` functional option which will generate the basic auth credentials and add it to the calls metadata.
 
+``` go
+grpcAuth := &basicAuthCreds{
+    username: *username,
+    password: *password,
+}
 
+conn, err := grpc.Dial(*target,
+    grpc.WithTransportCredentials(creds),
+    grpc.WithPerRPCCredentials(grpcAuth),
+)
+```
 
+We have reached the end of our overview of the Go gRPC API and shown what is possible.
 
+There are other behavior that can be changed via the API but will not go into detail now:
 
+- [Set own logger implementation for underlying logger](https://godoc.org/google.golang.org/grpc/grpclog#SetLoggerV2)
+- Enable tracing to trace RPCs using the golang.org/x/net/trace package (`grpc.EnableTracing = true`)
+- Set own [backoff](https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md) configuration.
 
+I encourage the reader to spend some time going over the API as well as it's [subdirectories](https://godoc.org/google.golang.org/grpc#pkg-subdirectories).
 
+In summary, we made our basic server more secure and added middleware without having to change code in our basic service. What's also nice is we can add more methods to our service which will automatically "inherit" the security and middleware functionality already created, we can just focus on the business logic required.
 
-
-
-
-
-
+Hopefully this is enough information to leverage the API and create your own specific implementation.
 
 ## Go gRPC ecosystem
 
-Let's step outside the official API and move towards looking at what is available in the wider gRPC ecosystem.
+Let's move towards looking at what is available in the wider gRPC ecosystem outside of the official API.
 
-### go-proxy
+### go-grpc-middleware
 
-### go-middleware
+[go-grpc-middleware](https://github.com/grpc-ecosystem/go-grpc-middleware)  
+
+
 
 ### gRPC and the web
 
@@ -345,6 +393,7 @@ https://coreos.com/blog/grpc-protobufs-swagger.html
 
 
 
+### go-proxy
 
 #### Other
 
