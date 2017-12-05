@@ -2,7 +2,7 @@
 author = ["Nelz Carpentier"]
 title = "A Tale of Two `rand`s"
 linktitle = "two rands"
-date = 2017-11-10T06:40:42Z
+date = 2017-12-05T00:40:42Z
 series = ["Advent 2017"]
 draft = true
 +++
