@@ -92,9 +92,7 @@ revision = "afadedface1"
 When our patch is merged upstream, we just revert this commit, and we automatically switch back to using the upstream repository. Depending on the version or SHA range we originally specified in our requirements, we may not even have to update the version range this time; dep can pull in the latest compatible version.
  
  
-The second scenario – preventing accidentally reintroducing a known bug through an upgrade – is
- 
-One convenient feature about Go: the `source` field is almost always redundant for typical use, because Go package names (and import paths) already specify source URLs. The mere presence of a `source` directive itself serves as a signal that something is afoot – a “proceed with extra caution” warning sign that will hopefully make Alice think twice before updating the version requested for that package.
+The second scenario – accidentally reintroducing a known bug through an upgrade – is prevented as well, using this same trick. One convenient feature about Go: the `source` field is almost always redundant for typical use, because Go package names (and import paths) already specify source URLs. The mere presence of a `source` directive itself serves as a signal that something is afoot – a “proceed with extra caution” warning sign that will hopefully make Alice think twice before updating the version requested for that package.
  
 But, even if Alice ignores or overlooks the `source` directive, we have another failsafe! It’s still impossible for her to accidentally update c/d to ` cafebead3`, because that commit only exists in the upstream repository, and we’ve specified our fork as the source repository.
  
