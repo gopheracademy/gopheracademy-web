@@ -1,6 +1,6 @@
 +++
 author = [ "Brian Ketelsen" ]
-date = "2017-12-06T00:00:00"
+date = "2017-12-07T00:00:00"
 linktitle = "Repeatable and Isolated Development Environments for Go"
 title = "Repeatable and Isolated Development Environments for Go"
 series = ["Advent 2017"]
