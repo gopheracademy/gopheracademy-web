@@ -3,13 +3,13 @@ author = ["Andrew Brampton"]
 date = "2017-12-10"
 linktitle = "Parsing with Antlr4 and Go"
 series = ["Advent 2017"]
-title = "Parsing with Antlr4 and Go"
+title = "Parsing with ANTLR 4 and Go"
 +++
 
-## What is Antlr4?
+## What is ANTLR?
 
 [ANTLR](http://www.antlr.org) (ANother Tool for Language Recognition),
-is an Adaptive [LL(\*)](https://en.wikipedia.org/wiki/LL_parser)
+is an [ALL(\*)](http://www.antlr.org/papers/allstar-techreport.pdf)
 [parser generator](https://en.wikipedia.org/wiki/Parser_generator). In
 layman's terms, Antlr, creates parsers in a number of languages (Go,
 Java, C, C#, Javascript), that can process text or binary input. The
@@ -17,11 +17,11 @@ generated parser provides a callback interface to parse the input in an
 event-driven manner, which can be used as-is, or used to build parse
 trees (a data structure representing the input).
 
-Antlr is used by a number of popular projects, e.g Hive and Pig use it
+ANTLR is used by a number of popular projects, e.g Hive and Pig use it
 to parse Hadoop queries, Oracle and NetBeans uses it for their IDEs, and
 Twitter even uses it to understand search queries. Support was recently
-added so that Antlr4 can be used to generate parsers in pure Go. This
-article will explain some of the benefits of Antlr, and walk us through
+added so that ANTLR 4 can be used to generate parsers in pure Go. This
+article will explain some of the benefits of ANTLR, and walk us through
 a simple example.
 
 ## Why use it?
@@ -39,9 +39,9 @@ go repo until it was moved to
 [golang.org/x/tools](https://godoc.org/golang.org/x/tools/cmd/goyacc)
 last year.
 
-### So why use Antlr over these?
+### So why use ANTLR over these?
 
-  * Antlr has a [suite of tools](http://www.antlr.org/tools.html), and
+  * ANTLR has a [suite of tools](http://www.antlr.org/tools.html), and
     [GUIs](http://tunnelvisionlabs.com/products/demo/antlrworks), that
     makes writing and debugging grammars easy.
   
@@ -49,9 +49,9 @@ last year.
     syntax to define the grammar, instead of a bespoke configuration
     language.
 
-  * Antlr is an [adaptive](http://www.antlr.org/papers/allstar-techreport.pdf)
-    [LL(\*) parser](https://en.wikipedia.org/wiki/LL_parser) whereas
-    most other parser generators (e.g Bison and Yacc) are
+  * ANTLR is an [Adaptive](http://www.antlr.org/papers/allstar-techreport.pdf)
+    [LL(\*) parser](https://en.wikipedia.org/wiki/LL_parser), ALL(\*) for short,
+    whereas most other parser generators (e.g Bison and Yacc) are
     [LALR](https://en.wikipedia.org/wiki/LALR_parser). The difference
     between LL(\*) and LALR is out of scope for this article, but
     simply LALR works bottom-up, and LL(\*) works top-down. This
@@ -63,18 +63,18 @@ last year.
     whereas LL(\*) parsers encode the logic in its control flow, making
     it more comprehensible.
 
-  * Finally Antlr is agnostic to the target language. A single grammar
+  * Finally ANTLR is agnostic to the target language. A single grammar
     can be used to generate parsers in Java, Go, C, etc. Unlike
     Bison/Yacc which typically embeds target language code into the
     grammar, making it harder to port.
 
-## Installing Antlr4
+## Installing ANTLR v4
 
-Antlr4 is a Java 1.7 application, that generates the Go code needed to
+ANTLR is a Java 1.7 application, that generates the Go code needed to
 parse your language. During development Java is needed, but once the
-parser is built only Go and the [Antlr
+parser is built only Go and the [ANTLR runtime
 library](https://godoc.org/github.com/antlr/antlr4/runtime/Go/antlr) is
-required. The Antlr site has
+required. The ANTLR site has
 [documentation](https://github.com/antlr/antlr4/blob/master/doc/getting-
 started.md) on how to install this on multiple platforms, but in brief,
 you can do the following:
@@ -93,8 +93,8 @@ stored in your `~/.bash_profile`.
 Let's start with the “hello world” for parsers, the calculator example.
 We want to build a parser that handles simple mathematical expressions
 such as `1 + 2 * 3`. The focus of this article is on how to use Go with
-Antlr4, so the syntax of the Antlr language won’t be explained in
-detail, but the Antlr site has [compressive documentation](https://githu
+ANTLR, so the syntax of the ANTLR language won’t be explained in
+detail, but the ANTLR site has [compressive documentation](https://githu
 b.com/antlr/antlr4/blob/master/doc/grammars.md).
 
 As we go along, the [source is available to all
@@ -129,7 +129,7 @@ terminal states made up of tokens and/or other rules.
 
 By convention this grammar must be saved with a filename that matches
 the name of the grammar, in this case “Calc.g4” . To process this file,
-and generate the Go parser, we run the antlr command like so:
+and generate the Go parser, we run the `antlr` command like so:
 
 ```shell
 $ antlr -Dlanguage=Go -o parser Calc.g4 
@@ -165,7 +165,7 @@ to calculate the result.
 
 The Listener then allows us to make use of the the parsed input. As
 mentioned earlier, yacc requires language specific code to be embedded
-with the grammar. However, Antlr separates this concern, allowing the
+with the grammar. However, ANTLR separates this concern, allowing the
 grammar to be agnostic to the target programming language. It does this
 through use of listeners, which effectively allows hooks to be placed
 before and after every rule is encountered in the parsed input.
@@ -301,7 +301,7 @@ This is very similar to before, but instead of manually iterating over
 the tokens, the lexer is used to create a [`CommonTokenStream`](https://
 godoc.org/github.com/antlr/antlr4/runtime/Go/antlr#CommonTokenStream),
 which in turn is used to create a new `CalcParser`. This `CalcParser` is
-then “walked”, which is antlr’s event-driven API for receiving the
+then “walked”, which is ANTLR's event-driven API for receiving the
 results of parsing the rules.
 
 Note, the [`Walk`](https://godoc.org/github.com/antlr/antlr4/runtime/Go/
@@ -483,7 +483,7 @@ thus the grammar.
 ## More grammars
 
 Learning how to write a grammar may be daunting, but there are many
-resources for help. The author of Antlr, [Terence
+resources for help. The author of ANTLR, [Terence
 Parr](http://parrt.cs.usfca.edu/), has [published a
 book](https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference),
 with some of the content freely available on [antlr.org](http://antlr.org).
@@ -532,9 +532,9 @@ func main() {
 
 ## Conclusion
 
-Hopefully this article has given you a taste of how to use Go and Antlr.
+Hopefully this article has given you a taste of how to use ANTLR with Go.
 The examples for this article are [found here](https://github.com/bramp/goadvent-antlr),
-and the [godoc for the antlr library is here](https://godoc.org/github.com/antlr/antlr4/runtime/Go/antlr)
+and the [godoc for the ANTLR library is here](https://godoc.org/github.com/antlr/antlr4/runtime/Go/antlr)
 which explains the various InputStream, Lexer, Parser, etc interfaces.
 
 If you have any questions or comments, please reach out to me at
