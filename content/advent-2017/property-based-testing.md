@@ -2,7 +2,7 @@
 author = ["Chewxy"]
 title = "Property Based Testing"
 linktitle = "Short Title (use when necessary)"
-date = 2017-12-04T06:40:42Z
+date = 2017-12-09T06:40:42Z
 +++
 
 # Useful Programs #
@@ -14,10 +14,7 @@ package foo
 
 func incr(i int) int { return i+1 }
 func decr(i int) int { return i-1 }
-
-func foo() {
-	decr(incr(0))
-}
+func foo()           { decr(incr(0)) }
 ```
 
 While obviously there are other things that make a program useful, the most fundamental thing that makes a program useful is that it needs to interact with things outside itself. This can come in the form of reading a file, reading a network input, reading user input, printing an output, or writing to a file. Indeed, so fundamental is input/output to the notion of programming that most languages have a standardized definition for a program entry point. In Go, it's the `func main(){}` function. 
@@ -57,7 +54,7 @@ Go supports testing as a first class citizen of the language. To write tests, yo
 ```go
 func TestAdd(t *testing.T) {
 	if out := Add(1, 2); out != 3 {
-		t.Errorf("Add failed. Expected the result to be 3. Got %d instead", out)
+		t.Errorf("Add failed. Expected 3. Got %d instead", out)
 	}
 }
 ```
@@ -118,7 +115,11 @@ But let's say you are a diligent programmer, and you checked all the errors, oth
 
 So an idea emerges: why don't we test on all possible values? Or at least as many values as we can? 
 
-Enter the notion of [fuzz testing](https://en.wikipedia.org/wiki/Fuzzing): we feed the program random inputs, and then watch for it to fail. Fuzz testing often leads one to find subtle bugs you don't expect. Here's one that Chris Marshall discovered on my [skiprope](https://github.com/chewxy/skiprope) library. I have to this day, no idea what the correct fix is. Solutions welcome
+Enter the notion of [fuzz testing](https://en.wikipedia.org/wiki/Fuzzing): we feed the program random inputs, and then watch for it to fail. Fuzz testing often leads one to find subtle bugs you don't expect. Here's [one](https://github.com/chewxy/skiprope/issues/9) that Chris Marshall discovered on my [skiprope](https://github.com/chewxy/skiprope) library. 
+
+Here's [another](https://github.com/gorgonia/randomkit/blob/master/utils_test.go#L40), from a random number generator library I wrote for Gorgonia, where a [Kahan summation algorithm](https://en.wikipedia.org/wiki/Kahan_summation_algorithm) yielded a different result from expected due to the way errors in floats are handled.
+
+I have to this day, no idea what the correct fixes are. Solutions welcome.
 
 ## A More Disciplined Approach ##
 
@@ -185,6 +186,27 @@ What the `quick.Check` function then does is it generates values based on the in
 
 The package works for non-primitive types too. Further extensions to functionality can be had by types that implement the `quick.Generator` interface.
 
+Take for example, a coordinate:
+
+```go
+type Point struct {
+	x, y int
+}
+```
+
+As long as `Point` implements `quick.Generator`, you can put it in the input of the property testing function, like so:
+
+```go
+func (Point) Generate(r *rand.Rand, size int) reflect.Value {
+	p := Point{}
+	p.x = rand.Int()
+	p.y = rand.Int()
+	return reflect.ValueOf(p)
+}
+```
+
+This is especially useful for types where there are unexported properties. If all your fields are exported, `testing/quick` can typically generate values for them.
+
 # How To Think About Properties #
 
 So we've now been briefly introduced to the world of properties: there is now a notion that there are some properties that functions and programs have. Here are some properties that an addition function for numbers should have:
@@ -232,7 +254,7 @@ Given the descriptions of the above, it's easy to figure out what property-based
 
 Usually a property based testing library comes with generators to generate input values to test. But that's just a technical part. Theoretically you *could* do property-based testing if you provide your own corpus of test inputs. I once consulted for a media company. Because of the vast library available, we could just use those as inputs to test (videos make for good random inputs). 
 
-A notion many people get confused about is that property-based testing has to be exactly like what QuickCheck does. Anything that doesn't implement combinators and use a HM-type system therefore aren't property-based testing. While I will say that there are some nice things that exist in QuickCheck due to those, the idea of property-based testing does not require them. 
+A notion many people get confused about is that property-based testing has to be exactly like what QuickCheck does. Anything that doesn't implement combinators and use a HM-ish type system therefore aren't property-based testing. While I will say that there are some nice things that exist in QuickCheck due to those, the idea of **property-based testing does not require them**. 
 
 # Real World Property Based Testing #
 
@@ -299,8 +321,8 @@ Because there are some helper functions, here's the line-by-line walkthrough:
 * `if err := typeclassCheck(a.Dtype(), floatTypes)` - because the `tensor` package is fairly generic, there would be data types of which `Log10` wouldn't make sense - `string` for example. In this case, we'd get rid of any generated `*Dense` tensors that aren't float types.
 * `ret, err := Log10(a)` - actually perform the `Log10` operation
 * `err, ok := qcErrCheck(t, "Log10", a, nil, we, err); ok` - check that if the operation errors as expected, or created no errors. If there were errors, and it's safe to return early (i.e. an error was indeed expected), the function will return early.
-* `ten := identityVal(10, a.Dtype())` - create a value that is a representation of `10`, in the `Dtype` provided
-* `Pow(ten, ret, UseUnsafe())` - perform `10 ^ ret`
+* `ten := identityVal(10, a.Dtype())` - create a value that is a representation of `10`, in the `Dtype` provided.
+* `Pow(ten, ret, UseUnsafe())` - perform `10 ^ ret`. This is the inverse operation of `Log10`. `UseUnsafe` is a function option of Gorgonia's tensor, which allows the operation to be done in-place so additional memory wouldn't have to be allocated.
 * `if !qcEqCheck(t, a.Dtype(), willFailEq, cd, rd)` - check that the result is the same.
 
 It should be noted that the code contains some bad practices - `willFailEq` will always be `True` in the code above. But in the checking code (`qcEqCheck`), if the data type is actually a float type (`float32`, `float64` etc), the `willFailEq` will be ignored, and a float [approximate-equality check](http://floating-point-gui.de/errors/comparison/) will be used instead.  Floats are treated differently - because floats are used a lot more in machine learning, and there is a greater imperative that they be tested more thoroughly.
@@ -360,7 +382,7 @@ This is a sign of poor thinking. I clearly didn't devote enough time and effort 
 
 These tests were written for most of the comparison operators, but not for equality. 
 
-# Advanced Libraries # 
+# Advanced Libraries #
 
 One of the nice things that Haskell's QuickCheck does that Go's built in `"testing/quick"` doesn't have is shrinking. Shrinking is the idea that the library is able to find the minimum reproductible test case for the test to fail. And as you can see with my real world example, I was pushing `"testing/quick"` to the limits, with a lot of weird looking escape hatches for my code.
 
@@ -375,3 +397,9 @@ In this post, I introduced the notion of a useful program, how we would test for
 
 * [time](https://golang.org/src/time/time_test.go) 
 * [miekg/dns](https://github.com/miekg/dns/blob/master/parse_test.go) 
+
+Lastly, please feel free to reach out to me if there are any questions. I'm almost always available to help.
+
+# About The Author #
+
+Chewxy is an author of the [Gorgonia](https://gorgonia.org/gorgonia) suite of libraries. He has a vested interest in making Go the de facto language for machine learning and AI related things (mainly because Go is the right balance between high development speed and high maintainability). He's passionate about natural language processing, linguistics and statistics. Follow [@chewxy](https://twitter.com/chewxy) on Twitter.
