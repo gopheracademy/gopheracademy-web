@@ -59,7 +59,7 @@ func TestAdd(t *testing.T) {
 }
 ```
 
-Then run `go test`. It just works.
+Then run `go test`. It just works. 
 
 ## The Case Of Perverse Incentives ##
 
@@ -206,6 +206,8 @@ func (Point) Generate(r *rand.Rand, size int) reflect.Value {
 ```
 
 This is especially useful for types where there are unexported properties. If all your fields are exported, `testing/quick` can typically generate values for them.
+
+Because Go doesn't have value-constrained types (aka ranged types in Ada, for example), it may be instructive to want to test on a subset of values, like `int`s that are even. I'd go so far to say create separate tests for different classes of ranged values. 
 
 # How To Think About Properties #
 
@@ -380,7 +382,7 @@ This is a sign of poor thinking. I clearly didn't devote enough time and effort 
 * Symmetry - `a == b` implies `b == a`
 * Reflexivity - `a == a`. This was originally done without using `Clone`. Reflexivity is all about testing of values. If `a.Eq(a)` is done, the `Eq` function would note that they're the same object, and return `true`. Instead, a clone, which is a different object but has the same value is used.
 
-These tests were written for most of the comparison operators, but not for equality. 
+These tests were written for most of the comparison operators, but not for equality. I attribute the problem firstly to my bad habit of [selectively choosing what to test](https://blog.chewxy.com/2017/01/04/what-to-test/), followed by undermining the purpose of property-based tests. If you find yourself writing a lot of exceptions to the rules of the property that you're testing, maybe it's time to rethink the test.
 
 # Advanced Libraries #
 
@@ -397,6 +399,7 @@ In this post, I introduced the notion of a useful program, how we would test for
 
 * [time](https://golang.org/src/time/time_test.go) 
 * [miekg/dns](https://github.com/miekg/dns/blob/master/parse_test.go) 
+* The standard library is actually quite littered with `testing/quick` based tests.
 
 Lastly, please feel free to reach out to me if there are any questions. I'm almost always available to help.
 
