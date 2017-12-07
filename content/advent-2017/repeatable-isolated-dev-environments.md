@@ -115,3 +115,5 @@ I'm still pretty new to LXD, so there may be some administration headaches I'm n
 Each development environment is repeatable, cloned from a base image.  They're 100% isolated too. It's like having a Virtual Machine for each development environment without the overhead in CPU and disk space for many virtual machines. LXD has almost no overhead, and the containers use an overlay filesystem so the majority of the diskspace is shared with the `base` image. 
 
 I have local SSH and remote web access to my development containers, and I couldn't be happier. I hope something in this post inspires you to tweak your development workflow and try new things, you just might find something new that makes your life easier.
+
+*Brian is a Cloud Developer Advocate at Microsoft.  @bketelsen on twitter, [https://brianketelsen.com](https://brianketelsen.com) on the web*
