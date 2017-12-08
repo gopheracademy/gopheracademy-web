@@ -162,7 +162,7 @@ There were at least 3 clear problems with `encoding/json` for unmarshaling Graph
 	```Go
 	var query struct {
 		Me struct {
-			Photo string `graphql:"avatarUrl(size: 72)"`
+			Photo string `graphql:"avatarUrl(width: 194, height: 180)"`
 		}
 	}
 	```
