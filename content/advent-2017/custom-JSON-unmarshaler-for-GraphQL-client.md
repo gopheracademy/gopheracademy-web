@@ -54,7 +54,7 @@ var query struct {
 		Bio  string
 	}
 }
-err := client.Query(context.Background(), &query, nil)
+err := client.Query(ctx, &query, nil)
 if err != nil {
 	// Handle error.
 }
@@ -220,7 +220,7 @@ The key insight was that the process of JSON unmarshaling consists of two indepe
 
 In Go 1.5, the `encoding/json` package exposed a JSON tokenizer API to the outside world. A JSON tokenizer parses JSON and emits a sequence of JSON tokens, which are higher-level and easier to work with compared to the original byte stream. I could make use of this to avoid having to parse the JSON myself.
 
-The `encoding/json` JSON tokenizer is available via the [`Token`](https://godoc.org/encoding/json#Decoder.Token) method of `json.Decoder` struct:
+The `encoding/json` JSON tokenizer is available via the [Token](https://godoc.org/encoding/json#Decoder.Token) method of `json.Decoder` struct:
 
 ```Go
 // Token returns the next JSON token in the input stream.
@@ -263,8 +263,9 @@ Great! We don't have to deal with all the low-level nuances of parsing JSON stri
 Let's start by defining and iterating on our `decoder` struct that contains the necessary state. We know we're going to base it on a JSON tokenizer. To make it very clear we're only ever using the `Token` method and nothing else from `json.Decoder`, we can make it a small interface. This is our starting point:
 
 ```Go
-// decoder is a JSON decoder that performs custom unmarshaling behavior
-// for GraphQL query data structures. It's implemented on top of a JSON tokenizer.
+// decoder is a JSON decoder that performs custom unmarshaling
+// behavior for GraphQL query data structures. It's implemented
+// on top of a JSON tokenizer.
 type decoder struct {
 	tokenizer interface {
 		Token() (json.Token, error)
@@ -275,11 +276,12 @@ type decoder struct {
 And the exported unmarshal function will look like this:
 
 ```Go
-// UnmarshalGraphQL parses the JSON-encoded GraphQL response data and stores
-// the result in the GraphQL query data structure pointed to by v.
+// UnmarshalGraphQL parses the JSON-encoded GraphQL response
+// data and stores the result in the GraphQL query data
+// structure pointed to by v.
 //
-// The implementation is created on top of the JSON tokenizer available
-// in "encoding/json".Decoder.
+// The implementation is created on top of the JSON tokenizer
+// available in "encoding/json".Decoder.
 func UnmarshalGraphQL(data []byte, v interface{}) error {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.UseNumber()
@@ -348,7 +350,8 @@ type decoder struct {
 		Token() (json.Token, error)
 	}
 
-	// What part of input JSON we're in the middle of - object, array. Zero value means neither.
+	// What part of input JSON we're in the middle of:
+	// '{' is object, '[' is array. Zero value means neither.
 	parseState json.Delim
 
 	// Value where to unmarshal.
@@ -370,11 +373,12 @@ type decoder struct {
 		Token() (json.Token, error)
 	}
 
-	// Stack of what part of input JSON we're in the middle of - objects, arrays.
+	// Stack of what part of input JSON we're in the middle of:
+	// '{' is object, '[' is array. Empty stack means neither.
 	parseState []json.Delim
 
-	// Stack of values where to unmarshal.
-	// The top of stack is the reflect.Value where to unmarshal next JSON value.
+	// Stack of values where to unmarshal. The top of stack
+	// is the reflect.Value where to unmarshal next JSON value.
 	vs []reflect.Value
 }
 ```
@@ -480,24 +484,26 @@ type decoder struct {
 		Token() (json.Token, error)
 	}
 
-	// Stack of what part of input JSON we're in the middle of - objects, arrays.
+	// Stack of what part of input JSON we're in the middle of:
+	// '{' is object, '[' is array. Empty stack means neither.
 	parseState []json.Delim
 
-	// Stacks of values where to unmarshal.
-	// The top of each stack is the reflect.Value where to unmarshal next JSON value.
+	// Stacks of values where to unmarshal. The top of each stack
+	// is the reflect.Value where to unmarshal next JSON value.
 	//
-	// The reason there's more than one stack is because we might be unmarshaling
-	// a single JSON value into multiple GraphQL fragments or embedded structs, so
-	// we keep track of them all.
+	// The reason there's more than one stack is because we
+	// might be unmarshaling a single JSON value into multiple
+	// GraphQL fragments or embedded structs, so we keep track
+	// of them all.
 	vs [][]reflect.Value
 }
 ```
 
-We need to modify `decode` to create additional stacks whenever we encounter an embedded struct or a struct with `graphql:"... on Type"` field tag, do some additional bookkeeping to manage multiple stacks of values, check for additional error conditions if our stacks run empty. Aside from that, the same algorithm continues to work.
+We need to modify `decode` to create additional stacks whenever we encounter an embedded struct or a GraphQL fragment (field with `graphql:"... on Type"` tag), do some additional bookkeeping to manage multiple stacks of values, check for additional error conditions if our stacks run empty. Aside from that, the same algorithm continues to work.
 
 I think getting the data structure to contain just enough information to resolve the task was the most challenging part of getting this to work. Once it's there, the rest of the algorithm details fall into place.
 
-If you'd like to learn even more of the low-level details of the implementation, I invite you to look at the [source code](https://github.com/shurcooL/graphql/blob/master/internal/jsonutil/graphql.go) of package [`github.com/shurcooL/graphql/internal/jsonutil`](https://godoc.org/github.com/shurcooL/graphql/internal/jsonutil). It should be easy to read after this post.
+If you'd like to learn even more of the low-level details of the implementation, I invite you to look at the [source code](https://github.com/shurcooL/graphql/blob/master/internal/jsonutil/graphql.go) of package [github.com/shurcooL/graphql/internal/jsonutil](https://godoc.org/github.com/shurcooL/graphql/internal/jsonutil). It should be easy to read after this post.
 
 Payoff
 ------
@@ -517,12 +523,12 @@ I'm finding GraphQL to be a pretty neat new technology. Its strongly typed natur
 
 Note that there are [two GraphQL client packages](https://dmitri.shuralyov.com/packages?pattern=...ql) to choose from:
 
--	[`github.com/shurcooL/graphql`](https://github.com/shurcooL/graphql) is a general-purpose GraphQL client library.
--	[`github.com/shurcooL/githubql`](https://github.com/shurcooL/githubql) is a client library specifically for accessing GitHub GraphQL API v4. It's powered by `graphql` internally.
+-	[github.com/shurcooL/graphql](https://github.com/shurcooL/graphql) is a general-purpose GraphQL client library.
+-	[github.com/shurcooL/githubql](https://github.com/shurcooL/githubql) is a client library specifically for accessing GitHub GraphQL API v4. It's powered by `graphql` internally.
 
 I've had a chance to actually use `githubql` for real tasks in some of my Go projects, and it was a pleasant experience. That said, their GraphQL API v4 is still missing many things present in [GitHub REST API v3](https://developer.github.com/v3/), so I couldn't do as much with it as I would've [liked](https://platform.github.community/t/3114). They're working on expanding it, and it'll be even better when fully complete.
 
-If you want to play around with GraphQL or take a stab at creating your own API with it, you'll need a GraphQL server library. I would suggest considering the [`neelance/graphql-go`](https://github.com/neelance/graphql-go) project as a starting point (if you want a complete list of options, see [here](http://graphql.org/code/#go)). Then, you can use any [GraphQL client](http://graphql.org/code/#graphql-clients) to execute queries, including the `graphql` package from this post.
+If you want to play around with GraphQL or take a stab at creating your own API with it, you'll need a GraphQL server library. I would suggest considering the [github.com/neelance/graphql-go](https://github.com/neelance/graphql-go) project as a starting point (if you want a complete list of options, see [here](http://graphql.org/code/#go)). Then, you can use any [GraphQL client](http://graphql.org/code/#graphql-clients) to execute queries, including the `graphql` package from this post.
 
 If you run into any issues, please report in the issue tracker of the corresponding repository. For anything else, I'm on Twitter as [@shurcooL](https://twitter.com/shurcooL).
 
