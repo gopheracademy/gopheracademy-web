@@ -68,7 +68,7 @@ fmt.Println(query.Me.Bio)
 // The Go gopher.
 ```
 
-Initially, `encoding/json` was used for unmarshaling the GraphQL response into the query structure amd it worked well. But eventually, some edge cases and advanced queries were discovered, where using `encoding/json` was no longer working out.
+Initially, `encoding/json` was used for unmarshaling the GraphQL response into the query structure and it worked well. But eventually, some edge cases and advanced queries were discovered, where using `encoding/json` was no longer working out.
 
 Motivation for Custom JSON Unmarshaler
 --------------------------------------
@@ -172,7 +172,7 @@ There were at least 3 clear problems with `encoding/json` for unmarshaling Graph
 	}
 	```
 
-	You can see that in this case the shape of the response doesn't quite align with the query struct. GraphQL inlines or embeds the fields from Animal into the "mascot" object. The `encoding/json` unmarshaler will not be able to handle that in the way we'd want, and the fields in the query struct will be left unset. See proof on [playground](https://play.golang.org/p/ug4T4Tt4n2).
+	You can see that in this case the shape of the response doesn't quite align with the query struct. GraphQL inlines or embeds the fields from Animal into the "mascot" object. The `encoding/json` unmarshaler will not be able to handle that in the way we'd want, and the fields in the query struct will be left unset. See proof on the [playground](https://play.golang.org/p/ug4T4Tt4n2).
 
 	You could try to work around it by using Go's embedded structs. If you define query as:
 
@@ -205,7 +205,7 @@ There were at least 3 clear problems with `encoding/json` for unmarshaling Graph
 	>
 	> 3.	Otherwise there are multiple fields, and all are ignored; no error occurs.
 
-	Multiple fields are ignored. So, `Name` would be left unset. See proof on [playground](https://play.golang.org/p/qT7n2P0sSk).
+	Multiple fields are ignored. So, `Name` would be left unset. See proof on the [playground](https://play.golang.org/p/qT7n2P0sSk).
 
 	An initial reaction might be that it's a bug or flaw in `encoding/json` package and should be fixed. However, upon careful consideration, this is a very ambiguous situation, and there's no single clear "correct" behavior. The `encoding/json` unmarshaler makes a sensible compromise for generic needs, not GraphQL-specific needs.
 
@@ -531,9 +531,9 @@ Payoff
 
 Let's quickly revisit our original GraphQL unions example that wasn't working with standard `encoding/json` unmarshaler. When we replace `json.UnmarshalJSON` with `jsonutil.UnmarshalGraphQL`, the `Name` field gets populated! That's good news, it means we didn't do all that work for nothing.
 
-See proof on [playground](https://play.golang.org/p/Xfu2mqxZ5m).
+See proof on the [playground](https://play.golang.org/p/Xfu2mqxZ5m).
 
-`jsonutil.UnmarshalGraphQL` also takes `graphql` struct field tags into account when unmarshaling, and doesn't get mislead by `json` field tags. If there are additional GraphQL-specific tweaks to unmarshaling behavior that need to be applied in the future, they'll be easy to apply. Best part is we're reusing the rigorous JSON tokenizer of `encoding/json` and its public API, so no need to deal with maintaining a fork.
+`jsonutil.UnmarshalGraphQL` also takes `graphql` struct field tags into account when unmarshaling, and doesn't get misled by `json` field tags. If there are additional GraphQL-specific tweaks to unmarshaling behavior that need to be applied in the future, they'll be easy to apply. Best part is we're reusing the rigorous JSON tokenizer of `encoding/json` and its public API, so no need to deal with maintaining a fork.
 
 Conclusion
 ----------
@@ -549,7 +549,7 @@ Note that there are [two GraphQL client packages](https://dmitri.shuralyov.com/p
 -	[`github.com/shurcooL/graphql`](https://github.com/shurcooL/graphql) is a general-purpose GraphQL client library.
 -	[`github.com/shurcooL/githubql`](https://github.com/shurcooL/githubql) is a client library specifically for accessing GitHub GraphQL API v4. It's powered by `graphql` internally.
 
-I've had a chance to actually use `githubql` for real tasks in some of my Go projects, and it was a pleasant experience. That said, their GraphQL API v4 is still missing many things present in [GitHub REST API v3](https://developer.github.com/v3/), so I couldn't do as much with it as I would've liked. They're working on expanding it, and it'll be even better when fully complete.
+I've had a chance to actually use `githubql` for real tasks in some of my Go projects, and it was a pleasant experience. That said, their GraphQL API v4 is still missing many things present in [GitHub REST API v3](https://developer.github.com/v3/), so I couldn't do as much with it as I would've [liked](https://platform.github.community/t/3114). They're working on expanding it, and it'll be even better when fully complete.
 
 If you want to play around with GraphQL or take a stab at creating your own API with it, you'll need a GraphQL server library. I would suggest considering the [`neelance/graphql-go`](https://github.com/neelance/graphql-go) project as a starting point (if you want a complete list of options, see [here](http://graphql.org/code/#go)). Then, you can use any [GraphQL client](http://graphql.org/code/#graphql-clients) to execute queries, including the `graphql` package from this post.
 
