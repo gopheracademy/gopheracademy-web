@@ -9,9 +9,10 @@ title = "gRPC Go: Beyond the basics"
 
 # Introduction
 
-Starting with gRPC (in Go) there are many resources about what it is and where it comes from and how to create a basic service and client. After I finished an introduction to gRPC and implemented a basic implementation I felt a bit lost as to where I need to go next.
+As a newcomer to gRPC (in Go) there are many resources setting out what gRPC is, where it originated from and how to create a basic service and client. After completing an introduction to gRPC and setting up a basic implementation I felt a bit lost as to where I need to go next.
 
-gRPC is more than just sending binary blobs over HTTP/2. gRPC is also a set of libraries that will provide higher-level features consistently across platforms that common HTTP libraries typically do not. The purpose of this blog is to be a guideline for where to look after you understand the basics of gRPC and leverage these libraries and features to make the most of the gRPC ecosystem.
+gRPC consists of more than just sending binary blobs over HTTP/2. gRPC is also a set of libraries that will provide higher-level features consistently across platforms that other libraries typically do not. The purpose of this blog is to be a guideline for where to find the resources and leverage these libraries and features to make the most of the gRPC ecosystem after you understand the basics of gRPC.
+
 
 Note:*To minimise bloat this article assumes knowledge of [gRPC](https://grpc.io) and [Protocol Buffers](https://developers.google.com/protocol-buffers/)*.
 
@@ -171,7 +172,7 @@ A client connection can be configured by supplying `DialOption` functional optio
 
 The API also has a concept called *interceptors* which basically makes it possible to add middleware functionality to both Unary (single request/response) and Streaming calls.
 
-Interceptors are very useful to wrap functionality around a RPC call. It helps to seperate things like logging/auth/monitoring/tracing from the logic of the RPC service and can help to create a uniform way for something like logging for each call in one place.
+Interceptors are very useful to wrap functionality around a RPC call. It helps to separate things like logging/auth/monitoring/tracing from the logic of the RPC service and can help to create a uniform way (for example : logging) for each call in one place.
 
 Other functionality that the API offer are things like the handling of messages with a different codec than Protocol Buffers (i.e FlatBuffers), enabling compression of message, control maximum message sizes, add headers and trailers, enabling tracing and even creating load balancing functionality (*the Load Balancing API is still experimental*)
 
@@ -493,7 +494,7 @@ For more info:
 ### Closing
 
 Thank you for reading this blog. Hopefully this blog helped you into diving deeper into the wonderful world of gRPC in Go.
-Although gRPC is considered a framework the API gives us a flexible API to leverage and control behavior and to make our services robust and production ready.
+Although gRPC is considered a framework, the API gives us a flexible API to leverage and control behavior and to make our services robust and production ready.
 
 If you have any feedback, remarks or questions you can send me a tweet @pieterlouw
 
