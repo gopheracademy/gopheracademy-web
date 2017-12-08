@@ -381,31 +381,6 @@ type decoder struct {
 }
 ```
 
-We'll create these helpers to help manage the `parseState` stack:
-
-```Go
-// pushState pushes a new parse state s onto the stack.
-func (d *decoder) pushState(s json.Delim) {
-	d.parseState = append(d.parseState, s)
-}
-
-// popState pops a parse state (already obtained) off the stack.
-// The stack must be non-empty.
-func (d *decoder) popState() {
-	d.parseState = d.parseState[:len(d.parseState)-1]
-}
-
-// state reports the parse state on top of stack, or 0 if empty.
-func (d *decoder) state() json.Delim {
-	if len(d.parseState) == 0 {
-		return 0
-	}
-	return d.parseState[len(d.parseState)-1]
-}
-```
-
-The `popState` helper happens to be called only when stack is known to be non-empty, so there's no need to have it check for that condition. We couldn't do that if it weren't an unexported helper.
-
 That should be enough for now. Let's look at the code for unmarshaling next.
 
 Remember that the `UnmarshalGraphQL` function calls `decoder.Decode` method. `Decode` will accept `v`, set up the decoder state, and call `decode`, where the actual decoding logic will take place.
