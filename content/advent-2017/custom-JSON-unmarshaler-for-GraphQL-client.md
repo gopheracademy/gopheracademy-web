@@ -10,9 +10,9 @@ In this post, I will tell a story of how I had to build a custom JSON unmarshale
 History of GraphQL Client Library in Go
 ---------------------------------------
 
-In May of 2017, I set out to build the first [GraphQL client library for Go](http://graphql.org/code/#go-1). Back then, only [GraphQL server libraries](http://graphql.org/code/#go) existed in Go. My main motivation was wanting to be able to access [GitHub GraphQL API v4](https://developer.github.com/v4/) from my Go code, which had just [come out of early access](https://github.com/blog/2359-introducing-github-marketplace-and-more-tools-to-customize-your-workflow) back then. I also knew that a general-purpose GraphQL client library would be useful, enabling Go projects to access any GraphQL API. There were GraphQL clients available in other languages, and I didn't want Go users to be missing out.
-
 [GraphQL](http://graphql.org/) is a data query language for APIs, developed internally by Facebook in 2012, and made publicly available in 2015. It can be used as a replacement for, or in addition to REST APIs. It some ways, it offers significant advantages compared to REST APIs, making it an attractive option. Of course, as any newer technology, it's less mature and has some weaknesses in certain areas.
+
+In May of 2017, I set out to build the first [GraphQL client library for Go](http://graphql.org/code/#go-1). Back then, only [GraphQL server libraries](http://graphql.org/code/#go) existed in Go. My main motivation was wanting to be able to access [GitHub GraphQL API v4](https://developer.github.com/v4/) from my Go code, which had just [come out of early access](https://github.com/blog/2359-introducing-github-marketplace-and-more-tools-to-customize-your-workflow) back then. I also knew that a general-purpose GraphQL client library would be useful, enabling Go projects to access any GraphQL API. There were GraphQL clients available in other languages, and I didn't want Go users to be missing out.
 
 I spent a week on the initial investigation and research into what a Go client for GraphQL could look like. GraphQL is strongly typed, which is a good fit for Go. However, it also has some more advanced query syntax and features that play better with more dynamic languages, so I had my share of concerns whether a good client in Go would even be viable. Fortunately, at the end of that week, I found that a reasonable client in Go was indeed possible, and pushed a working [initial prototype](https://github.com/shurcooL/githubql/commit/78a7455460db3b5f51a2ec5640d7e47326a9ef12) that had most basic functionality implemented, with a plan for how to implement and address the [remaining features](https://github.com/shurcooL/githubql/issues/22).
 
@@ -21,7 +21,7 @@ I documented the history of my findings and design decisions made in [this issue
 JSON Unmarshaling Task at Hand
 ------------------------------
 
-Unmarshaling JSON into a structure is a very common and well understood problem. It's already implemented inside the `encoding/json` package in Go standard library. Given that JSON is such a well specified standard, why would I need to implement my own JSON unmarshaler?
+Unmarshaling JSON into a structure is a very common and well understood problem. It's already implemented inside the `encoding/json` package in Go standard library. Given that JSON is such a well specified standard, why would anyone need to implement their own JSON unmarshaler?
 
 To answer that, I need to provide a little context about how GraphQL works. The GraphQL client begins by sending a request containing a GraphQL query, for example:
 
@@ -45,9 +45,7 @@ The GraphQL server receives it, processes it, and sends a JSON-encoded response 
 }
 ```
 
-Notice it has the same shape as the query. Taking advantage of this property turned out to be a critical factor in making the Go GraphQL client library convenient and useful.
-
-That's why the `graphql` package was designed so that to make a query, you start by defining a Go struct variable. That variable then both defines the GraphQL query that will be made, and gets populated with the response data from the GraphQL server:
+Notice it has the same shape as the query. That's why the `graphql` package was designed so that to make a query, you start by defining a Go struct variable. That variable then both defines the GraphQL query that will be made, and gets populated with the response data from the GraphQL server:
 
 ```Go
 var query struct {
@@ -68,64 +66,14 @@ fmt.Println(query.Me.Bio)
 // The Go gopher.
 ```
 
-Initially, `encoding/json` was used for unmarshaling the GraphQL response into the query structure and it worked well. But eventually, some edge cases and advanced queries were discovered, where using `encoding/json` was no longer working out.
+Initially, `encoding/json` was used for unmarshaling the GraphQL response into the query structure. It worked well for most things, but there were some problems.
 
 Motivation for Custom JSON Unmarshaler
 --------------------------------------
 
 There were at least 3 clear problems with `encoding/json` for unmarshaling GraphQL responses into the query structure. These served as motivation to write a custom JSON unmarshaler for `graphql` needs.
 
-1.	Consider if the user supplied a query struct that happened to contain `json` struct field tags, for example:
-
-	```Go
-	type query struct {
-		Me struct {
-			Name string `json:"full_name"`
-		}
-	}
-	```
-
-	(Suppose the user wants to serialize the response later, or uses some struct that happens to have `json` tags defined for other reasons.)
-
-	The JSON-encoded response from GraphQL server will contain:
-
-	```JSON
-	{
-		"me": {
-			"name": "gopher"
-		}
-	}
-	```
-
-	As a result, `query.Me.Name` will not be populated, since the Go struct has a JSON tag calling it "full_name", but the field is "name" in the response, which doesn't match.
-
-	This happens because `encoding/json` unmarshaler is affected by `json` struct field tags.
-
-2.	To have additional control over the GraphQL query that is generated from the query struct, the `graphql` struct field tag can be used. It allows overriding how a given struct field gets encoded in the GraphQL query. Suppose the user happens to use a field with a name that doesn't match that of the GraphQL field:
-
-	```Go
-	var query struct {
-		Me struct {
-			Photo string `graphql:"avatarUrl(size: 72)"`
-		}
-	}
-	```
-
-	The JSON-encoded response from GraphQL server will contain:
-
-	```JSON
-	{
-		"me": {
-			"avatarUrl": "https://golang.org/doc/gopher/run.png"
-		}
-	}
-	```
-
-	As a result, `query.Me.Photo` will not be populated, since the field is "avatarUrl" in the response, and the Go struct has a field named "Photo", which doesn't match.
-
-	This happens because `encoding/json` unmarshaler is unaware of the `graphql` struct field tags.
-
-3.	Perhaps the largest problem with using `encoding/json` came to light when looking to support the GraphQL [unions](https://facebook.github.io/graphql/October2016/#sec-Unions) feature. In GraphQL, a union is a type of object representing many objects.
+1.	The largest problem with using `encoding/json` became apparent when looking to support the GraphQL [unions](https://facebook.github.io/graphql/October2016/#sec-Unions) feature. In GraphQL, a union is a type of object representing many objects.
 
 	```GraphQL
 	query {
@@ -209,6 +157,56 @@ There were at least 3 clear problems with `encoding/json` for unmarshaling Graph
 
 	An initial reaction might be that it's a bug or flaw in `encoding/json` package and should be fixed. However, upon careful consideration, this is a very ambiguous situation, and there's no single clear "correct" behavior. The `encoding/json` unmarshaler makes a sensible compromise for generic needs, not GraphQL-specific needs.
 
+2.	To have additional control over the GraphQL query that is generated from the query struct, the `graphql` struct field tag can be used. It allows overriding how a given struct field gets encoded in the GraphQL query. Suppose the user happens to use a field with a name that doesn't match that of the GraphQL field:
+
+	```Go
+	var query struct {
+		Me struct {
+			Photo string `graphql:"avatarUrl(size: 72)"`
+		}
+	}
+	```
+
+	The JSON-encoded response from GraphQL server will contain:
+
+	```JSON
+	{
+		"me": {
+			"avatarUrl": "https://golang.org/doc/gopher/run.png"
+		}
+	}
+	```
+
+	As a result, `query.Me.Photo` will not be populated, since the field is "avatarUrl" in the response, and the Go struct has a field named "Photo", which doesn't match.
+
+	This happens because `encoding/json` unmarshaler is unaware of the `graphql` struct field tags.
+
+3.	Consider if the user supplied a query struct that happened to contain `json` struct field tags, for example:
+
+	```Go
+	type query struct {
+		Me struct {
+			Name string `json:"full_name"`
+		}
+	}
+	```
+
+	(Suppose the user wants to serialize the response later, or uses some struct that happens to have `json` tags defined for other reasons.)
+
+	The JSON-encoded response from GraphQL server will contain:
+
+	```JSON
+	{
+		"me": {
+			"name": "gopher"
+		}
+	}
+	```
+
+	As a result, `query.Me.Name` will not be populated, since the Go struct has a JSON tag calling it "full_name", but the field is "name" in the response, which doesn't match.
+
+	This happens because `encoding/json` unmarshaler is affected by `json` struct field tags.
+
 This motivation lead to the conclusion that for GraphQL-specific needs, a custom JSON unmarshaler is unavoidably needed.
 
 Implementing a Custom JSON Unmarshaler
@@ -218,11 +216,11 @@ Discarding a well written, thoroughly tested, battle proven JSON unmarshaler in 
 
 Writing it from scratch would've been the last option to consider. I could've made a copy of `encoding/json` and modified it. But that would mean having to maintain a copy of `encoding/json` and keep it up to date with any upstream changes.
 
-Luckily, I found a better option. The key insight was that the process of JSON unmarshaling consists of two independent parts: parsing JSON, and populating the target struct fields with the parsed values. The JSON that GraphQL servers respond with is completely standard, specification-compliant JSON. I didn't need to make any changes there. It was only the behavior of populating target struct fields that I needed to customize.
+The key insight was that the process of JSON unmarshaling consists of two independent parts: parsing JSON, and populating the target struct fields with the parsed values. The JSON that GraphQL servers respond with is completely standard, specification-compliant JSON. I didn't need to make any changes there. It was only the behavior of populating target struct fields that I needed to customize.
 
-In Go 1.5, the `encoding/json` package API was expanded to expose a JSON tokenizer to the outside world. A JSON tokenizer parses JSON and returns a sequence of JSON tokens, which are higher-level and easier to work with compared to the original byte stream. I could make use of this to avoid having to parse the JSON myself.
+In Go 1.5, the `encoding/json` package exposed a JSON tokenizer API to the outside world. A JSON tokenizer parses JSON and emits a sequence of JSON tokens, which are higher-level and easier to work with compared to the original byte stream. I could make use of this to avoid having to parse the JSON myself.
 
-The `encoding/json` JSON tokenizer is exposed via a [`Token`](https://godoc.org/encoding/json#Decoder.Token) method of `json.Decoder` struct:
+The `encoding/json` JSON tokenizer is available via the [`Token`](https://godoc.org/encoding/json#Decoder.Token) method of `json.Decoder` struct:
 
 ```Go
 // Token returns the next JSON token in the input stream.
@@ -242,7 +240,7 @@ Calling `Token` repeatedly on an input like this:
 }
 ```
 
-Returns a sequence of JSON tokens, followed by io.EOF error:
+Produces this sequence of JSON tokens, followed by `io.EOF` error:
 
 ```
 json.Delim: {
@@ -513,11 +511,9 @@ See proof on the [playground](https://play.golang.org/p/Xfu2mqxZ5m).
 Conclusion
 ----------
 
-If you got this far, thanks for following along with me on this journey! I hope you enjoyed it and/or learned something new.
-
 It has been a lot of fun implementing the GraphQL client library for Go, and trying to make the best [API design decisions](https://github.com/shurcooL/githubql/issues?q=label%3A%22API+decision%22). I enjoyed using the tools that Go gives me to tackle this task. Even after using Go for 4 years, I'm still finding Go to be the absolutely most fun programming language to use, and feeling same joy I did back when I was just starting out!
 
-I think GraphQL is an exciting new technology. Its strongly typed nature is a great fit for Go. APIs that are created with it can be a pleasure to use. Keep in mind that GraphQL shines most when you're able to replace multiple REST API calls with a single carefully crafted GraphQL query. This requires high quality and completeness of the GraphQL schema, so not all GraphQL APIs are made equal.
+I'm finding GraphQL to be a pretty neat new technology. Its strongly typed nature is a great fit for Go. APIs that are created with it can be a pleasure to use. Keep in mind that GraphQL shines most when you're able to replace multiple REST API calls with a single carefully crafted GraphQL query. This requires high quality and completeness of the GraphQL schema, so not all GraphQL APIs are made equal.
 
 Note that there are [two GraphQL client packages](https://dmitri.shuralyov.com/packages?pattern=...ql) to choose from:
 
