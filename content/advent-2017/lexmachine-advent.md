@@ -46,7 +46,7 @@ often the token type will be the part of speech.
 
 Tokenizing English is very difficult in general because determining the part of
 speech of a particular word is not always obvious. The same word can play
-multiple *semantic* roles in a sentence. Humans to consider the sentence in its
+multiple *semantic* roles in a sentence. Humans consider the sentence in its
 entirety when determining the parts of speech for each word. This allows us to
 "noun verbs" and "verb nouns."
 
@@ -60,7 +60,7 @@ language), tokenization is the first step in parsing or compilation and is
 called lexical analysis.
 
 Modern compilers are designed as a "pipeline" or series of steps (called passes)
-which operator over a program. They take the source code and transform it step
+which operate over a program. They take the source code and transform it step
 by step into the desired output (machine code, assembly, another programming
 language). Breaking compilation into steps simplifies each stage and makes the
 individual passes reusable. The start of the pipeline is shown in Figure 1.
@@ -366,7 +366,7 @@ func newLexer() *lexmachine.Lexer {
 	lexer.Add([]byte(`( |\t|\f)+`), getToken(tokmap["SPACE"]))
 	lexer.Add([]byte(`\\\n`), getToken(tokmap["SPACE"]))
 	lexer.Add([]byte(`\n|\r|\n\r`), getToken(tokmap["NEWLINE"]))
-	err = lexer.Compile()
+	err := lexer.Compile()
 	if err != nil {
 		panic(err)
 	}
@@ -387,7 +387,7 @@ func skip(scan *Scanner, match *machines.Match) (interface{}, error) {
 ```
 
 ```go
-lexer.Add([]byte("\s+"), skip)     // skip whitespace
+lexer.Add([]byte(`\s+`), skip)     // skip whitespace
 lexer.Add([]byte(`#[^\n]*`), skip) // skip comments
 ```
 
@@ -423,7 +423,7 @@ func newLexer() *lexmachine.Lexer {
 	lexer.Add([]byte(`( |\t|\f)+`), skip)
 	lexer.Add([]byte(`\\\n`), skip)
 	lexer.Add([]byte(`\n|\r|\n\r`), getToken(tokmap["NEWLINE"]))
-	err = lexer.Compile()
+	err := lexer.Compile()
 	if err != nil {
 		panic(err)
 	}
@@ -458,16 +458,15 @@ if err != nil {
 for tk, err, eof := scanner.Next(); !eof; tk, err, eof = scanner.Next() {
 	if err != nil {
 		panic(err)
-	} else {
-		token := tk.(*lexmachine.Token)
-		fmt.Printf("%-7v | %-25q | %v:%v-%v:%v\n",
-			tokens[token.Type],
-			token.Value.(string),
-			token.StartLine,
-			token.StartColumn,
-			token.EndLine,
-			token.EndColumn)
 	}
+	token := tk.(*lexmachine.Token)
+	fmt.Printf("%-7v | %-25q | %v:%v-%v:%v\n",
+		tokens[token.Type],
+		token.Value.(string),
+		token.StartLine,
+		token.StartColumn,
+		token.EndLine,
+		token.EndColumn)
 }
 ```
 
@@ -522,28 +521,27 @@ func printChipLabels(text []byte) error {
 	for tk, err, eof := scanner.Next(); !eof; tk, err, eof = scanner.Next() {
 		if err != nil {
 			return err
-		} else {
-			token := tk.(*lexmachine.Token)
-			switch token.Type {
-			case tokmap["CHIP"]:
-				addChips()
-				state = "chip"
-			case tokmap["LABEL"]:
-				state = "label"
-			case tokmap["NAME"]:
-				switch state {
-				case "chip":
-					curChips = append(curChips, token.Value.(string))
-				case "label":
-					curLabel = append(curLabel, token.Value.(string))
-					if len(curLabel) >= 2 {
-						curLabels = append(curLabels, strings.Join(curLabel, ":"))
-						curLabel = make([]string, 0, 2)
-					}
+		}
+		token := tk.(*lexmachine.Token)
+		switch token.Type {
+		case tokmap["CHIP"]:
+			addChips()
+			state = "chip"
+		case tokmap["LABEL"]:
+			state = "label"
+		case tokmap["NAME"]:
+			switch state {
+			case "chip":
+				curChips = append(curChips, token.Value.(string))
+			case "label":
+				curLabel = append(curLabel, token.Value.(string))
+				if len(curLabel) >= 2 {
+					curLabels = append(curLabels, strings.Join(curLabel, ":"))
+					curLabel = make([]string, 0, 2)
 				}
-			case tokmap["NEWLINE"]:
-				state = "none"
 			}
+		case tokmap["NEWLINE"]:
+			state = "none"
 		}
 	}
 	addChips() // close the final chip statement
