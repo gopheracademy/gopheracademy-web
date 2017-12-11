@@ -4,7 +4,6 @@ date = "2017-12-13"
 series = ["Advent 2017"]
 linktitle = "gRPC Go: Beyond the basics"
 title = "gRPC Go: Beyond the basics"
-
 +++
 
 # Introduction
