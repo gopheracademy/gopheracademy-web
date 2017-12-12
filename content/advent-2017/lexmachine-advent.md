@@ -2,8 +2,7 @@
 author = ["Tim Henderson"]
 title = "How to Tokenize Complex Strings with Lexmachine"
 linktitle = "How to Tokenize Complex Strings with Lexmachine"
-date = 2017-12-12
-draft = false
+date = 2017-12-12T00:40:42Z
 +++
 
 
