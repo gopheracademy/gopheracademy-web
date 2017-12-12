@@ -39,8 +39,8 @@ message ListReleasesResponse {
 
 message ReleaseInfo {
     string version = 1;
-    string releaseDate = 2;
-    string releaseNotesURL = 3;
+    string release_date = 2;
+    string release_notes_url = 3;
 }
 ```
 
@@ -52,8 +52,8 @@ Let's look at a basic service and client implementation.
 
 ``` go
 type releaseInfo struct {
-    ReleaseDate     string `json:"releaseDate"`
-    ReleaseNotesURL string `json:"releaseNotesURL"`
+    ReleaseDate     string `json:"release_date"`
+    ReleaseNotesURL string `json:"release_notes_url"`
 }
 
 /* goReleaseService implements GoReleaseServiceServer as defined in the generated code:
@@ -81,7 +81,7 @@ func (g *goReleaseService) GetReleaseInfo(ctx context.Context,
     return &pb.ReleaseInfo{
         Version:         r.GetVersion(),
         ReleaseDate:     ri.ReleaseDate,
-        ReleaseNotesURL: ri.ReleaseNotesURL,
+        ReleaseNotesUrl: ri.ReleaseNotesURL,
     }, nil
 }
 
@@ -93,7 +93,7 @@ func (g *goReleaseService) ListReleases(ctx context.Context, r *pb.ListReleasesR
         ri := &pb.ReleaseInfo{
             Version:         k,
             ReleaseDate:     v.ReleaseDate,
-            ReleaseNotesURL: v.ReleaseNotesURL,
+            ReleaseNotesUrl: v.ReleaseNotesURL,
         }
 
         releases = append(releases, ri)
