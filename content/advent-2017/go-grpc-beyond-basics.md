@@ -238,7 +238,7 @@ For more client side options, see [DialOption](https://godoc.org/google.golang.o
 
 **Tip:** `DialOption` values all have a **With** prefix, i.e grpc.**With**TransportCredentials
 
-*Fo more resources on enabling TLS for gRPC in Go:*
+*For more resources on enabling TLS for gRPC in Go:*
 
 [Using gRPC with Mutual TLS in Golang](http://krishicks.com/post/2016/11/01/using-grpc-with-mutual-tls-in-golang/)
 
