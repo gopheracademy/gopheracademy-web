@@ -1,6 +1,6 @@
 +++
 author = ["Pieter Louw"]
-date = "2017-12-13"
+date = "2017-12-13T09:15:00Z"
 series = ["Advent 2017"]
 linktitle = "gRPC Go: Beyond the basics"
 title = "gRPC Go: Beyond the basics"
