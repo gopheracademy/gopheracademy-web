@@ -389,7 +389,7 @@ And again, do not forget to fix the tests and provide [all necessary changes](ht
 
 ### Step 9. Health checks
 
-In a case if we want to run a service in Kubernetes, we usually need to add the health checks: [liveness and readiness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/). The purpose of a liveness probe is to understand that the application is running. If a liveness probe fails, the service will be restarted. The purpose of a readiness probe is to understand if the application is ready to serve traffic. 
+In a case if we want to run a service in Kubernetes, we usually need to add the health checks: [liveness and readiness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/). The purpose of a liveness probe is to understand that the application is running. If the liveness probe fails, the service will be restarted. The purpose of a readiness probe is to understand if the application is ready to serve traffic. If the readiness probe fails, the container will be removed from service load balancers.
 
 To define the readiness probe we usually need to write a simple handler which always return response code `200`:
 
@@ -445,6 +445,8 @@ Here we want to mark that the application is ready to serve traffic after 10 sec
 
 As usual, the whole changes we made of this step you can find [on Github](https://github.com/rumyantseva/advent-2017/commit/e73b996f8522b736c150e53db059cf041c7c3e64).
 
+**Note.** *If your application hits too much traffic, its endpoints will response unstable. E.g. liveness probe might be failed because of timeouts. This is why some engineers prefer to not to use liveness probe at all. Personally, I think that it would be better to scale resources if you find out that you have more and more requests. For example, you might want to [scale pods with HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/).*
+
 ### Step 10. Graceful shutdown
 
 When the service needs to be stoped, it is good to not to interrupt connections, requests and other operations immediately, but to handle all those things properly. Go supports graceful shutdown for `http.Server` since version 1.8. Let's see [how we may use it](https://github.com/rumyantseva/advent-2017/commit/93f8357d5f2a8fb0c978e5256d400dd00a393575):
@@ -456,7 +458,7 @@ func main() {
 	r := handlers.Router(version.BuildTime, version.Commit, version.Release)
 
 	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
@@ -469,8 +471,6 @@ func main() {
 
 	killSignal := <-interrupt
 	switch killSignal {
-	case os.Kill:
-		log.Print("Got SIGKILL...")
 	case os.Interrupt:
 		log.Print("Got SIGINT...")
 	case syscall.SIGTERM:
@@ -483,7 +483,9 @@ func main() {
 }
 ```
 
-In this example we are able to catch operation system signals and if one of `SIGKILL`, `SIGINT` or `SIGTERM` is catched, we will shut down the service gracefully.
+In this example we are able to catch operation system signals and if one of `SIGINT` or `SIGTERM` is catched, we will shut down the service gracefully.
+
+**Note.** *When I was writing this code, I tried to catch `SIGKILL` here. I saw it few times in different libraries and I was sure that it worked. But, as Sandor Szücs [noted](https://twitter.com/sszuecs/status/941582509565005824), it is not possible to catch `SIGKILL`. In the case of `SIGKILL`, the application will be stoped immediately.*
 
 ### Step 11. Dockerfile
 
@@ -761,3 +763,5 @@ Yeah, it works!
 You can find all steps [here](https://github.com/rumyantseva/advent-2017), there are two versions available: [commit-by-commit](https://github.com/rumyantseva/advent-2017/commits/master) and [all steps in one](https://github.com/rumyantseva/advent-2017/tree/all-steps). If you have any questions, please, [create an issue](https://github.com/rumyantseva/advent-2017/issues/new) or ping me via twitter: [@webdeva](https://twitter.com/webdeva) or just leave a comment here.
 
 It might be interesting for you how a more flexible service, prepared for the real production, may look like. In this case, feel free to take a look at [takama/k8sapp](https://github.com/takama/k8sapp), a Go application template which meets the Kubernetes requirements.
+
+P.S. Many thanks to [Natalie Pistunovich](https://twitter.com/NataliePis), [Paul Brousseau](https://twitter.com/object88), [Sandor Szücs](https://twitter.com/sszuecs) and others for their review and comments.
