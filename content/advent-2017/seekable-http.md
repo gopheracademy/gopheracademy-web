@@ -193,7 +193,7 @@ issuing a stream of tiny reads. All of those short HTTP transactions
 are hard on the server, and terrible for our throughput, since each
 one entails many round-trips to the server.
 
-The solution, of course, it caching. Instead of reading just the first
+The solution, of course, is caching. Instead of reading just the first
 512 bytes that the TAR reader asks for, I read 10 times that many, so
 that the next several reads will be serviced directly from cache. If
 there is a read that is outside of the cache, we assume that the other
