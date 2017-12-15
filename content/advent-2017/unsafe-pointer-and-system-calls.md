@@ -212,7 +212,7 @@ it can populate the value at that memory address with our local context ID.
 ```go
 f, err := fs.Open("/dev/vsock")
 if err != nil {
-	return err
+	return 0, err
 }
 defer f.Close()
 
@@ -222,7 +222,7 @@ var cid uint32
 // Retrieve the context ID of this machine from /dev/vsock.
 err = Ioctl(f.Fd(), unix.IOCTL_VM_SOCKETS_GET_LOCAL_CID, unsafe.Pointer(&cid))
 if err != nil {
-	return err
+	return 0, err
 }
 
 // Return the now-populated context ID to the caller.
