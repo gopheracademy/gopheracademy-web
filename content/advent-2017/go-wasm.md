@@ -27,8 +27,8 @@ With wasm, developers get:
 
 ### wasm format
 
-WebAssembly is formally defined by a set of [specifications](https://webassembly.github.io/spec/index.html).
-The wasm binary format is described [here](https://webassembly.github.io/spec/binary/index.html).
+WebAssembly is formally defined by a set of [specifications](https://webassembly.github.io/spec/core/index.html).
+The wasm binary format is described [here](https://webassembly.github.io/spec/core/binary/index.html).
 
 A `.wasm` file is the result of the compilation of C/C++, Rust or Go code with the adequate toolchain.
 It contains bytecode instructions to be executed by the browser or any other program that can decode and interpret that binary format.
@@ -48,7 +48,7 @@ After that come the different sections of a module:
 - the code segments section: function bodies, and
 - the data segments section.
 
-The full description with all the details is available [here](https://webassembly.github.io/spec/binary/modules.html).
+The full description with all the details is available [here](https://webassembly.github.io/spec/core/binary/modules.html).
 A more gentle and less dry introduction to wasm can be found at https://rsms.me/wasm-intro.
 
 A toolchain like [emscripten](http://kripken.github.io/emscripten-site/) will thus take a set of C/C++ source code and generate a `.wasm` file containing type definitions, function definitions, function bodies with the corresponding wasm instructions (_e.g.:_ `i32.store` to store a signed 32b integer to memory, `if` and `return` control instructions, etc...)
