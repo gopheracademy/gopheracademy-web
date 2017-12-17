@@ -27,14 +27,14 @@ search API will return. This is a post about Go, so the lambda function is writt
 course! The total resource usage is well below the free tier limits, so running this function is
 free indefinitely.
 
-The data that the lambda function collects is stored in a DyanmoDB table that just holds the repo
+The data that the lambda function collects is stored in a DynamoDB table that just holds the repo
 name, an integer timestamp (epoch time in seconds), and the number of stars at that time. By the
 time this article was started, I had several hundred megabytes of data in DynamoDB. As with the
 Lambda function, the usage here is below the free tier limit, so the storage is free as well. For
 reference, the allocated read and write capacity is 20 units each.
 
 Just getting the data out of DynamoDB was a chore, as I chose to use the Data Pipeline in AWS which
-runs a MapReduce cluster on your behalf to extract data from DyanmoDB into S3. There is a standard
+runs a MapReduce cluster on your behalf to extract data from DynamoDB into S3. There is a standard
 template to dump a DynamoDB table into S3 that's fairly easy to figure out. From there, I had to
 download it all locally using the AWS CLI and then write a program (this time in Go) to convert the
 many separate chunk files into one CSV file. This left me with a 726 MB CSV file.
@@ -180,8 +180,46 @@ the end.
 
 I wanted to figure out if the larger repositories grow faster than smaller ones, so I grabbed the
 number of stars at the end of the tracking period for each repository and charted that against the
-number of stars increase per day. I'll spare you the SQL this time as it's just a small tweak to the
-last one.
+number of stars increase per day. The SQL this time as it's just a small tweak to the
+last one:
+
+```sql
+select rises.repo, rises.stars as stars,
+cast(rise as float)/cast(run as float)*(24*60*60) as stars_per_day
+from (
+    select maxs.repo, maxs.stars, maxs.stars-mins.stars as rise
+    from (
+        select gs.repo, gs.stars
+        from github_stars as gs
+        inner join (
+            select repo, max(ts) as ts
+            from github_stars
+            group by repo
+        ) as maxts
+        on gs.repo = maxts.repo and gs.ts = maxts.ts
+    ) as maxs
+    inner join (
+        select gs.repo, gs.stars
+        from github_stars as gs
+        inner join (
+            select repo, min(ts) as ts
+            from github_stars
+            group by repo
+        ) as mints
+        on gs.repo = mints.repo and gs.ts = mints.ts
+    ) as mins
+    on maxs.repo = mins.repo
+) as rises
+inner join
+(
+    select repo, max(ts)-min(ts) as run
+    from github_stars
+    group by repo
+) as runs
+on rises.repo = runs.repo
+where runs.run > 0
+order by stars desc;
+```
 
 ![spd_vs_total](/postimages/advent-2017/tracking-the-stars/spd_vs_total.svg)
 
