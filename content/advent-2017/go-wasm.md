@@ -1,6 +1,6 @@
 +++
 author = ["Sebastien Binet"]
-date = "2017-12-17"
+date = "2017-12-17T09:15:00Z"
 linktitle = "Go and wasm"
 series = ["Advent 2017"]
 title = "Go and wasm: generating and executing wasm with Go"
