@@ -16,7 +16,7 @@ Our physicians will analyse this data and generate a report, basically a PDF fil
 
 ## Our Architecture
 
-Regarding the reports our application was splitted in two parts:
+Regarding the reports our application was split in two parts:
 
 - Python API which holds patient's data, exams information and other business logic;
 - Go application used by physicians to analyse medical information and "create the report";
@@ -31,7 +31,7 @@ The Python API will use the metadata sent before to create the PDF when the endp
 
 ## Our Problem
 
-The reports was builded using [Report Lab](http://www.reportlab.com/), a great python library used by players like NASA and Wikipedia, but the way we used it makes changes into report's structure a nightmare.
+The reports was built using [Report Lab](http://www.reportlab.com/), a great python library used by players like NASA and Wikipedia, but the way we used it makes changes into report's structure a nightmare.
 
 Our reports are using background/foreground structure, which maps to a predefined PDF template (background) and the data you wish to add on it (foreground).
 
@@ -58,7 +58,7 @@ A great library ported from PHP which have good support for everything we needed
 
 ## Proof of Concept
 
-We've created a new repo to check if we could reproduce the hardest report usign gofpdf and to understand the trade-offs with this new approach.
+We've created a new repo to check if we could reproduce the hardest report using gofpdf and to understand the trade-offs with this new approach.
 
 To start we need to get it as any Go library using `go get github.com/jung-kurt/gofpdf`
 
@@ -94,9 +94,9 @@ func NewReport() *Report {
 
 Our struct `Report` just holds the configured document as you can see in the last line before actually return it.
 
-The ideia here is just to show how simple is to create your documents using this library. You could check the [docs](https://godoc.org/github.com/jung-kurt/gofpdf) to understand what each function does. Let's move one step further.
+The idea here is just to show how simple is to create your documents using this library. You could check the [docs](https://godoc.org/github.com/jung-kurt/gofpdf) to understand what each function does. Let's move one step further.
 
-The main code lives in a `HandleFunc`, which was created just to be able to see this PDF usign a browser instead of generate it in the file system.
+The main code lives in a `HandleFunc`, which was created just to be able to see this PDF using a browser instead of generating it in the file system.
 
 ```go
 http.HandleFunc("/report", func(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +117,7 @@ http.HandleFunc("/report", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-Each function in the `report` object (created by our `NewReport` as we saw above) is a section builder for that given name. We build the patient header, with information like name, age, etc, diagnostic section which is where we explain if the patient have a positive or negative result for that specific exam and so on.
+Each function in the `report` object (created by our `NewReport` as we saw above) is a section builder for that given name. We build the patient header, with information like name, age, etc, diagnostic section which is where we explain if the patient has a positive or negative result for that specific exam and so on.
 
 Let's get the `Method` function to see how it works under the hood.
 
@@ -150,25 +150,25 @@ Below you could see the result of this POC: a report 99% similar to what we have
 
 ## From Python to Go
 
-As we saw previously, we need to change how Python and Go communicate each other. Instead send an `application/pdf` as before, now the python API need to serve all the data needed to construct the report on the Go side.
+As we saw previously, we need to change how Python and Go communicate with each other. Instead of sending an `application/pdf` as before, now the python API needs to serve all the data needed to construct the report on the Go side.
 
 We created a new endpoint to serve this new information as we can see below:
 
 ![](/postimages/advent-2017/building-medial-reports-in-go/api-v2-diagram.png)
 
-With the API ready we changed how our Go application called it. Instead call the API to build the report now we're calling the model endpoint in order to get the metadata necessary to construct it in our end.
+With the API ready we changed how our Go application called it. Instead of calling the API to build the report now we're calling the model endpoint in order to get the metadata necessary to construct it in our end.
 
 ```go
 model, err := api.GetModel(code, user)
 
 if err != nil {
-    errorMessage := "unable to get report model"
+    msg := "unable to get report model"
     logrus.WithFields(logrus.Fields{
         "code":  code,
         "user":  user,
         "error": err,
-    }).Error(errorMessage)
-    http.Error(w, errorMessage, http.StatusInternalServerError)
+    }).Error(msg)
+    http.Error(w, msg, http.StatusInternalServerError)
 }
 ```
 
@@ -176,16 +176,16 @@ After that we pass this data to our `report` object:
 
 ```go
 if err := report.New(model).Output(w); err != nil {
-    errorMessage := "unable to generate report"
+    msg := "unable to generate report"
     logrus.WithFields(logrus.Fields{
         "code":  code,
         "error": err,
-    }).Error(errorMessage)
-    http.Error(w, errorMessage, http.StatusInternalServerError)
+    }).Error(msg)
+    http.Error(w, msg, http.StatusInternalServerError)
 }
 ```
 
-Did you see how this code is very similar which our POC? Yes, you got this right, we just basically copy&paste these code from POC to our application and just remove the hardcode part related to how we build each section. The `Output` function is pretty the same:
+Did you see how this code is very similar with the one from our POC? Yes, you got this right, we just basically copy&paste these code from POC to our application and just remove the hardcode part related to how we build each section. The `Output` function is pretty much the same:
 
 ```go
 func (r *Report) Output(w io.Writer) error {
@@ -209,7 +209,7 @@ func (r *Report) Output(w io.Writer) error {
 
 ## Bonus: Unit Test For PDF
 
-Your methods to build each PDF's section is fully tested, but if I change something like font color, an image position or another visual thing? How can I get feedback about it?
+Your methods to build each PDF's section are fully tested, but what if I change something like font color, an image position or another visual thing? How can I get feedback about it?
 
 In our case, let's say we change accidentally the color of an arbitrary element. The right document was:
 
@@ -225,7 +225,7 @@ We changed the background color of an element in the right corner.
 
 ![](/postimages/advent-2017/building-medial-reports-in-go/testing-mistake.png)
 
-Without any unit tests we need to check all documents by eye to guarantee we didn't broke anything, but the library provides an awesome way to test our PDF files! Please check the [unit tests inside the library](https://github.com/jung-kurt/gofpdf/blob/master/fpdf_test.go) to get the whole idea.
+Without any unit tests we need to check all documents by eye to guarantee we didn't break anything, but the library provides an awesome way to test our PDF files! Please check the [unit tests inside the library](https://github.com/jung-kurt/gofpdf/blob/master/fpdf_test.go) to get the whole idea.
 
 In our end our tests will alarm if we made a mistake like above:
 
