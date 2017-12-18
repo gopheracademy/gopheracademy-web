@@ -179,7 +179,7 @@ import (
 func main() {
 	http.Handle("/hello", http.HandlerFunc(helloHandler))
 
-	http.ListenAndServe(":8181", http.DefaultServeMux)
+	http.ListenAndServe("localhost:8181", http.DefaultServeMux)
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -188,6 +188,8 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 ```
 
 To collect the traces we need to issue a request to the endpoint, e.g, `curl localhost:8181/debug/pprof/trace?seconds=10 > trace.out`. This request will block for 10 seconds and the trace data will written to the file `trace.out`. A trace generated like this can be viewed the same way as we did before: `go tool trace trace.out`.
+
+> Security note: beware that exposing pprof handlers to the Internet is not advisable. The recommendation is to expose these endpoints on a different http.Server that is only bound to the loopback interface. [This blog post](http://mmcloughlin.com/posts/your-pprof-is-showing) discusses the risks and has code samples on how to properly expose pprof handlers.
 
 Before gathering the trace, let's start by generating some load on our service using `wrk`: 
 
@@ -235,3 +237,4 @@ Unfortunately, official documentation is lacking so some experimentation is need
 1. [Go execution tracer (design doc)](https://docs.google.com/document/u/1/d/1FP5apqzBgr7ahCCgFO-yoVhk4YZrNIDNf9RybngBc14/pub)
 2. [Using the go tracer to speed fractal rendering](https://medium.com/@francesc/using-the-go-execution-tracer-to-speed-up-fractal-rendering-c06bb3760507)
 3. [Go tool trace](https://making.pusher.com/go-tool-trace/)
+4. [Your pprof is showing](http://mmcloughlin.com/posts/your-pprof-is-showing)
