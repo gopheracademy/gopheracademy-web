@@ -2,7 +2,7 @@
 title = "Using Vue.js with Buffalo"
 linktitle = "Using Vue.js with Buffalo"
 author = ["Mark Bates"]
-date = "2017-12-16T00:00:00"
+date = "2017-12-18T00:00:00"
 series = ["Advent 2017"]
 
 +++
