@@ -17,7 +17,7 @@ Osquery is a powerful tool, but it’s written in C++, so why are we talking abo
 
 ## Writing a custom logger plugin 
 
-When schedule a query like `SELECT name, version from deb_packages;` the `oqueryd` daemon will create a JSON log event with the results of the query. By default, a `filesystem` plugin is used, which logs the results to a local file. Commonly oquery users use aggregation tools like `filebeat`to send the result logs to a centralized log platform. Other plugins exist too. The `tls` plugin sends all logs to a remote TLS server like [Fleet](https://kolide.com/fleet). The `kinesis` plugin sends logs results to AWS, allowing advanced monitoring with applications like [StreamAlert](https://medium.com/airbnb-engineering/streamalert-real-time-data-analysis-and-alerting-e8619e3e5043). But what if you already have a well established logging pipeline with the systemd `journa`l, Splunk, `fluentd` or any number of proprietary logging systems. With the Thrift bindings to osquery, you can write your own logger. Go, having support for most APIs these days, is an ideal language for implementing a logger. 
+When you schedule a query like `SELECT name, version from deb_packages;` the `oqueryd` daemon will create a JSON log event with the results of the query. By default, a `filesystem` plugin is used, which logs the results to a local file. Commonly oquery users use aggregation tools like `filebeat` to send the result logs to a centralized log platform. Other plugins exist too. The `tls` plugin sends all logs to a remote TLS server like [Fleet](https://kolide.com/fleet). The `kinesis` plugin sends logs results to AWS, allowing advanced monitoring with applications like [StreamAlert](https://medium.com/airbnb-engineering/streamalert-real-time-data-analysis-and-alerting-e8619e3e5043). But what if you already have a well established logging pipeline with the systemd `journal`, Splunk, `fluentd` or any number of proprietary logging systems. With the Thrift bindings to osquery, you can write your own logger. Go, having support for most APIs these days, is an ideal language for implementing a logger. 
 
 For the purpose of this tutorial, we’ll implement a systemd `journal` logger. The [`go-systemd`](http://github.com/coreos/go-systemd/journal) library from CoreOS has a convenient package we can use to write to `journald`.
 
@@ -203,7 +203,7 @@ We can now use the `systemd` service in our queries.
     | 6308708    | nignx.service    | nginx    | ::      | 443  | 25859 |
     +------------+------------------+----------+---------+------+-------+
 
-By configuring the query to run on a schedule, and using the logger plugin to aggregate the results centrally, we can begin to instrument our systems and create alerts.  Osquery allows for 
+By configuring the query to run on a schedule, and using the logger plugin to aggregate the results centrally, we can begin to instrument our systems and create alerts.
 
 Speaking of configuration, how are you configuring the osquery process. The recommended way is a configuration management tool like Chef, or a dedicated TLS server like [Fleet](https://kolide.com/fleet), but maybe you’ve got *custom* requirements?
 
