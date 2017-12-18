@@ -1,18 +1,18 @@
 +++
-author = ["Scott Mansfield "]
-date = 2017-12-11T06:40:42Z
+author = ["Scott Mansfield"]
+date = 2017-12-20T06:40:42Z
 title = "Tracking the Stars"
 series = ["Advent 2017"]
 +++
 
-Back in April this year (2017) I thought it would be fun to try setting up a system to track the
-star counts of the top 1000 Go repositories on GitHub. This article describes how I did this data
-collection and some simple analysis of the dataset.
+In April 2017, I thought it would be fun to try setting up a system to track the star counts of the
+top 1000 Go repositories on GitHub. This article describes how I collected this data and some simple
+analysis of the dataset.
 
 I want to be clear that this was for fun only and I'm not advocating that the number of stars a
 repository has is the be-all-end-all of its success. There's many, many repositories I am not
 mentioning here that are high quality, useful code. There's also tons of code that lives in private
-repositories outside Github or on Bitbucket and GitLab. In the context of this article, the stars on
+repositories outside GitHub or on Bitbucket and GitLab. In the context of this article, the stars on
 GitHub are a set of data used to explore the patterns people have when starring repositories.
 
 ## Collecting the data
@@ -22,7 +22,7 @@ be brief.
 
 The collection is done by a [Lambda function](/postimages/advent-2017/tracking-the-stars/lambda.py)
 on Amazon Web Services using a timer that triggers an execution every 15 minutes. The lambda
-function collects the stars count of the top 1000 Go repositories, which is the maximum the GitHub
+function collects the star count of the top 1000 Go repositories, which is the maximum the GitHub
 search API will return. This is a post about Go, so the lambda function is written in... Python, of
 course! The total resource usage is well below the free tier limits, so running this function is
 free indefinitely.
@@ -33,11 +33,11 @@ time this article was started, I had several hundred megabytes of data in Dynamo
 Lambda function, the usage here is below the free tier limit, so the storage is free as well. For
 reference, the allocated read and write capacity is 20 units each.
 
-Just getting the data out of DynamoDB was a chore, as I chose to use the Data Pipeline in AWS which
-runs a MapReduce cluster on your behalf to extract data from DynamoDB into S3. There is a standard
-template to dump a DynamoDB table into S3 that's fairly easy to figure out. From there, I had to
-download it all locally using the AWS CLI and then write a program (this time in Go) to convert the
-many separate chunk files into one CSV file. This left me with a 726 MB CSV file.
+To get the data out of DynamoDB, I used the standard AWS Data Pipeline template. The AWS
+[Documentation](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBPipeline.html)
+covers the process well. From there, I had to download it all locally using the AWS CLI and then
+write a program (this time in Go) to convert the many separate chunk files into one CSV file. This
+left me with a 726 MB CSV file.
 
 The [go program](/postimages/advent-2017/tracking-the-stars/tocsv.go) to do the CSV conversion is
 incredibly over-engineered, but it was fun to optimize while the next step completed.
@@ -71,10 +71,6 @@ That's because the error handling was not extremely robust in the lambda. It's d
 term trends, not second-by-second updates. The number of tracked repositories is higher than 1000
 because some repositories stayed the same and slipped out of view as others increased. Yet others
 increased rapidly from 0 to attain a relatively high position in the middle of tracking.
-
-I should warn anyone that is halfway decent at SQL that my skills are very rusty and therefore you
-will likely know a better way to write the queries below. Don't sweat it, I've already done the
-waiting for you.
 
 ### Total stars per repo
 
@@ -180,8 +176,7 @@ the end.
 
 I wanted to figure out if the larger repositories grow faster than smaller ones, so I grabbed the
 number of stars at the end of the tracking period for each repository and charted that against the
-number of stars increase per day. The SQL this time as it's just a small tweak to the
-last one:
+number of stars increase per day. The SQL this time is a small tweak to the last one:
 
 ```sql
 select rises.repo, rises.stars as stars,
@@ -281,6 +276,6 @@ with all this data, let me know.
 
 Twitter: [@sgmansfield](https://twitter.com/sgmansfield)
 
-Github: [ScottMansfield](https://github.com/ScottMansfield)
+GitHub: [ScottMansfield](https://github.com/ScottMansfield)
 
 Email: [sgmansf@gmail.com](mailto:sgmansf@gmail.com)
