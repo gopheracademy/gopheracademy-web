@@ -1,6 +1,6 @@
 +++
 author = ["Matt Layher"]
-date = "2017-12-XXT08:00:00+00:00"
+date = "2017-12-19T08:00:00+00:00"
 title = "Accessing SMBIOS information with Go"
 series = ["Advent 2017"]
 +++
