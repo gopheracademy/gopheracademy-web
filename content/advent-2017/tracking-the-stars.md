@@ -229,8 +229,8 @@ ones.
 ## Single Repository Graphs
 
 One of the first things I did early on was to create a [python script](/postimages/advent-2017/tracking-the-stars/star_graph.py)
-that pulls the data for a any number of repositories and graph it using matplotlib. The details are
-not super interesting but the graphs are fun to look at.
+that pulls the data for any number of repositories and graph it using matplotlib. The details are
+can be found in the Python code, but the graphs are fun to look at:
 
 ![docker and moby graph](/postimages/advent-2017/tracking-the-stars/docker_and_moby.png)
 ![dominikh/go-tools graph](/postimages/advent-2017/tracking-the-stars/dominikh_go-tools.png)
