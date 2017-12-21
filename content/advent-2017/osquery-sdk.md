@@ -1,5 +1,5 @@
 +++
-date = "2017-12-17T06:40:42Z"
+date = "2017-12-21T00:00:00Z"
 linktitle = "Extending Osquery with Go"
 title = "Extending Osquery with Go"
 author = ["Victor Vrantchan"]
