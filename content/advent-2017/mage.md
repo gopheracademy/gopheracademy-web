@@ -45,10 +45,10 @@ Windows Subsystem for Linux, but now you're up to a pretty big ask just to build
 your Go project).
 
 Mage, on the other hand, is a plain old Go application.  If you have Go
-installed (which if you're building a Go project, I presume you do) you can
-simply `go get github.com/magefile/mage`.  Mage has no dependencies outside the
-standard library, so you don't even have to worry about a dependency manager for
-it. You can also download prebuilt binaries from github, if that's preferable.
+installed (and I presume you do) you can simply `go get
+github.com/magefile/mage`.  Mage has no dependencies outside the standard
+library, so you don't even have to worry about a dependency manager for it. You
+can also download prebuilt binaries from github, if that's preferable.
 
 Once Mage is installed, you use Mage much like make in that you write one or
 more scripts (in this case, normal go files that we call magefiles) which mage
@@ -111,7 +111,7 @@ not just *what* it does.
 ## How it Works
 
 When you run `mage`, the first thing it has to do is figure out what files it
-should read.  It uses the normal `go build` heuristics (build tags, _platform in
+should read.  It uses the normal `go build` heuristics (build tags, \_platform in
 filenames, etc) with one little tweak... normally when you build, go grabs all
 files in a directory without tags.  If you specify a tag in the build command it
 *adds* any files with that build tag... but it never takes away the files with
@@ -148,7 +148,7 @@ and the magefiles are run through a normal execution of `go build` to produce
 the binary, then the temp file is cleaned up.  
 
 Now that the glue code and magefiles have been compiled, it's just a matter of
-running the binary and passing through the arguments sent to mage (which is the
+running the binary and passing through the arguments sent to mage (this is the
 only thing that happens when the binary is cached).
 
 From there, it's just your go code running, same as always.  No surprises, no
