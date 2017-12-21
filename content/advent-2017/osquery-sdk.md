@@ -3,6 +3,7 @@ date = "2017-12-21T00:00:00Z"
 linktitle = "Extending Osquery with Go"
 title = "Extending Osquery with Go"
 author = ["Victor Vrantchan"]
+series = ["Advent 2017"]
 +++
 
 What if you could use SQL to query any aspect of your infrastructure? [Osquery](https://github.com/facebook/osquery#osquery), an open source instrumentation tool released by the Facebook security team allows you to do just that.
