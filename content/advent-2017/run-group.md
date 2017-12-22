@@ -1,7 +1,7 @@
 +++
 author = ["Peter Bourgon"]
 title = "Managing goroutine lifecycles with run.Group"
-linktitle = "run group"
+linktitle = "Managing goroutine lifecycles with run.Group"
 date = 2017-12-24T00:34:34Z
 series = ["Advent 2017"]
 +++
