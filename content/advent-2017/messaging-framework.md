@@ -7,21 +7,21 @@ series = ["Advent 2017"]
 +++  
   
 ![System diagram](/static/postimages/advent-2017/messaging-framework/system-diagram.png)  
-I needed to create a simple framework to provide my endpoint devices ( doesn't matter which platform they run on ) the the option to send and receive messages from my backend.  
+I needed to create a simple framework to provide my endpoint devices ( doesn't matter which platform they run on ) the option to send and receive messages from my backend.  
 I require those messages to be managed by a message broker so that they can be processed in an asynchronous way.  
 The system contains 4 main layers, this article section is mainly about the first one:  
-1. TCP servers - Needs to keep maintain as many as possible concurrent tcp sockets with the endpoints. all of the endpoints messages will be processed on a different layer through the message broker. This keeps the TCP servers layer very thin and effective and to keep as many concurrent connection as possible, and Go is a good pick for it ( see [this article](https://medium.freecodecamp.org/million-websockets-and-go-cc58418460bb))  
-2. Message broker - Responsible for delivering the messages between the TCP servers layer and the workers layer. I chose [Apache Kafka](https://kafka.apache.org/) for that purpose.  
-3. Workers layer - will process the messages through services exposed in the backend layer.  
-4. Backed services layer - An encapsulation of services requires by your application such as DB, Authentication, Logging, external APIs and more.  
+1. **TCP servers** - Needs to keep maintain as many as possible concurrent tcp sockets with the endpoints. all of the endpoints messages will be processed on a different layer through the message broker. This keeps the TCP servers layer very thin and effective and to keep as many concurrent connection as possible, and Go is a good pick for it ( see [this article](https://medium.freecodecamp.org/million-websockets-and-go-cc58418460bb))  
+2. **Message broker** - Responsible for delivering the messages between the TCP servers layer and the workers layer. I chose [Apache Kafka](https://kafka.apache.org/) for that purpose.  
+3. **Workers layer** - will process the messages through services exposed in the backend layer.  
+4. **Backed services layer** - An encapsulation of services requires by your application such as DB, Authentication, Logging, external APIs and more.  
   
 So, this Go Server:  
-1. communicates with its endpoint clients by TCP sockets  
+1. communicates with its endpoint clients by TCP sockets.  
 2. queues the messages in the message broker.  
 3. receives back messages from the broker after they were processed and send response acknowledgment and/or errors to the TCP clients.  
 
 The full source code is available in : https://github.com/orrchen/go-messaging  
-I have also included a Dockerfile and a build script to push the image to your Docker repository.
+I have also included a Dockerfile and a build script to push the image to your Docker repository.  
 Special thanks to the great go Kafka [sarama library from Shopify](https://github.com/Shopify/sarama).
 
 _The article is divided to sections representing the components of the system. Each component should be decoupled from the others in a way that if you are interested in reading about just one of components it should be straight forward._
@@ -30,7 +30,8 @@ _The article is divided to sections representing the components of the system. E
 Its role is to represent a TCP client communicating with our TCP server.
 ```go
 type Client struct {
-	Uid  string /* client is responsible of generating a uinque uid for each request, it will be sent in the response from the server so that client will know what request generated this response */
+	Uid  string /* client is responsible of generating a unique uid for each request,   
+	it will be sent in the response from the server so that client will know what request generated this response */
 	DeviceUid string /* a unique id generated from the client itself */
 	conn net.Conn
 	onConnectionEvent func(c *Client, eventType ConnectionEventType, e error) /* function for handling new connections */
@@ -43,8 +44,8 @@ We will also define constants for events:
 ```go
 const
 (
-	CONNECTION_EVENT_TYPE_NEW_CONNECTION        ConnectionEventType = "new_connection"
-	CONNECTION_EVENT_TYPE_CONNECTION_TERMINATED ConnectionEventType = "connection_terminated"
+	CONNECTION_EVENT_TYPE_NEW_CONNECTION           ConnectionEventType = "new_connection"
+	CONNECTION_EVENT_TYPE_CONNECTION_TERMINATED    ConnectionEventType = "connection_terminated"
 	CONNECTION_EVENT_TYPE_CONNECTION_GENERAL_ERROR ConnectionEventType = "general_error"
 )
 ```
@@ -88,7 +89,7 @@ type Consumer struct {
 	callbacks ConsumerCallbacks
 }
 ```
-ConsumerCallbacks are:
+```ConsumerCallbacks``` are:
 ```go
 
 type ConsumerCallbacks struct {
@@ -666,7 +667,7 @@ Few things to notice here:
 ## Build, run and deploy to Docker image
 To build:
 ```bash 
-go build  main.go
+go build main.go
 ```
 To run:
 ```bash
@@ -694,7 +695,7 @@ I will be very happy to read your thoughts and comments, happy holidays to all!
 
 ## About the author:
 Hi, my name is Orr Chen, a software engineer and a gopher for the past 3 years.
-My first experience with Go was migrating the entire backend of my startup [PushApps](www.pushapps.mobi) from Rails to Golang.  Since then I am a big fun of the language!
+My first experience with Go was migrating the entire backend of my startup [PushApps](www.pushapps.mobi) from Rails to Golang.  Since then I am a big fun of the language!  
 Github: [OrrChen](https://github.com/orrchen)  
 Twitter: [OrrChen](https://twitter.com/OrrChen)  
 LinkedIn: [orrchen](www.linkedin.com/in/orrchen)
