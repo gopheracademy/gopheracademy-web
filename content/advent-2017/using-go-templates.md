@@ -39,7 +39,7 @@ Actions have several built-in functions that're used along with pipelines to add
 
 Functions are used to escape the action's result. There're several functions available by default such as, `html` which returns HTML escaped output, safe against code injection or `js` which returns JavaScript escaped output.
 
-Using the `with` action, you can define variables that are available in that `with` block: `{{ with $x := <^>result-of-some-action<^> }} {{ $x }} {{ end }}`.
+Using the `with` action, you can define variables that're available in that `with` block: `{{ with $x := <^>result-of-some-action<^> }} {{ $x }} {{ end }}`.
 
 Throughput the article, we're going to cover more complex actions, such as reading from array instead of struct.
 
@@ -117,13 +117,13 @@ The `Must` function takes an template and error as arguments. It's common to pro
 t := template.Must(template.New("todos").Parse("You have task named \"{{ .Name}}\" with description: \"{{ .Description}}\""))
 ```
 
-Througput the article we're going to use this function so we can omit explicitly error checking.
+Througput the article we're going to use this function so we can omit explicit error checking.
 
 Once we know how what Template interface provides, we can use it in our application. Next section of the article will cover some practical use cases, such as creating web pages, sending e-mails or implementing it with your CLI.
 
 ## Implementing Templates
 
-In this part of the article we're going to take a look how you can use the magic of templates. Let's start by creating a simple HTML page, containing an to-do list.
+In this part of the article we're going to take a look how you can use the magic of templates. Let's create a simple HTML page, containing an to-do list.
 
 #### Creating Web Pages using Templates
 
@@ -243,7 +243,7 @@ This code generates code such as the below one:
 
 #### Parsing Multiple Files
 
-Sometimes, this approach is not suitable if you have many files, or you're dynamically adding new ones or removing old ones
+Sometimes, this approach is not suitable if you have many files, or you're dynamically adding new ones and removing old ones
 
 Beside `ParseFiles` function, there's `ParseGlob` function which takes glob as an argument and than parses all files that matches the glob.
 
@@ -259,5 +259,12 @@ if err != nil {
 
 #### Use cases
 
+* You can use this approach to generate a web page that obtains data using Go API.
+* You can generate and send e-mails.
+* You can create wonderful web sites using [Go Hugo templating](https://gohugo.io/templates/introduction/).
+
 ## Conclusion
 
+In this article we showed how to use basic templating functions to manipulate data. This article is meant to be quick reference to Go's `template` packages. You can also check out the official [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/) if you're interested in more complex use cases.
+
+If you have any questions, feel free to contact me! You can find me as xmudrii on [Gophers Slack](https://gophers.slack.com/), [Twitter](https://github.com/xmudrii) and [GitHub](https://github.com/xmudrii)
