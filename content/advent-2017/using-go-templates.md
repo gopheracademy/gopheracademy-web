@@ -241,7 +241,7 @@ This code generates code such as the below one:
 </html>
 ```
 
-#### Parsing Multiple Files
+##### Parsing Multiple Files
 
 Sometimes, this approach is not suitable if you have many files, or you're dynamically adding new ones and removing old ones
 
@@ -257,14 +257,59 @@ if err != nil {
 // ...
 ```
 
-#### Use cases
+##### Use cases
 
 * You can use this approach to generate a web page that obtains data using Go API.
 * You can generate and send e-mails.
 * You can create wonderful web sites using [Go Hugo templating](https://gohugo.io/templates/introduction/).
 
+#### Customizing Command's Output
+
+You can incorporate templates in your CLI allowing users to customize command's output. This is commonly done by providing flags for inputing templates. For example, Kubernetes CLI—`kubectl` provides two flags, `--template` for providing template as a string and `--template-file` used to provide template in form of a file.
+
+The following snippet parses template provided via one of two flags—`template` and `template-file`.
+
+```go
+package main
+
+import (
+	"flag"
+	"os"
+)
+
+func main() {
+  	// data parsing...
+  
+	var template, templateFile string
+	flag.StringVar(&template, "template", "", "a template")
+	flag.StringVar(&templateFile, "template-file", "", "a template file path")
+	flag.Parse()
+
+	if templateFile != "" {
+		path := []string{templateFile}
+		t := template.Must(template.New("html-tmpl").ParseFiles(path...))
+		err = t.Execute(os.Stdout, todos)
+		if err != nil {
+			panic(err)
+		}
+	} else if template != "" {
+		path := []string{templateFile}
+		t := template.Must(template.New("html-tmpl").Parse(template))
+		err = t.Execute(os.Stdout, todos)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		// non-template data logic...
+	}
+
+}
+```
+
+Similar could be done using [`spf13/cobra`](https://github.com/spf13/cobra). This code snippet omits data parsing logic because of brevity. Users can use this to customize output using intuitive template language, without need to use tools such as `sed`, `awk` or `grep`.
+
 ## Conclusion
 
-In this article we showed how to use basic templating functions to manipulate data. This article is meant to be quick reference to Go's `template` packages. You can also check out the official [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/) if you're interested in more complex use cases.
+In this article we showed how to use basic templating functions to manipulate data along with several use cases. This article is meant to be quick reference to Go's `template` packages. You can also check out the official [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/) if you're interested in more complex use cases.
 
-If you have any questions, feel free to contact me! You can find me as xmudrii on [Gophers Slack](https://gophers.slack.com/), [Twitter](https://github.com/xmudrii) and [GitHub](https://github.com/xmudrii)
+If you have any questions, feel free to contact me! You can find me as xmudrii on [Gophers Slack](https://gophers.slack.com/), [Twitter](https://github.com/xmudrii) and [GitHub](https://github.com/xmudrii).
