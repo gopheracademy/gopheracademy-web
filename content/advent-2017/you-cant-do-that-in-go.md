@@ -1,6 +1,6 @@
 +++
 author = ["David Crawshaw"]
-title = "You Can't Do That In Go"
+title = "Method Closures: You Can't Do That In Go"
 date = 2017-12-26T00:00:01Z
 series = ["Advent 2017"]
 +++
@@ -17,30 +17,48 @@ discover until I tried to use it without thinking.
 
 # Background: Go without declarations
 
-When designing a language for use in a REPL you want the user to be
-able to dive right in and have their code executed as quickly as
-is reasonable.
-So the common choice (Perl, Python, etc) make is to use statements
-as the topmost grammatical construction.
-Put another way, a scripting language should be able to say
+When designing a language for use in a REPL (a read-eval-print-loop
+like your shell), you want to be able to dive right in and have code
+executed as quickly as possible.
+That is, a scripting language should be able to say
 `"Hello, World!"` in one reasonable line.
 
-Not so in Go.
-The topmost grammatical construction in Go is a declaration (called
-a `TopLevelDecl` in the Go spec because, conveniently for Neugram,
- many Go declarations are also valid statements).
-The order of top-level declarations in Go does not affect the order
-of execution of the program, and is a very useful concept to have
-in a general purpose programming language. It makes it possible to
-depend on names defined later in the file (or in an entirely
-different file in the package) without developing a system of
-forward declarations or header files.
-We remove top-level declarations in Neugram only so we can get the
-REPL executing statements quickly, and we pay for it.
+Popular scripting languages like Perl and Python use statements
+as the topmost grammatical construction. A simple statement can
+consist of a single expression, like the command to print a string.
 
-Mostly the cost is low. Packages are restricted to a single file
-(to avoid thinking about order of file execution) and many top-level
-declarations work well as statements:
+Go is different. The topmost grammatical construction in Go is a
+[declaration](https://golang.org/ref/spec#Declarations_and_scope).
+Declarations consist of package-wide constants, variables, functions,
+types and methods.
+Inside declarations are statements.
+The [statement](https://golang.org/ref/spec#Statements) is
+in charge of program control flow, and contain some number of
+expressions.
+An [expression](https://golang.org/ref/spec#Expressions) is an
+actual computation, where we do the work of programming.
+
+The concept of having a layer of declarations above statements
+is common in programming languages.
+Both C and Java have declarations.
+Declarations are useful.
+The order of top-level declarations in Go does not affect the order
+of execution of the program.
+This makes it possible to depend on names defined later in the file
+(or in an entirely different file in the package) without developing
+a system of forward declarations or header files.
+
+One of the key changes that makes Neugram a different language from
+Go is we do not have top-level declarations.
+Neugram starts with statements.
+We lose the advantages of declarations in exchange for
+executing statements quickly
+
+Without declarations, packages are restricted to a single file
+(to avoid thinking about order of file execution) and referring to
+names not yet defined is tricky, but the feel of many programs stays
+the same because in Go most declarations also work as statements.
+For example:
 
 ```
 var V = 4
@@ -49,8 +67,9 @@ type T int
 
 # Method grammar
 
-The one top-level declaration that we miss in Neugram is `MethodDecl`.
-In Go you can declare a method by writing:
+The one top-level declaration that we miss in Neugram is the
+[method declaration](https://golang.org/ref/spec#Method_declarations).
+In Go you declare a method by writing:
 
 ```
 func (t T) String() string {
@@ -62,7 +81,7 @@ Critically, this declaration does not stand on its own.
 You need another declaration somewhere in your package defining the
 type T.
 While type declarations can be made as statements, method declarations
-cannot be.
+cannot.
 There are several possible arguments for why not, but given the current
 syntax one is that it would introduce the notion of incomplete types
 to the run time phase of Go programs. Imagine:
@@ -112,7 +131,7 @@ evaluated it exists with all of its methods.
 
 So far so good.
 
-# An accidental closure
+# Method closures: You can't do that in Go
 
 While testing out method declarations, I attempted to reimplement
 io.LimitReader. The version I came up with didn't work:
