@@ -2,7 +2,7 @@
 author = ["Nate Finch"]
 title = "Make Your Build Better With Mage"
 linktitle = "Make Your Build Better With Mage"
-date = "2017-12-02T00:00:00"
+date = "2017-12-25T00:00:00"
 series = ["Advent 2017"]
 +++
 
