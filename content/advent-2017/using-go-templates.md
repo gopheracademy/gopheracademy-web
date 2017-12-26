@@ -5,11 +5,11 @@ title = "Using Go Templates"
 series = ["Advent 2017"]
 +++
 
-Go templates are powerful method to customize output however you want, whatever you're creating a web page, sending e-mail, working with [Buffalo](https://github.com/gobuffalo/buffalo), [Go-Hugo](https://gohugo.io), or just using some CLI such as [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/).
+Go templates are a powerful method to customize output however you want, whether you're creating a web page, sending an e-mail, working with [Buffalo](https://github.com/gobuffalo/buffalo), [Go-Hugo](https://gohugo.io), or just using some CLI such as [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/).
 
 There're two packages operating with templates — [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/). Both provide the same interface, however the `html/template` package is used to generate HTML output safe against code injection.
 
-In this article we're going to take a quick look on how to use them package, as well as how to integrate them with your application.
+In this article we're going to take a quick look on how to use the package, as well as how to integrate them with your application.
 
 ### Actions
 
@@ -19,11 +19,11 @@ Before we learn how to implement it, let's take a look at template's syntax. Tem
 
 Usually, when using templates, you'll bind them to some data structure (e.g. `struct`) from which you'll obtain data. To obtain data from a `struct`, you can use the `{{ .FieldName }}` action, which will replace it with `FieldName` value of given struct, on parse time. The struct is given to the `Execute` function, which we'll cover later.
 
-There's also `{{.}}` action that you can use to refer to value of non-struct types.
+There's also the `{{.}}` action that you can use to refer to a value of non-struct types.
 
 #### Conditions
 
-You can also use `if` loops in templates. For example, you can check is `FieldName` non-empty, and if it's, print its value: `{{if .FieldName}} Value of FieldName is {{ .FieldName }} {{end}}`. 
+You can also use `if` loops in templates. For example, you can check if `FieldName` non-empty, and if it is, print its value: `{{if .FieldName}} Value of FieldName is {{ .FieldName }} {{end}}`. 
 
 `else` and `else if` are also supported: `{{if .FieldName}} // action {{ else }} // action 2 {{ end }}`.
 
@@ -31,7 +31,7 @@ You can also use `if` loops in templates. For example, you can check is `FieldNa
 
 Using the `range` action you can loop through a slice. A range actions is defined using the `{{range .Member}} ... {{end}}` template.
 
-If your slice is non-struct type, you can refer to the value using the `{{ . }}` action. In case of structs, you can refer to the value using the `{{ .Member }}` action, as already explained.
+If your slice is a non-struct type, you can refer to the value using the `{{ . }}` action. In case of structs, you can refer to the value using the `{{ .Member }}` action, as already explained.
 
 #### Functions, Pipelines and Variables
 
@@ -41,15 +41,15 @@ Functions are used to escape the action's result. There're several functions ava
 
 Using the `with` action, you can define variables that're available in that `with` block: `{{ with $x := <^>result-of-some-action<^> }} {{ $x }} {{ end }}`.
 
-Throughput the article, we're going to cover more complex actions, such as reading from array instead of struct.
+Throughput the article, we're going to cover more complex actions, such as reading from an array instead of struct.
 
 ## Parsing Templates
 
 The three most important and most frequently used functions are:
 
-* `New` — allocates new, undefinied template,
+* `New` — allocates new, undefined template,
 * `Parse` — parses given template string and return parsed template,
-* `Execute` — applies parsed template to the data structure and write result to the given writer.
+* `Execute` — applies parsed template to the data structure and writes result to the given writer.
 
 The following code shows above-mentioned functions in the action:
 
@@ -67,9 +67,9 @@ type Todo struct {
 }
 
 func main() {
-	td := Todo{"Test templates", "Let's test an template to see the magic."}
+	td := Todo{"Test templates", "Let's test a template to see the magic."}
 
-  t, err := template.New("todos").Parse("You have task named \"{{ .Name}}\" with description: \"{{ .Description}}\"")
+  t, err := template.New("todos").Parse("You have a task named \"{{ .Name}}\" with description: \"{{ .Description}}\"")
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +83,7 @@ func main() {
 The result is the following message printed in your terminal:
 
 ```
-You have task named "Test templates" with description: "Let's test an template to see the magic."
+You have a task named "Test templates" with description: "Let's test a template to see the magic."
 ```
 
 You can reuse the same template, without needing to create or parse it again by providing the struct you want to use to the `Execute` function again:
@@ -100,36 +100,36 @@ err = t.Execute(os.Stdout, tdNew)
 The result is like the previous one, just with new data:
 
 ```
-You have task named "Go" with description: "Contribute to any Go project"
+You have a task named "Go" with description: "Contribute to any Go project"
 ```
 
-As you can see, templates provide powerful way to customize textual output. Beside manipulating textual output, you can also manipulate HTML output using the `html/template` package.
+As you can see, templates provide a powerful way to customize textual output. Beside manipulating textual output, you can also manipulate HTML output using the `html/template` package.
 
 ### Verifying Templates
 
-`template` packages provide the `Must` functions, used to verify is template correct on parsing time. `Must` function provides the same result as if we manually checked for the error, like in the previous example. 
+`template` packages provide the `Must` functions, used to verify that a template is valid during parsing. The `Must` function provides the same result as if we manually checked for the error, like in the previous example. 
 
 This approach saves you typing, but if you encounter an error, your application will panic. For advanced error handling, it's easier to use above solution instead of `Must` function.
 
-The `Must` function takes an template and error as arguments. It's common to provide `New` function as an argument to it:
+The `Must` function takes a template and error as arguments. It's common to provide `New` function as an argument to it:
 
 ```go
 t := template.Must(template.New("todos").Parse("You have task named \"{{ .Name}}\" with description: \"{{ .Description}}\""))
 ```
 
-Througput the article we're going to use this function so we can omit explicit error checking.
+Throughput the article we're going to use this function so we can omit explicit error checking.
 
 Once we know how what Template interface provides, we can use it in our application. Next section of the article will cover some practical use cases, such as creating web pages, sending e-mails or implementing it with your CLI.
 
 ## Implementing Templates
 
-In this part of the article we're going to take a look how you can use the magic of templates. Let's create a simple HTML page, containing an to-do list.
+In this part of the article we're going to take a look how can you use the magic of templates. Let's create a simple HTML page, containing an to-do list.
 
 #### Creating Web Pages using Templates
 
-The `html/template` package allows you to provide template file, e.g. in the form of an HTML file, to make implementing both the front-end and back-end part easier.
+The `html/template` package allows you to provide template file, e.g. in the form of an HTML file, to make implementing both the front-end and back-end easier.
 
-The following data structure represents a To-Do list. The root element has the user's name and list, which is represented as array of struct containing taks's name and status.
+The following data structure represents a To-Do list. The root element has the user's name and list, which is represented as an array of struct containing the tasks' name and status.
 
 ```go
 type entry struct {
@@ -173,7 +173,7 @@ This simple HTML page will be used to display user's name and its To-Do list. Fo
 </html>
 ```
 
-Just like earlier, we're going to parse template and then apply it to the struct containing our data. Instead of the `Parse` function, the `ParseFile` is going to be used. Also, for code brevity, we'll write parsed data to standard output (your terminal) instead to an HTTP Writer.
+Just like earlier, we're going to parse the template and then apply it to the struct containing our data. Instead of the `Parse` function, the `ParseFile` is going to be used. Also, for code brevity, we'll write parsed data to standard output (your terminal) instead to an HTTP Writer.
 
 ```go
 package main
@@ -194,7 +194,7 @@ type ToDo struct {
 }
 
 func main() {
-	// Parse data -- omited for brevity
+	// Parse data -- omitted for brevity
 
 	// Files are provided as a slice of strings.
 	paths := []string{
@@ -209,7 +209,7 @@ func main() {
 }
 ```
 
-This time, we're using `html/template` instead of `text/template`, but as they provide the same interface, we're using same functions to parse the template. That output would be same even if you used `text/template`, but this output is safe against code injection.
+This time, we're using `html/template` instead of `text/template`, but as they provide the same interface, we're using the same functions to parse the template. That output would be same even if you used `text/template`, but this output is safe against code injection.
 
 This code generates code such as the below one:
 
@@ -243,9 +243,9 @@ This code generates code such as the below one:
 
 ##### Parsing Multiple Files
 
-Sometimes, this approach is not suitable if you have many files, or you're dynamically adding new ones and removing old ones
+Sometimes, this approach is not suitable if you have many files, or you're dynamically adding new ones and removing old ones.
 
-Beside `ParseFiles` function, there's `ParseGlob` function which takes glob as an argument and than parses all files that matches the glob.
+Beside the `ParseFiles` function, there's also the `ParseGlob` function which takes glob as an argument and than parses all files that matches the glob.
 
 ```go
 // ...
@@ -265,9 +265,9 @@ if err != nil {
 
 #### Customizing Command's Output
 
-You can incorporate templates in your CLI allowing users to customize command's output. This is commonly done by providing flags for inputing templates. For example, Kubernetes CLI—`kubectl` provides two flags, `--template` for providing template as a string and `--template-file` used to provide template in form of a file.
+You can incorporate templates in your CLI allowing users to customize command's output. This is commonly done by providing flags for inputing templates. For example, Kubernetes CLI—`kubectl` provides two flags, `--template` for providing a template as a string and `--template-file` used to provide a template in the form of a file.
 
-The following snippet parses template provided via one of two flags—`template` and `template-file`.
+The following snippet parses the template provided via one of the two flags—`template` and `template-file`.
 
 ```go
 package main
@@ -310,6 +310,6 @@ Similar could be done using [`spf13/cobra`](https://github.com/spf13/cobra). Thi
 
 ## Conclusion
 
-In this article we showed how to use basic templating functions to manipulate data along with several use cases. This article is meant to be quick reference to Go's `template` packages. You can also check out the official [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/) if you're interested in more complex use cases.
+In this article we showed how to use basic templating functions to manipulate data along with several use cases. This article is meant to be a quick reference to Go's `template` packages. You can also check out the official [`text/template`](https://golang.org/pkg/text/template/) and [`html/template`](https://golang.org/pkg/html/template/) if you're interested in more complex use cases.
 
-If you have any questions, feel free to contact me! You can find me as xmudrii on [Gophers Slack](https://gophers.slack.com/), [Twitter](https://github.com/xmudrii) and [GitHub](https://github.com/xmudrii).
+If you have any questions, feel free to contact me! You can find me as xmudrii on [Gophers Slack](https://gophers.slack.com/), [Twitter](https://twitter.com/xmudrii) and [GitHub](https://github.com/xmudrii).
