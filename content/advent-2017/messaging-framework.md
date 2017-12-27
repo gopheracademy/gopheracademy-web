@@ -38,7 +38,7 @@ type Client struct {
 	onDataEvent func(c *Client, data []byte) /* function for handling new date events */
 }
 ```
-Please notice that ```onConnectionEvent``` and ```onDataEvent``` are callbacks for the Struct that will obtain and manage Clients.
+Please notice that `onConnectionEvent` and `onDataEvent` are callbacks for the Struct that will obtain and manage Clients.
 
 We will also define constants for events:
 ```go
@@ -49,7 +49,7 @@ const
 	CONNECTION_EVENT_TYPE_CONNECTION_GENERAL_ERROR ConnectionEventType = "general_error"
 )
 ```
-Our client will listen permanently using the ```listen()``` function:
+Our client will listen permanently using the `listen()` function:
 ```go
 // Read client data from channel
 func (c *Client) listen() {
@@ -82,14 +82,14 @@ func (c *Client) listen() {
 Its role is to consume messages from our Kafka broker, and to broadcast them back to relevant clients by their uids.  
 In this example we are consuming from multiple topics using the [cluster implementation of sarama](github.com/bsm/sarama-cluster).
 
-Let's define our ```Consumer``` struct:  
+Let's define our `Consumer` struct:  
 ```go
 type Consumer struct {
 	consumer *cluster.Consumer
 	callbacks ConsumerCallbacks
 }
 ```
-```ConsumerCallbacks``` are:
+`ConsumerCallbacks` are:
 ```go
 
 type ConsumerCallbacks struct {
@@ -157,7 +157,7 @@ Its role is to produce messages to our Kafka broker.
 In this example we are producing to a single topic.  
 This section is mainly inspired from the example in https://github.com/Shopify/sarama/blob/master/examples/http_server/http_server.go
 
-Let's define our ```Producer``` Struct:
+Let's define our `Producer` Struct:
 ```go
 type Producer struct {
 	asyncProducer sarama.AsyncProducer
@@ -171,7 +171,7 @@ type ProducerCallbacks struct {
 	OnError func(error)
 }
 ```
-```Producer``` is constructed with the callbacks for error, and the details to connect to the Kafka broker including optional ssl configurations:
+`Producer` is constructed with the callbacks for error, and the details to connect to the Kafka broker including optional ssl configurations:
 ```go
 func NewProducer(callbacks ProducerCallbacks,brokerList []string,topic string,certFile *string,keyFile *string,caFile *string,verifySsl *bool ) *Producer {
 	producer := Producer{ callbacks: callbacks, topic: topic}
@@ -280,7 +280,7 @@ func (p *Producer) Close() error{
 ```
 ## TCP Server
 
-Its role is to obtain and manage a set of ```Client```, and send and receive messages from them.
+Its role is to obtain and manage a set of `Client`, and send and receive messages from them.
 ```go
 type TcpServer struct {
 	address                  string // Address to open connection: localhost:9999
@@ -329,7 +329,7 @@ func (s *TcpServer) onConnectionEvent(c *Client,eventType ConnectionEventType, e
 	}
 }
 ```
-We define ```OnDataEvent``` callback to pass for each ```Client```:
+We define `OnDataEvent` callback to pass for each `Client`:
 ```go
 func (s *TcpServer) onDataEvent(c *Client, data []byte) {
 	if s.callbacks.OnDataReceived!=nil {
@@ -337,7 +337,7 @@ func (s *TcpServer) onDataEvent(c *Client, data []byte) {
 	}
 }
 ```
-```TcpServer``` will listen permanently for new connections and new data with ```Listen```:
+`TcpServer` will listen permanently for new connections and new data with `Listen`:
 ```go
 // Start network Server
 func (s *TcpServer) Listen() {
@@ -445,7 +445,7 @@ type ServerResponse struct {
 }
 ```
 ## Configurations
-I use ```.yml``` files for configurations that change between environments. Here is how to model them and parse from the ```.yml``` file.
+I use `.yml` files for configurations that change between environments. Here is how to model them and parse from the `.yml` file.
 ```go
 func InitConfig(configPath string) {
 	if conf == nil {
@@ -473,7 +473,7 @@ type Configuration struct {
 	ConsumerGroupId     string `yaml:"consumer_group_id"`
 }
 ```
-And here is an example for a ```yml``` config file:
+And here is an example for a `yml` config file:
 ```yaml
 brokers_list:
   - "localhost:9092"
@@ -484,7 +484,7 @@ consumer_group_id: "id-1"
 ```
 ## Main function - putting it all together
 Obtains and manages all the other components in this system. It will include the TCP server that holds an array of TCP clients, and a connection to the Kafka broker for consuming and sending messages to it.
-Here is the full ```main.go``` file:
+Here is the full `main.go` file:
 ```go
 var tcpServer *lib.TcpServer
 var producer *messages.Producer
@@ -663,7 +663,7 @@ Few things to notice here:
 * Test handler on port 8080 to see in the browser everything is running.
 * Ping will be answered with Pong :)
 * Listening to various system calls to gracefully shuts down.
-* An example for setting a device uid to a given client id, assuming there is an event with ``` Action ==  "connect.response" ```
+* An example for setting a device uid to a given client id, assuming there is an event with ` Action ==  "connect.response" `
 ## Build, run and deploy to Docker image
 To build:
 ```bash 
@@ -673,7 +673,7 @@ To run:
 ```bash
 go run main.go -config=config/config.yml
 ```
-To build and run with Docker I first set this ```Dockerfile```:
+To build and run with Docker I first set this `Dockerfile`:
 ```docker
 FROM debian
 MAINTAINER "Orr Chen"
