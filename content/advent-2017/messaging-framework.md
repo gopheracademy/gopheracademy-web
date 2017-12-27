@@ -10,21 +10,21 @@ series = ["Advent 2017"]
 I needed to create a simple framework to provide my endpoint devices ( doesn't matter which platform they run on ) the option to send and receive messages from my backend.  
 I require those messages to be managed by a message broker so that they can be processed in an asynchronous way.  
 The system contains 4 main layers, this article section is mainly about the first one:  
-1. **TCP servers** - Needs to keep maintain as many as possible concurrent tcp sockets with the endpoints. all of the endpoints messages will be processed on a different layer through the message broker. This keeps the TCP servers layer very thin and effective and to keep as many concurrent connection as possible, and Go is a good pick for it ( see [this article](https://medium.freecodecamp.org/million-websockets-and-go-cc58418460bb))  
+1. **TCP servers** - Needs to maintain as many TCP sockets in synch with the endpoints as possible. All of the endpoints messages will be processed on a different layer by the message broker. This keeps the TCP servers layer very thin and effective. I also want to keep as many concurrent connection as possible, and Go is a good choice for this ( see [this article](https://medium.freecodecamp.org/million-websockets-and-go-cc58418460bb))  
 2. **Message broker** - Responsible for delivering the messages between the TCP servers layer and the workers layer. I chose [Apache Kafka](https://kafka.apache.org/) for that purpose.  
 3. **Workers layer** - will process the messages through services exposed in the backend layer.  
-4. **Backed services layer** - An encapsulation of services requires by your application such as DB, Authentication, Logging, external APIs and more.  
+4. **Backed services layer** - An encapsulation of services required by your application such as DB, Authentication, Logging, external APIs and more.  
   
 So, this Go Server:  
 1. communicates with its endpoint clients by TCP sockets.  
 2. queues the messages in the message broker.  
-3. receives back messages from the broker after they were processed and send response acknowledgment and/or errors to the TCP clients.  
+3. receives back messages from the broker after they were processed and sends response acknowledgment and/or errors to the TCP clients.  
 
 The full source code is available in : https://github.com/orrchen/go-messaging  
 I have also included a Dockerfile and a build script to push the image to your Docker repository.  
 Special thanks to the great go Kafka [sarama library from Shopify](https://github.com/Shopify/sarama).
 
-_The article is divided to sections representing the components of the system. Each component should be decoupled from the others in a way that if you are interested in reading about just one of components it should be straight forward._
+_The article is divided to sections representing the components of the system. Each component should be decoupled from the others in a way that allows you to read about a single component in a straight forward manner._
 
 ## TCP Client 
 Its role is to represent a TCP client communicating with our TCP server.
@@ -38,7 +38,7 @@ type Client struct {
 	onDataEvent func(c *Client, data []byte) /* function for handling new date events */
 }
 ```
-pay attention that ```onConnectionEvent``` and ```onDataEvent``` are callbacks for the Struct that will obtain and manage Clients.
+Please notice that ```onConnectionEvent``` and ```onDataEvent``` are callbacks for the Struct that will obtain and manage Clients.
 
 We will also define constants for events:
 ```go
@@ -82,7 +82,7 @@ func (c *Client) listen() {
 Its role is to consume messages from our Kafka broker, and to broadcast them back to relevant clients by their uids.  
 In this example we are consuming from multiple topics using the [cluster implementation of sarama](github.com/bsm/sarama-cluster).
 
-let's define our ```Consumer``` struct:  
+Let's define our ```Consumer``` struct:  
 ```go
 type Consumer struct {
 	consumer *cluster.Consumer
@@ -177,7 +177,7 @@ func NewProducer(callbacks ProducerCallbacks,brokerList []string,topic string,ce
 	producer := Producer{ callbacks: callbacks, topic: topic}
 
 	config := sarama.NewConfig()
-	tlsConfig := createTlsConfiguration(certFile,keyFile,caFile,verifySsl)
+	tlsConfig := createTLSConfiguration(certFile,keyFile,caFile,verifySsl)
 	if tlsConfig != nil {
 		config.Net.TLS.Enable = true
 		config.Net.TLS.Config = tlsConfig
@@ -290,7 +290,7 @@ type TcpServer struct {
 	listener net.Listener
 }
 ```
-it is constructed simply with an address to bind to and the callbacks to send:
+It is constructed simply with an address to bind to and the callbacks to send:
 ```go
 // Creates new tcp Server instance
 func NewServer(address string, callbacks Callbacks ) *TcpServer {
@@ -329,7 +329,7 @@ func (s *TcpServer) onConnectionEvent(c *Client,eventType ConnectionEventType, e
 	}
 }
 ```
-we define ```OnDataEvent``` callback to pass for each ```Client```:
+We define ```OnDataEvent``` callback to pass for each ```Client```:
 ```go
 func (s *TcpServer) onDataEvent(c *Client, data []byte) {
 	if s.callbacks.OnDataReceived!=nil {
@@ -483,7 +483,7 @@ consumer_topics:
 consumer_group_id: "id-1"
 ```
 ## Main function - putting it all together
-Here obtain and manages all the other components in this system. It will include the TCP server that holds an array of TCP clients, and a connection to the Kafka broker for consuming and sending messages to it.
+Obtains and manages all the other components in this system. It will include the TCP server that holds an array of TCP clients, and a connection to the Kafka broker for consuming and sending messages to it.
 Here is the full ```main.go``` file:
 ```go
 var tcpServer *lib.TcpServer
@@ -660,9 +660,9 @@ func onDataConsumed(data []byte){
 ```
 Few things to notice here:  
 * TCP server is listening on port 3000.
-* Test handler on port 8080 to see on the browser everything is running.
+* Test handler on port 8080 to see in the browser everything is running.
 * Ping will be answered with Pong :)
-* Listening to various system calls to gracefully shutting down.
+* Listening to various system calls to gracefully shuts down.
 * An example for setting a device uid to a given client id, assuming there is an event with ``` Action ==  "connect.response" ```
 ## Build, run and deploy to Docker image
 To build:
