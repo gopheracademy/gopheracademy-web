@@ -26,7 +26,7 @@ Special thanks to the great go Kafka [sarama library from Shopify](https://githu
 
 _The article is divided to sections representing the components of the system. Each component should be decoupled from the others in a way that allows you to read about a single component in a straight forward manner._
 
-## TCP Client 
+## [TCP Client](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/lib/client.go) 
 Its role is to represent a TCP client communicating with our TCP server.
 ```go
 type Client struct {
@@ -40,44 +40,9 @@ type Client struct {
 ```
 Please notice that `onConnectionEvent` and `onDataEvent` are callbacks for the Struct that will obtain and manage Clients.
 
-We will also define constants for events:
-```go
-const
-(
-	CONNECTION_EVENT_TYPE_NEW_CONNECTION           ConnectionEventType = "new_connection"
-	CONNECTION_EVENT_TYPE_CONNECTION_TERMINATED    ConnectionEventType = "connection_terminated"
-	CONNECTION_EVENT_TYPE_CONNECTION_GENERAL_ERROR ConnectionEventType = "general_error"
-)
-```
-Our client will listen permanently using the `listen()` function:
-```go
-// Read client data from channel
-func (c *Client) listen() {
-	reader := bufio.NewReader(c.conn)
-	buf := make([]byte, 1024)
-	for {
-		n, err := reader.Read(buf)
+Our client will listen permanently using the `listen()` function and response to new connections, new data received and connections terminations.
 
-		switch err {
-		case io.EOF:
-			// connection terminated
-			c.conn.Close()
-			c.onConnectionEvent(c,CONNECTION_EVENT_TYPE_CONNECTION_TERMINATED, err)
-			return
-		case nil:
-			// new data available
-			c.onDataEvent(c, buf[:n])
-		default:
-			log.Fatalf("Receive data failed:%s", err)
-			c.conn.Close()
-			c.onConnectionEvent(c, CONNECTION_EVENT_TYPE_CONNECTION_GENERAL_ERROR, err)
-			return
-		}
-	}
-}
-```
-
-## Kafka Consumer
+## [Kafka Consumer](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/messages/consumer.go)
 
 Its role is to consume messages from our Kafka broker, and to broadcast them back to relevant clients by their uids.  
 In this example we are consuming from multiple topics using the [cluster implementation of sarama](github.com/bsm/sarama-cluster).
@@ -89,14 +54,7 @@ type Consumer struct {
 	callbacks ConsumerCallbacks
 }
 ```
-`ConsumerCallbacks` are:
-```go
 
-type ConsumerCallbacks struct {
-	OnDataReceived func(msg []byte)
-	OnError func(err error)
-}
-```
 The constructor receives the callbacks and relevant details to connect to the topic:
 ```go
 func NewConsumer(callbacks ConsumerCallbacks,brokerList []string, groupId string, topics []string) *Consumer {
@@ -114,45 +72,10 @@ func NewConsumer(callbacks ConsumerCallbacks,brokerList []string, groupId string
 
 }
 ```
-It will consume permanently on a new goroutine:
-```go
-func (c *Consumer) Consume() {
-	// Create signal channel
-	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
+It will consume permanently on a new goroutine inside the `Consume()` function.  
+It reads from the `Messages()` channel for new messages and the `Notifications()` channel for events.
 
-	// Consume all channels, wait for signal to exit
-	go func(){
-		for {
-			select {
-			case msg, more := <-c.consumer.Messages():
-				if more {
-					if c.callbacks.OnDataReceived!=nil {
-						c.callbacks.OnDataReceived(msg.Value)
-					}
-					fmt.Fprintf(os.Stdout, "%s/%d/%d\t%s\n", msg.Topic, msg.Partition, msg.Offset, msg.Value)
-					c.consumer.MarkOffset(msg, "")
-				}
-			case ntf, more := <-c.consumer.Notifications():
-				if more {
-					log.Printf("Rebalanced: %+v\n", ntf)
-				}
-			case err, more := <-c.consumer.Errors():
-				if more {
-					if c.callbacks.OnError!=nil {
-						c.callbacks.OnError(err)
-					}
-				}
-			case <-sigchan:
-				return
-			}
-		}
-	}()
-
-}
-```
-
-## Kafka Producer
+## [Kafka Producer](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/messages/producer.go)
 Its role is to produce messages to our Kafka broker.  
 In this example we are producing to a single topic.  
 This section is mainly inspired from the example in https://github.com/Shopify/sarama/blob/master/examples/http_server/http_server.go
@@ -165,13 +88,8 @@ type Producer struct {
 	topic         string
 }
 ```
-These are the callbacks:
-```go
-type ProducerCallbacks struct {
-	OnError func(error)
-}
-```
-`Producer` is constructed with the callbacks for error, and the details to connect to the Kafka broker including optional ssl configurations:
+
+`Producer` is constructed with the callbacks for error, and the details to connect to the Kafka broker including optional ssl configurations that are created with `createTLSConfiguration`:
 ```go
 func NewProducer(callbacks ProducerCallbacks,brokerList []string,topic string,certFile *string,keyFile *string,caFile *string,verifySsl *bool ) *Producer {
 	producer := Producer{ callbacks: callbacks, topic: topic}
@@ -200,33 +118,6 @@ func NewProducer(callbacks ProducerCallbacks,brokerList []string,topic string,ce
 	}()
 	producer.asyncProducer = saramaProducer
 	return &producer
-}
-```
-To create the TLS configurations use:
-```go
-func createTlsConfiguration(certFile *string,keyFile *string,caFile *string,verifySsl *bool)(t *tls.Config) {
-	if certFile!=nil && keyFile!=nil && caFile!=nil && *certFile != "" && *keyFile != "" && *caFile != "" {
-		cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caCert, err := ioutil.ReadFile(*caFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		caCertPool := x509.NewCertPool()
-		caCertPool.AppendCertsFromPEM(caCert)
-
-		t = &tls.Config{
-			Certificates:       []tls.Certificate{cert},
-			RootCAs:            caCertPool,
-			InsecureSkipVerify: *verifySsl,
-		}
-	}
-	// will be nil by default if nothing is provided
-	return t
 }
 ```
 
@@ -278,7 +169,7 @@ func (p *Producer) Close() error{
 	return nil
 }
 ```
-## TCP Server
+## [TCP Server](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/lib/tcp_server.go)
 
 Its role is to obtain and manage a set of `Client`, and send and receive messages from them.
 ```go
@@ -306,210 +197,31 @@ func NewServer(address string, callbacks Callbacks ) *TcpServer {
 When a connection event occurs we process it and handle it, if it's a new event we attach a new UID to the client.  
 If connection is terminated we delete this client.  
 In both cases we send the callbacks to notify about those events.
-```go
-func (s *TcpServer) onConnectionEvent(c *Client,eventType ConnectionEventType, e error ) {
-	switch eventType {
-	case CONNECTION_EVENT_TYPE_NEW_CONNECTION:
-		s.connLock.Lock()
-		u1 := uuid.NewV4()
-		uidString := u1.String()
-		c.Uid = uidString
-		s.connections[uidString] = c
-		s.connLock.Unlock()
-		if s.callbacks.OnNewConnection != nil {
-			s.callbacks.OnNewConnection(uidString)
-		}
-	case CONNECTION_EVENT_TYPE_CONNECTION_TERMINATED, CONNECTION_EVENT_TYPE_CONNECTION_GENERAL_ERROR:
-		s.connLock.Lock()
-		delete(s.connections,c.Uid)
-		s.connLock.Unlock()
-		if s.callbacks.OnConnectionTerminated!=nil {
-			s.callbacks.OnConnectionTerminated(c.Uid)
-		}
-	}
-}
-```
-We define `OnDataEvent` callback to pass for each `Client`:
-```go
-func (s *TcpServer) onDataEvent(c *Client, data []byte) {
-	if s.callbacks.OnDataReceived!=nil {
-		s.callbacks.OnDataReceived(c.Uid, data)
-	}
-}
-```
-`TcpServer` will listen permanently for new connections and new data with `Listen`:
-```go
-// Start network Server
-func (s *TcpServer) Listen() {
-	var err error
-	s.listener, err = net.Listen("tcp", s.address)
-	if err != nil {
-		log.Fatal("Error starting TCP Server.: " , err)
-	}
-	for {
-		conn, _ := s.listener.Accept()
-		client := NewClient(conn,s.onConnectionEvent,s.onDataEvent)
-		s.onConnectionEvent(client, CONNECTION_EVENT_TYPE_NEW_CONNECTION,nil)
-		go client.listen()
 
-	}
-}
-```
-We need to shut it down gracefully by closing all open connections:
-```go
-func (s *TcpServer) Close(){
-	log.Println("TcpServer.Close()")
-	log.Println("s.connections length: " , len(s.connections))
-	for k := range s.connections {
-		fmt.Printf("key[%s]\n", k)
-		s.connections[k].Close()
-	}
-	s.listener.Close()
-}
-```
-We provide 2 options ot send data to our clients, by their device uid ( generated from the client side) or by the client id which is generated in our system:
-```go
-func (s *TcpServer) SendDataByClientId(clientUid string, data []byte) error{
-	if s.connections[clientUid]!=nil {
-		return s.connections[clientUid].Send(data)
-	} else {
-		return errors.New(fmt.Sprint("no connection with uid ", clientUid))
-	}
+`TcpServer` will listen permanently for new connections and new data with `Listen()`, and support a graceful shutdown with `Close()`.
 
-	return nil
-}
-
-func (s *TcpServer) SendDataByDeviceUid(deviceUid string, data []byte) error{
-	for k := range s.connections {
-		if s.connections[k].DeviceUid == deviceUid {
-			return s.connections[k].Send(data)
-		}
-	}
-	return errors.New(fmt.Sprint("no connection with deviceUid ", deviceUid))
-}
-```
-And we also provide a way to bind a device uid to an existing client id ( in case a registration process happens during the processing of our messages and pushed back to us ):
-```go
-func (s *TcpServer) SendDataByClientId(clientUid string, data []byte) error{
-	if s.connections[clientUid]!=nil {
-		return s.connections[clientUid].Send(data)
-	} else {
-		return errors.New(fmt.Sprint("no connection with uid ", clientUid))
-	}
-
-	return nil
-}
-
-func (s *TcpServer) SendDataByDeviceUid(deviceUid string, data []byte) error{
-	for k := range s.connections {
-		if s.connections[k].DeviceUid == deviceUid {
-			return s.connections[k].Send(data)
-		}
-	}
-	return errors.New(fmt.Sprint("no connection with deviceUid ", deviceUid))
-}
-```
+We provide 2 options ot send data to our clients, by their device uid ( generated from the client side) with `SendDataByDeviceUid`or by the client id which is generated in our system with `SendDataByClientId`.  
 
 ## API
 
 We need to create structs for the API that the tcp clients use, and the API for the messages sent to/from the messages broker.  
-For the TCP clients:
-```go
-type DeviceRequest struct {
-	Action string `json:"action"`
-	DeviceUid string `json:"deviceUid"`
-	Uid string `json:"uid"`
-	Data map[string]interface{} `json:"data"`
-}
-type DeviceResponse struct {
-	Action string `json:"action"`
-	Uid string `json:"uid"`
-	Data map[string]interface{} `json:"data"`
-	Status string `json:"status"`
-	ErrorCode string `json:"errorCode"`
-	ErrorMessage string `json:"errorMessage"`
-}
-```
-For the message broker:
-```go
-type ServerRequest struct{
-	DeviceRequest DeviceRequest `json:"deviceRequest"`
-	ServerId string `json:"serverId"` // unique identifier for each server in case of having more than 1 server
-	ClientId string `json:"clientId"`
-}
-type ServerResponse struct {
-	DeviceResponse DeviceResponse `json:"deviceResponse"`
-	ServerId string `json:"serverId"` // unique identifier for each server in case of having more than 1 server
-	ClientId string `json:"clientId"`
-	DeviceUid string `json:"deviceUid"`
-}
-```
-## Configurations
-I use `.yml` files for configurations that change between environments. Here is how to model them and parse from the `.yml` file.
-```go
-func InitConfig(configPath string) {
-	if conf == nil {
-		filename, _ := filepath.Abs(configPath)
-		log.Println("trying to read file ", filename)
-		yamlFile, err := ioutil.ReadFile(filename)
-		var confi Configuration
-		err = yaml.Unmarshal(yamlFile, &confi)
-		if err != nil {
-			log.Println(err)
-			panic(err)
-		}
-		conf = &confi
-	}
-}
+For the TCP clients:  
+*  [DeviceRequest](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/models/device_request.go)
+*  [DeviceResponse](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/models/device_response.go)  
 
-func Get() *Configuration {
-	return conf
-}
+For the message broker:  
+*  [ServerRequest](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/models/server_request.go)  
+*  [ServerResponse](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/models/server_response.go)  
 
-type Configuration struct {
-	BrokersList []string  `yaml:"brokers_list"`
-	ProducerTopic		string `yaml:"producer_topic"`
-	ConsumerTopics		[]string `yaml:"consumer_topics"`
-	ConsumerGroupId     string `yaml:"consumer_group_id"`
-}
-```
-And here is an example for a `yml` config file:
-```yaml
-brokers_list:
-  - "localhost:9092"
-producer_topic: "tcp_layer_messages"
-consumer_topics:
-  - "workers_layer_messages"
-consumer_group_id: "id-1"
-```
-## Main function - putting it all together
+## [Main function - putting it all together](https://github.com/orrchen/go-messaging/blob/1c5f38664ee822b1e8ebd29560bd41fcdd1c12c3/main.go)
 Obtains and manages all the other components in this system. It will include the TCP server that holds an array of TCP clients, and a connection to the Kafka broker for consuming and sending messages to it.
-Here is the full `main.go` file:
+Here are the main parts of `main.go` file:
 ```go
 var tcpServer *lib.TcpServer
 var producer *messages.Producer
 var consumer *messages.Consumer
 
-var (
-	configPath = flag.String("config", "", "config file")
-	consumerGroupId string
-)
-
 func main() {
-	flag.Parse()
-	if *configPath == "" {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-	config.InitConfig(*configPath)
-	configuration := config.Get()
-	if configuration.ConsumerGroupId==""{
-		consumerGroupId = uuid.NewV4().String()
-	} else {
-		consumerGroupId = configuration.ConsumerGroupId
-	}
-	log.Printf("Kafka brokers: %s", strings.Join(configuration.BrokersList, ", "))
-	
     callbacks := lib.Callbacks{
 		OnDataReceived: onDataReceived,
 		OnConnectionTerminated: onConnectionTerminated,
@@ -529,37 +241,6 @@ func main() {
 	consumer = messages.NewConsumer(consumerCallbacks,configuration.BrokersList,consumerGroupId,configuration.ConsumerTopics)
 	consumer.Consume()
 
-	signal_chan := make(chan os.Signal, 1)
-	signal.Notify(signal_chan,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT,
-		syscall.SIGKILL)
-
-	go func() {
-		for {
-			s := <-signal_chan
-			switch s {
-			case syscall.SIGINT:
-				fmt.Println("syscall.SIGINT")
-				cleanup()
-				// kill -SIGTERM XXXX
-			case syscall.SIGTERM:
-				fmt.Println("syscall.SIGTERM")
-				cleanup()
-				// kill -SIGQUIT XXXX
-			case syscall.SIGQUIT:
-				fmt.Println("syscall.SIGQUIT")
-				cleanup()
-			case syscall.SIGKILL:
-				fmt.Println("syscall.SIGKILL")
-				cleanup()
-			default:
-				fmt.Println("Unknown signal.")
-			}
-		}
-	}()
-
 	go func(){
 		http.HandleFunc("/", handler)
 		http.ListenAndServe(":8080", nil)
@@ -570,100 +251,13 @@ func main() {
 
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "TCP Server is up and running!")
-}
-
 func cleanup(){
 	tcpServer.Close()
 	producer.Close()
 	consumer.Close()
 	os.Exit(0)
 }
-
-
-
-func onNewConnection(clientUid string) {
-	log.Println("onNewConnection, uid: ", clientUid)
-}
-
-func onConnectionTerminated(clientUid string) {
-	log.Println("onConnectionTerminated, uid: ", clientUid)
-}
-
-/**
-Called when data is received from a TCP client, will generate a message to the message broker
- */
-func onDataReceived(clientUid string, data []byte) {
-	log.Println("onDataReceived, uid: ", clientUid, ", data: ", string(data))
-	if string(data)=="Ping" {
-		log.Println("sending Pong")
-		//answer with pong
-		tcpServer.SendDataByClientId(clientUid, []byte("Pong"))
-	}
-	if producer!=nil {
-		var deviceRequest models.DeviceRequest
-		err:= json.Unmarshal(data,&deviceRequest)
-		if err==nil {
-			serverRequest := models.ServerRequest{
-				DeviceRequest: deviceRequest,
-				ServerId: "1",
-				ClientId: clientUid,
-			}
-			producer.Produce(serverRequest)
-		} else {
-			log.Println(err)
-		}
-
-	}
-
-}
-
-func onProducerError(err error){
-	log.Println("onProducerError: ", err)
-}
-
-func onConsumerError(err error){
-	log.Println("onConsumerError: ",err)
-}
-
-func onDataConsumed(data []byte){
-	log.Println("onDataConsumed: ", string(data))
-	var serverResponse models.ServerResponse
-	err := json.Unmarshal(data,&serverResponse)
-	if err!=nil {
-		log.Println(err)
-		return
-	}
-	if serverResponse.DeviceResponse.Action == "connect.response" && serverResponse.DeviceResponse.Status == "ok" && serverResponse.ClientId!= "" {
-		//attach the device id to our existing client
-		err =tcpServer.SetDeviceUidToClient(serverResponse.ClientId,serverResponse.DeviceUid)
-		if err!=nil {
-			log.Println(err)
-		}
-	}
-	toSend, err := json.Marshal(serverResponse.DeviceResponse)
-	if err!=nil {
-		log.Println(err)
-		return
-	}
-	if serverResponse.ClientId!="" {
-		tcpServer.SendDataByClientId(serverResponse.ClientId,toSend)
-	} else {
-		if serverResponse.DeviceUid!=""{
-			tcpServer.SendDataByDeviceUid(serverResponse.DeviceUid,toSend)
-		}
-	}
-
-
-}
 ```
-Few things to notice here:  
-* TCP server is listening on port 3000.
-* Test handler on port 8080 to see in the browser everything is running.
-* Ping will be answered with Pong :)
-* Listening to various system calls to gracefully shuts down.
-* An example for setting a device uid to a given client id, assuming there is an event with ` Action ==  "connect.response" `
 ## Build, run and deploy to Docker image
 To build:
 ```bash 
