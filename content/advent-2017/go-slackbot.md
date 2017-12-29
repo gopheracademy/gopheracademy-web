@@ -2,7 +2,7 @@
 author = ["Sebastian Borza"]
 title = "Create a Slack bot with golang" 
 linktitle = "Create a Slack bot with golang"
-date = 2017-12-24T23:06:00Z
+date = 2017-12-29T00:06:00Z
 series = ["Advent 2017"]
 +++
 
