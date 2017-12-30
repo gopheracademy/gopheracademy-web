@@ -151,6 +151,7 @@ additional changes being required in order to restore the old behaviour.
 Speaking of caching, ` go test ` has seen a lot of changes as well. One of the
 most important is that ` go test ` will now cache the results of the tests if
 they meet certain criteria such as:
+
 - the test executable and command line match a previous run
 - the files and environment variables used by that run have not changed 
 - the results are successful
@@ -228,6 +229,9 @@ changes on each new Go release. The recommendation is not to have ` gofmt `
 enforced in the CI or have everyone use the same binary version for the
 application that formats your source code as well as checks it in the CI system.
 
+A good news is that now all flags supported by ` gofmt ` are supported by
+` go fmt ` as well.
+
 <br>
 
 #### go fix
@@ -244,9 +248,6 @@ by running ` go tool fix -r context your/package `
 Go 1.10 will also bring an update to the ` pprof ` tool. This brings a host of
 improvements, among which an updated UI featuring a flame graph representation
 of the profiling data [CL 75870](https://golang.org/cl/75870)
-
-A good news is that now all flags supported by ` gofmt ` are supported by
-` go fmt ` as well.
 
 <br>
 
