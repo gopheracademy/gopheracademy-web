@@ -91,10 +91,10 @@ projects and pave the road towards Go 2.0.
 
 #### Environment variables
 
-` GOROOT ` will also now be inferred from the location of the ` go ` tool binary
-by default. This means that, as of Go 1.10+, you'll be able to have multiple Go
-versions as of Go installed side by side and you won't need to fiddle around
-with the ` GOROOT ` environment variable
+Since Go 1.9,` GOROOT ` is inferred from the location of the ` go ` tool binary
+by default. However, if your application relied on that value at runtime via
+` runtime.GOROOT() ` there was a bug which prevented it have the correct
+location. As of Go 1.10+ this bug was fixed and you can now use it as expected
 [CL 61310](https://golang.org/cl/61310)
 
 A couple of new environment variables were added to the ` go ` command.
@@ -485,3 +485,9 @@ reach 1.10 and I look forward to what the future holds.
 
 A big thank you goes to Russ Cox and the team that created the initial draft
 documentation which this article uses / reuses a lot. 
+
+Errata:
+
+The initial version of this article incorrectly mentioned a change about how
+GOROOT is handled. Thank you to
+[Dominik Honnef](https://twitter.com/dominikhonnef) for reporting this.
