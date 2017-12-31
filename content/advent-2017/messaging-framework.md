@@ -6,7 +6,7 @@ date = 2017-12-31T00:00:00Z
 series = ["Advent 2017"]
 +++  
   
-![System diagram](/static/postimages/advent-2017/messaging-framework/system-diagram.png)  
+![System diagram](/postimages/advent-2017/messaging-framework/system-diagram.png)  
 I needed to create a simple framework to provide my endpoint devices ( doesn't matter which platform they run on ) the option to send and receive messages from my backend.  
 I require those messages to be managed by a message broker so that they can be processed in an asynchronous way.  
 The system contains 4 main layers, this article section is mainly about the first one:  
