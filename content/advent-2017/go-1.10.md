@@ -131,6 +131,9 @@ install step, such as ` go install ` or ` go get `. This means that you'll be
 able to switch between branches or experiment a lot more with the code without
 having to invoke ` go install ` or ` go build -i ` but just ` go build `.
 
+Are you a Windows user? Now you can use c-shared as a target for your
+libraries, thanks to [CL 69091](https://golang.org/cl/69091).
+
 <br>
 
 #### go install
