@@ -1,7 +1,7 @@
 +++
 author = ["Natalie Pistunovich"]
-title = "Tensorflow and Go"
-linktitle = "Tensorflow and Go"
+title = "TensorFlow and Go"
+linktitle = "TensorFlow and Go"
 date = 2017-12-28T20:00:00Z
 series = ["Advent 2017"]
 +++
@@ -14,14 +14,14 @@ The task that requires breaking the captcha is disabling a security camera, to b
 
 The provided information was the [saved model](https://www.tensorflow.org/programmers_guide/saved_model#apis_to_build_and_load_a_savedmodel) used for captcha recognition in the binary [ProtoBuf](https://developers.google.com/protocol-buffers/docs/gotutorial) format, and a link to the camera control panel.
 
-An input of a Tensorflow model requires doing some Tensorflow!
+An input of a TensorFlow model requires doing some TensorFlow!
 
 
-## A Few words about Tensorflow
+## A Few words about TensorFlow
 
-Tensorflow is an open-source software for Machine Intelligence, used mainly for machine learning applications such as neural networks.
+TensorFlow is an open-source software for Machine Intelligence, used mainly for machine learning applications such as neural networks.
 
-Tensorflow runs computations involving tensors, and there are many sources to understand what a Tensor is. This article is definitely not a sufficient one, and it only holds the bare minimum to make sense of what the code does. Tensors are awesome and complex mathematical objects, and I encourage you to take the time to learn more about them.
+TensorFlow runs computations involving tensors, and there are many sources to understand what a Tensor is. This article is definitely not a sufficient one, and it only holds the bare minimum to make sense of what the code does. Tensors are awesome and complex mathematical objects, and I encourage you to take the time to learn more about them.
 
 For our purposes, here is the explanation from the [TensorFlow website](https://www.tensorflow.org/programmers_guide/tensors): 
 ```
@@ -29,18 +29,19 @@ A tensor is a generalization of vectors and matrices to potentially higher dimen
 ```
 A tensor is defined by the data type of the value(s) it holds, and its shape, which is the number of dimensions, and number of values per dimension.
 
-The `flow` part in Tensorflow comes to describe that essentially the graph (model) is a set of nodes (operations), and the data (tensors) "flow" through those nodes, undergoing mathematical manipulation. You can look at, and evaluate, any node of the graph. 
+The `flow` part in TensorFlow comes to describe that essentially the graph (model) is a set of nodes (operations), and the data (tensors) "flow" through those nodes, undergoing mathematical manipulation. You can look at, and evaluate, any node of the graph. 
 
 
-### A Few words about Tensorflow+Go
+### A Few words about TensorFlow+Go
 
-On the official Tensorflow website, you can find [a page dedicated to Go](https://www.tensorflow.org/install/install_go), where it says "TensorFlow provides APIs that are particularly well-suited to loading models created in Python and executing them within a Go application." It also warns that the TensorFlow Go API is not covered by the [TensorFlow API stability guarantees](https://www.tensorflow.org/programmers_guide/version_compat). To the date of this post, it is still working as expected.
+On the official TensorFlow website, you can find [a page dedicated to Go](https://www.tensorflow.org/install/install_go), where it says "TensorFlow provides APIs that are particularly well-suited to loading models created in Python and executing them within a Go application." It also warns that the TensorFlow Go API is not covered by the [TensorFlow API stability guarantees](https://www.tensorflow.org/programmers_guide/version_compat). To the date of this post, it is still working as expected.
 
 When going to the [package page](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/go/), there are 2 warnings:
 1) The API defined in this package is not stable and can change without notice. 
 2) The package path is awkward: `github.com/tensorflow/tensorflow/tensorflow/go`.
 
-Training models is not possible with Go. And while Go might not be your first choice for working with Tensorflow, they do play nice together when using existing models.
+
+In theory, the Go APIs for TensorFlow are powerful enough to do anything you can do from the Python APIs, including training. [Here](https://github.com/asimshankar/go-tensorflow/tree/master/train) is an example of training a model in Go using a graph written in Python. In practice, some of tasks, particularly those for model construction are very low level and certainly not as convenient as doing them in Python. For now, it generally makes sense to define the model in TensorFlow for Python, export it, and then use the Go APIs for inference or training that model.[1] So while Go might not be your first choice for working with TensorFlow, they do play nice together when using existing models.
 
 
 
@@ -236,10 +237,10 @@ And [here](https://github.com/Pisush/break-captcha-tensorflow) is how it looks w
 
 ## To wrap this up
 
-Tensorflow has many great models which can be used with Go. [Here](https://github.com/tensorflow/models) is a great list of those.
+TensorFlow has many great models which can be used with Go. [Here](https://github.com/tensorflow/models) is a great list of those.
 
 Online challenges can be an awesome way to learn, whether it's coding, security or sports. The combination of putting in practice your knowledge and having a mission creates a fun environment where you can work on improving your skills. Consider joining such a challenge as your new year's resolution.
 
-Thanks a lot to [Ed](https://github.com/emedvedev), and xxx for reviewing this PR.
+Thanks a lot to [Ed](https://github.com/emedvedev) for reviewing this PR. Also thanks to [Asim Ahankar](https://github.com/asimshankar) from the TensorFlow team for pointing out it is possible to train models with Go, as updated in [1]. We will collaborate further to make the documentation around this more accessible.
 
 If you want to chat more about this, [tweet me](https://twitter.com/nataliepis), or meet me at [Gophercon Iceland](https://gophercon.is)!
