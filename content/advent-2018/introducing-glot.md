@@ -108,7 +108,7 @@ Lets take a look
 
 Glot also supports 3-d plots
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-5.png)
+![System diagram](/static/postimages/advent-2018/introducing-glot/glot-5.png)     
 For more information checkout my [medium blog](https://medium.com/@Arafat./).
 
 Acknowledgements
