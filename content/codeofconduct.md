@@ -2,7 +2,7 @@
 author = ["Brian Ketelsen", "Erik St. Martin", "Ashley McNamara"]
 date = "2018-05-23T12:30:00-00:00"
 linktitle = "Code of Conduct"
-title = "The New Go Community Code of Conduct"
+title = "New Go Community Code of Conduct"
 
 +++
 In November 2015, Google introduced the Go Code of Conduct (CoC) and as the leading Go language conference, it was important for us to set an example by publishing and enforcing this Code of Conduct to safeguard the dignity and well-being of all who work in the Go Community. However, as our community grows, things change, and our Code of Conduct should evolve as our community does.
