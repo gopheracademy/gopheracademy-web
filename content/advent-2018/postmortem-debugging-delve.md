@@ -47,7 +47,7 @@ Indeed, we have a problem! Let's look what is happening.
 
 ---
 
-In the similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much, the server became unresponsible. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
+In the similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much, the server became unresponsive. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
 
 ---
 
