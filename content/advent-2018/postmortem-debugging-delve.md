@@ -6,15 +6,15 @@ date = 2018-12-02
 series = ["Advent 2018"]
 +++
 
-One day several instances of one of our production services stopped accepting incoming traffic. HTTP requests successfully went through the load balancer reaching the instance and just hanged. What followed became an exciting exercise in debugging of a running production service written in Go.
+One day, several instances of one of our production services stopped accepting incoming traffic. HTTP requests successfully went through the load balancer reaching the instance and just hanged. What followed became an exciting exercise in debugging of a running production service written in Go.
 
 Below is a step-by-step guide that demonstrates the process which helped us in identifying the root causes of the problem.
 
-To make things easier we will take a simple HTTP service, written in Go, as our debugging target. The implementation details of the service are not very important now (we will dig into the code later). A real-world production service will likey to consist of many different components, that implement business logic and the infrastructure of the service. Let’s convince ourselves that the service was already “battle-tested” by running it production for many months :)
+To make things easier we will take a simple HTTP service, written in Go, as our debugging target. The implementation details of the service are not very important now (we will dig into the code later). A real-world production service will likely to consist of many different components, that implement business logic and the infrastructure of the service. Let’s convince ourselves that the service was already “battle-tested” by running it production for many months :)
 
-To following along this guide you will need a VM running Linux. The source code and the details about the setup can be found in [github repository](https://github.com/narqo/postmortem-debug-go). I will use Vagrant with hostmanager plugin. Have a look at Vagrantfile in the root of the repository.
+The source code and the details about the setup can be found in [github repository](https://github.com/narqo/postmortem-debug-go). To follow along, you will need a VM running Linux. I will use Vagrant with hostmanager plugin. Refer to Vagrantfile in the root of the repository.
 
-To debug the problem we need to bump into the problem first. Let’s start the VM, build our HTTP service, run it and see what will happen.
+To debug the problem, we need to bump into the problem first. Let’s start the VM, build our HTTP service, run it and see what will happen.
 
 ```
 = vagrant ssh server-test-1
@@ -27,7 +27,7 @@ Welcome to Ubuntu 18.04.1 LTS (GNU/Linux 4.15.0-33-generic x86_64)
 server listening addr=:10080
 ```
 
-Using [wrk][] HTTP benchmarking tool start adding some load. I run this demo on my MacBook with four cores. Running wrk with 4 threads and 1000 connections is enough to simulate the failure we want to debug. Run the following command in a new terminal panel:
+Using [wrk][] HTTP benchmarking tool start adding some load. I run this demo on my MacBook with four cores. Running wrk with four threads and 1000 connections is enough to simulate the failure we want to debug. Run the following command in a new terminal panel:
 
 ```
 = wrk -d1m -t4 -c1000 'http://server-test-1:10080'
@@ -43,11 +43,11 @@ After a brief period, the server gets stacked. Even after wrk finished the run, 
 curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
 ```
 
-Indeed, we have a problem! Let's look what is happening.
+Indeed, we have a problem! Let have a look.
 
 ---
 
-In the similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much, the server became unresponsive. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
+In a similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much, the server became unresponsive. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
 
 ---
 
@@ -84,7 +84,7 @@ With the debbuger attached to the process, we can run GDB's `bt` command (aka ba
 #8  0x0000000000000000 in ?? ()
 ```
 
-Honestly, I’m not a GDB expert, but it seems that Go runtime is putting threads to a sleep. *But why?*
+Honestly, I’m not a GDB expert, but it seems that Go runtime is putting threads to sleep. *But why?*
 
 Debugging a live process is “fun”, also let’s grab a coredump of the process to analyse it offline. We can do it with GDB's `gcore` command. The core file will be saved as `core.<process_id>` in the current working directory. Note, even for our simple server, the file will be pretty big. It’s likely to be huge for production service.
 
@@ -113,7 +113,7 @@ Delve is written in Go so installing it as simple as running:
 = go get -u github.com/derekparker/delve/cmd/dlv
 ```
 
-With Delve installed we can start analysing the core file by running `dlv core <path to service binary> <core file>`. We start from listing all goroutines that were running when the coredump was taken. Delve's `goroutines` command does exactly this:
+With Delve installed we can start analysing the core file by running `dlv core <path to service binary> <core file>`. We start by listing all goroutines that were running when the coredump was taken. Delve's `goroutines` command does exactly this:
 
 ```
 = dlv core example/server/server core.1628
@@ -126,7 +126,7 @@ With Delve installed we can start analysing the core file by running `dlv core <
 
 ```
 
-*Unfortunately, in a real case scenario, the list can be so big, it doesn't even fit into terminal's scroll buffer. Remember that the server spawns a goroutine for each incoming request, so “goroutines” command has shown us a list of almost a million items. Let's pretend that we faced exacly this and think of a way to work through this situation.*
+*Unfortunately, in a real case scenario, the list can be so big, it doesn't even fit into terminal's scroll buffer. Remember that the server spawns a goroutine for each incoming request, so “goroutines” command has shown us a list of almost a million items. Let's pretend that we faced exactly this, and think of a way to work through this situation.*
 
 We can run Delve in the "headless" mode to interact with the debugger via it's [JSON-RPC API](https://github.com/derekparker/delve/tree/master/Documentation/api).
 
@@ -138,13 +138,13 @@ API server listening at: [::]:44441
 INFO[0000] opening core file core.1628 (executable example/server/server)  layer=debugger
 ```
 
-After debug server is running we can send commands to it’s TCP port and store the output as raw JSON. Let's get the list of running goroutines once again, but this time saving the results to a file:
+After debug server is running, we can send commands to it’s TCP port and store the output as raw JSON. Let's get the list of running goroutines once again, but this time saving the results to a file:
 
 ```
 = echo -n '{"method":"RPCServer.ListGoroutines","params":[],"id":2}' | nc localhost 44441 > server-test-1_dlv-rpc-list_goroutines.json
 ```
 
-Now we have a (pretty big) JSON file with lots of information in it! To inspect any JSON data I like to use [jq][]. Just to have an idea of what the data looks like, get the first five top objects from the JSON's `result` field:
+Now we have a (pretty big) JSON file with lots of information in it! To inspect any JSON data, I like to use [jq][]. To have an idea of what the data looks like, get the first five top objects from the JSON's `result` field:
 
 ```
 = jq '.result[0:5]' server-test-1_dlv-rpc-list_goroutines.json
@@ -272,7 +272,7 @@ Of all goroutines in the JSON let's list unique function names with the exact li
    6 ["runtime.gopark",303]
 ```
 
-The majority of goroutines (1000) have stacked in `main.(*Metrics).CountS:113`. Now this is the perfect time to look at the source code.
+The majority of goroutines (1000) have stacked in `main.(*Metrics).CountS:113`. Now, this is the perfect time to look at the source code.
 
 In the `main` package, find `Metrics` struct and look at its `CountS` method (see `example/server/metrics.go`):
 
@@ -291,7 +291,7 @@ Our server has stacked on sending to the `inChannel` channel. Let’s find out w
 // starts a consumer for inChannel
 func (m *Metrics) startInChannelConsumer() {
     for inMetrics := range m.inChannel {
-   	 // ···
+   	    // ···
     }
 }
 ```
@@ -374,7 +374,7 @@ There is a single item in the response. That's promising!
 
 A goroutine with id "20" started at `main.(*Metrics).startInChannelConsumer:167` and went up to `main.(*Metrics).SetM:145` (`userCurrentLoc` field) until it got stacked.
 
-Knowing the id of the goroutine dramatically narrows down our scope of interest (we don't need to dig into raw JSON anymore, I promise :). With Delve's `goroutine` command change current goroutine to the one we're interested in. `stack` command will prints the stack trace of the goroutine:
+Knowing the id of the goroutine dramatically narrows down our scope of interest (we don't need to dig into raw JSON anymore, I promise :). With Delve's `goroutine` command change current goroutine to the one we'd found. `stack` command will print the stack trace of the goroutine:
 
 ```
 = dlv core example/server/server core.1628
@@ -455,7 +455,7 @@ Within a single goroutine, the function that reads values out of a buffered chan
 
 ----
 
-And that’s our story. Using the described technique we’ve managed to find the root-cause the problem. The original piece of code was written so many years ago, nobody even looked at it and never thought it might bring such problems.
+And that’s our story. Using the described technique we’ve managed to find the root-cause the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
 
 As you just saw not everything is yet ideal with the tooling. But the tooling exists and becomes better over time. I hope, I’ve encouraged you to give it a try. And I’m very interested to hear about other ways to work around a similar scenario.
 
