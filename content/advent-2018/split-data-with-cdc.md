@@ -28,7 +28,7 @@ Enough theory, let's dive into the code!
 Splitting data
 ==============
 
-The type which does all the hard work of computing the fingerprints over the sliding window is contained in the `Chunker` type. The Rabin fingerprint needs a so-called "irreducible polynomial" to work, which is encoded as an `uint64`. The `chunker` package exports the function `RandomPolynomial()` which creates a new polynomial for you to use. **Important:** Different polynomials will result in different fingerprints and therefore different boundaries for the chunks, so if you depend on your program computing the same boundaries, you'll need to pass in the same polynomial.
+The type which does all the hard work of computing the fingerprints over the sliding window is contained in the `Chunker` type. The Rabin fingerprint needs a so-called "irreducible polynomial" to work, which is encoded as an `uint64`. The `chunker` package exports the function `RandomPolynomial()` which creates a new polynomial for you to use.
 
 Our first program will generate a random polynomial and create a new `Chunker` which reads data from `os.Stdin`:
 
@@ -40,15 +40,15 @@ if err != nil {
 
 fmt.Printf("using polynomial %v for splitting data\n", p)
 
-chunker := chunker.New(os.Stdin, p)
+chk := chunker.New(os.Stdin, p)
 ```
 
-By default, it tries to make chunks of one megabyte on average (you can control that with the method `SetAverageBits()`). Then we can repeatedly call the `Next()` function on the `Chunker` and pass in a byte slice buffer for the data read from the reader passed to `New()`, it'll return a `Chunk` type and an error:
+The `Next()` method on the `Chunker` reads data out the reader (`os.Stdin` in this example) into a byte slice buffer. The methods returns a next `Chunk` and an error. We call it repeatedly until `io.EOF` is returned, which tells us that all data has been read:
 
 ```go
 buf := make([]byte, 16*1024*1024) // 16 MiB
 for {
-	chunk, err := chunker.Next(buf)
+	chunk, err := chk.Next(buf)
 	if err == io.EOF {
 		break
 	}
@@ -89,13 +89,15 @@ using polynomial 0x3dea92648f6e83 for splitting data
 104225786       631814  001d5ba20d38998b
 ```
 
-On a second run, it'll generate a new polynomial and the chunks will be different. Let's fix the polynomial (`0x3dea92648f6e83`) for the next runs and change the program like this ([code](https://gist.github.com/bf984e1c40b56eaeff310d07a0d71128)):
+On a second run, it'll generate a new polynomial and the chunks will be different, so if you depend on your program computing the same boundaries, you'll need to pass in the same polynomial.
+
+Let's fix the polynomial (`0x3dea92648f6e83`) for the next runs and change the program like this ([code](https://gist.github.com/bf984e1c40b56eaeff310d07a0d71128)):
 
 ```go
-chunker := chunker.New(os.Stdin, 0x3dea92648f6e83)
+chk := chunker.New(os.Stdin, 0x3dea92648f6e83)
 ```
 
-Running the new program will give us the same chunks again:
+After replacing the randomly generated polynomial with a constant, every new run will give us the same chunks:
 
 ```
 $ cat data | go run main.go
@@ -124,7 +126,7 @@ Let's add a hash to identify the contents of the individual chunks ([code](https
 
 ```go
 for {
-	chunk, err := chunker.Next(buf)
+	chunk, err := chk.Next(buf)
 	if err == io.EOF {
 		break
 	}
@@ -160,9 +162,9 @@ $ (echo -n foo; cat data) | go run main.go
 7019630 1278326 001734984b000000        5bec562b7ad37b8b[...]
 ```
 
-The SHA-256 hash for the first chunk changed from `8d17f5f7326a2fd7[...]` to `f41084d25bc273f2[...]`, but the rest is still the same. That's pretty cool.
+The SHA-256 hash for the first chunk changed from `8d17f5f7326a2fd7[...]` to `f41084d25bc273f2[...]`, but the rest are still the same. That's pretty cool.
 
-Let's see how many different chunks we have in our data file byte counting the different hashes:
+Let's see how many different chunks we have in our data file by counting the different hashes:
 ```
 $ cat data | go run main.go | cut -f4 | sort | uniq | wc -l
 69
@@ -184,7 +186,7 @@ $ cat data | go run main.go > orig.log
 $ cat data | sed 's/EZE8HX/xxxxxx/' | go run main.go > mod.log
 ```
 
-The string `EZE8HX` was present in my randomly generated file `data` only once and the `sed` command above changed it to the string `xxxxxx`. When we now compare the two log files using `diff`, we can see that for exactly one chunk the SHA-256 hash has changed, but the other chunks (and the chunk boundaries) stayed the same:
+The string `EZE8HX` was present in my randomly generated file `data` only once and the `sed` command above changed it to the string `xxxxxx`. When we now compare the two log files using `diff`, we can see that for exactly one chunk the SHA-256 hash has changed, but the other chunks and the chunk boundaries stayed the same:
 
 ```diff
 $ diff -au orig.log mod.log
@@ -201,14 +203,16 @@ $ diff -au orig.log mod.log
  93176433       1362655 0003009fc1600000        8e7a35e340c10d61[...]
 ```
 
-This technique can be used for many other things besides a backup program.
+This technique can be used for many other things besides a backup program. For example, the program `rsync` uses content-defined chunking to efficiently transfer files by detecting which parts of the files are already present on the receiving side (with a different rolling hash). The [Low Bandwidth Network File System (LBFS)](https://pdos.csail.mit.edu/papers/lbfs:sosp01/lbfs.pdf) uses CDC with Rabin fingerprints to only transfer chunks that are needed over the network. Another application of a rolling hash is finding strings in text, for example in the [Rabin-Karp algorithm](https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm).
 
 If you're interested in how the `chunker` package is used in restic, there's a [post over at the restic blog](https://restic.net/blog/2015-09-12/restic-foundation1-cdc) which explains this in a bit more detail.
 
 Performance
 ===========
 
-Performance in a backup program is important: if it's too slow people tend to skip backup, which is undesirable. The `chunker` package is written in plain Go (so no fancy assembler functions or optimizations). I've optimized the calculations a bit and it's pretty fast already, the package contains some benchmarks:
+Performance is crucial for backup programs. If creating backups is too slow people tend to stop using it.
+
+The `chunker` package is written in plain Go. It doesn't have any fancy low-level assembler, but the code is already pretty fast, thanks to some optimized calculations. The package has some benchmarks:
 
 ```
 $ go test -run xxx -bench 'BenchmarkChunker$'
@@ -223,7 +227,7 @@ PASS
 ok      github.com/restic/chunker       1.655s
 ```
 
-You can see that data is processed at about 477 MB per second on a single core on an older machine using an Intel i5 CPU.
+Running on an older machine with an Intel i5 CPU `chunker` processes at about 477 MB per second on a single core.
 
 Conclusion
 ==========
