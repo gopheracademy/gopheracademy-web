@@ -6,7 +6,7 @@ series = ["Advent 2018"]
 +++
 
 Several years ago, I began exploring Linux's Netlink inter-process communication
-interface. Netlink is typically used for retrieving information from the Linux
+interface. Netlink is used for retrieving information from the Linux
 kernel, and in order to cross the kernel boundary, information is typically
 packed into Netlink attributes.  After some experimentation, I created my own
 [netlink package](https://github.com/mdlayher/netlink) for Go.
@@ -65,7 +65,7 @@ As an example, let's say we want to unpack a `uint16` and `string` value from th
 slice of Attributes. You can safely ignore `parseUint16` and `parseString`;
 they'll deal with some of the tricky parts of Netlink attribute data.
 
-To unpack the attribute data, we can use a loop and match on the Type field:
+To unpack the attribute data, we can use a loop and match on the `Type` field:
 
 ```go
 attrs, err := netlink.UnmarshalAttributes(b)
