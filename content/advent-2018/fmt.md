@@ -1,4 +1,3 @@
-vim: tw=80
 +++
 title = "Dive Into the `fmt` Package"
 date = "2018-11-24T16:07:17+02:00"
