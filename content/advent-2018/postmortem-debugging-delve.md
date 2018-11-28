@@ -415,7 +415,7 @@ Within a single goroutine, the function that reads values out of a buffered chan
 
 And that’s our story. Using the described technique we’ve managed to find the root cause of the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
 
-As you just saw not everything is yet ideal with the tooling. But the tooling exists and becomes better over time. I hope, I’ve encouraged you to give it a try. And I’m very interested to hear about other ways to work around a similar scenario.
+As you just saw not everything is ideal with the tooling yet. But the tools exist and become better over time. I hope, I’ve encouraged you to give them a try. And I’m very interested to hear about other ways to work around a similar scenario.
 
 
 *Vladimir is a Backend Developer at adjust.com. @tvii on Twitter, @narqo on Github.*
