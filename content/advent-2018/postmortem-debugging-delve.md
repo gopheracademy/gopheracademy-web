@@ -12,7 +12,7 @@ Below is a step-by-step guide that demonstrates the process which helped us in i
 
 To make things easier we will take a simple HTTP service, written in Go, as our debugging target. The implementation details of the service are not very important now (we will dig into the code later). A real-world production service will likely to consist of many different components, that implement business logic and the infrastructure of the service. Let’s convince ourselves that the service was already “battle-tested” by running it production for many months :)
 
-The source code and the details about the setup can be found in [github repository](https://github.com/narqo/postmortem-debug-go). To follow along, you will need a VM running Linux. I will use Vagrant with hostmanager plugin. Refer to Vagrantfile in the root of the repository.
+The source code and the details about the setup can be found in [GitHub repository](https://github.com/narqo/postmortem-debug-go). To follow along, you will need a VM running Linux. I will use Vagrant with the [`vagrant-hostmanager](https://github.com/sevos/vagrant-hostmanager) plugin. Have a look a the `Vagrantfile` in the root of the repository for more detailed information.
 
 To debug the problem, we need to bump into the problem first. Let’s start the VM, build our HTTP service, run it and see what will happen.
 
@@ -21,7 +21,7 @@ To debug the problem, we need to bump into the problem first. Let’s start the 
 Welcome to Ubuntu 18.04.1 LTS (GNU/Linux 4.15.0-33-generic x86_64)
 
 :~$ cd /vagrant/example/server
-:/vagrant/example/server$ go build -o server ./
+:/vagrant/example/server$ go build
 :/vagrant/example/server$ ./server --addr=:10080
 
 server listening addr=:10080
@@ -36,18 +36,18 @@ Running 1m test @ http://server-test-1:10080
   ···
 ```
 
-After a brief period, the server gets stacked. Even after wrk finished the run, the service is unable to process an incoming request:
+After a brief period, the server gets stuck. Even after `wrk` finished the run, the service is unable to process an incoming request:
 
 ```
 = curl --max-time 5 'http://server-test-1:10080/'
 curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
 ```
 
-Indeed, we have a problem! Let have a look.
+Indeed, we have a problem! Let's have a look.
 
 ---
 
-In a similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much, the server became unresponsive. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
+In a similar situation with our production service, after a brief period, the total number of spawned goroutines for incoming requests has risen so much that the server became unresponsive. Even requests to pprof debug handlers were *s-u-u-u-per slow*, making it look like the server was completely "dead". Similarly, our attempts to kill the process with `SIGQUIT` to [get the stack dump of running goroutines][1] didn't seem to work.
 
 ---
 
@@ -57,7 +57,7 @@ We can start with trying to inspect the running service with GDB (GNU Debugger).
 
 *Running a debugger in the production environment will likely require additional privileges. If in doubt, be wise and always consult with your operations team first.*
 
-Connect to another SSH session on the VM, find server process's id, and attach to the process with the debugger:
+Connect to another SSH session on the VM, find server's process id, and attach to the process with the debugger:
 
 ```
 = vagrant ssh server-test-1
@@ -128,7 +128,7 @@ With Delve installed we can start analysing the core file by running `dlv core <
 
 *Unfortunately, in a real case scenario, the list can be so big, it doesn't even fit into terminal's scroll buffer. Remember that the server spawns a goroutine for each incoming request, so “goroutines” command has shown us a list of almost a million items. Let's pretend that we faced exactly this, and think of a way to work through this situation.*
 
-We can run Delve in the "headless" mode to interact with the debugger via it's [JSON-RPC API](https://github.com/derekparker/delve/tree/master/Documentation/api).
+We can run Delve in the "headless" mode to interact with the debugger via its [JSON-RPC API](https://github.com/derekparker/delve/tree/master/Documentation/api).
 
 Run the same `dlv core` command as we previously did, but this time specify that we need to start Delve’s API server:
 
@@ -138,10 +138,10 @@ API server listening at: [::]:44441
 INFO[0000] opening core file core.1628 (executable example/server/server)  layer=debugger
 ```
 
-After debug server is running, we can send commands to it’s TCP port and store the output as raw JSON. Let's get the list of running goroutines once again, but this time saving the results to a file:
+After debug server is running, we can send commands to its TCP port and store the output as raw JSON. Let's get the list of running goroutines once again, but this time saving the results to a file:
 
 ```
-= echo -n '{"method":"RPCServer.ListGoroutines","params":[],"id":2}' | nc localhost 44441 > server-test-1_dlv-rpc-list_goroutines.json
+= echo -n '{"method":"RPCServer.ListGoroutines","params":[],"id":2}' | nc -w 1 localhost 44441 > server-test-1_dlv-rpc-list_goroutines.json
 ```
 
 Now we have a (pretty big) JSON file with lots of information in it! To inspect any JSON data, I like to use [jq][]. To have an idea of what the data looks like, get the first five top objects from the JSON's `result` field:
@@ -272,7 +272,7 @@ Of all goroutines in the JSON let's list unique function names with the exact li
    6 ["runtime.gopark",303]
 ```
 
-The majority of goroutines (1000) have stacked in `main.(*Metrics).CountS:113`. Now, this is the perfect time to look at the source code.
+The majority of goroutines (1000) have stacked in `main.(*Metrics).CountS` at line 113. Now, this is the perfect time to look at the source code.
 
 In the `main` package, find `Metrics` struct and look at its `CountS` method (see `example/server/metrics.go`):
 
@@ -296,7 +296,7 @@ func (m *Metrics) startInChannelConsumer() {
 }
 ```
 
-The function reads values out of the channel and does something with them, one by one. In what possible situations, could the sending to this channel being blocked?
+The function reads values out of the channel and does something with them, one by one. In what possible situations could the sending to this channel being blocked?
 
 When working with channels, there are only four possible "oopsies", according to Dave Cheney's [Channel Axioms](https://dave.cheney.net/2014/03/19/channel-axioms):
 
@@ -305,7 +305,7 @@ When working with channels, there are only four possible "oopsies", according to
 - send to a closed channel panics
 - receive from a closed channel returns the zero value immediately.
 
-"Send to a nil channel block forever" – at first sight, this sounds like something possible. But, after double-checking with the code, `inChannel` is initialised in the `Metrics` constructor. So it can't be nil.
+"Send to a nil channel block forever" – at first sight, this seems like something possible. But, after double-checking with the code, `inChannel` is initialised in the `Metrics` constructor. So it can't be nil.
 
 Let’s look at the list of functions we’ve got above. Could this (buffered) channel become full because we've stacked somewhere in `(*Metrics).startInChannelConsumer()`?
 
@@ -374,7 +374,7 @@ There is a single item in the response. That's promising!
 
 A goroutine with id "20" started at `main.(*Metrics).startInChannelConsumer:167` and went up to `main.(*Metrics).SetM:145` (`userCurrentLoc` field) until it got stacked.
 
-Knowing the id of the goroutine dramatically narrows down our scope of interest (we don't need to dig into raw JSON anymore, I promise :). With Delve's `goroutine` command change current goroutine to the one we'd found. `stack` command will print the stack trace of the goroutine:
+Knowing the id of the goroutine dramatically narrows down our scope of interest (we don't need to dig into raw JSON anymore, I promise :). With Delve's `goroutine` command we can change current goroutine to the one we've found, then we can use the `stack` command to print the stack trace of the goroutine:
 
 ```
 = dlv core example/server/server core.1628
@@ -447,7 +447,7 @@ Bottom to top:
 
 (4) And `main.(*Metrics).SetM` next, passing `key="metrics.raw_channel"` and `value = 100`
 
-And so on until we've been blocked in `runtime.gopark` with “waitReasonChanSend”.
+And so on until we've been blocked in `runtime.gopark` with `waitReasonChanSend`.
 
 Everything makes sense now!
 
@@ -455,7 +455,7 @@ Within a single goroutine, the function that reads values out of a buffered chan
 
 ----
 
-And that’s our story. Using the described technique we’ve managed to find the root-cause the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
+And that’s our story. Using the described technique we’ve managed to find the root cause of the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
 
 As you just saw not everything is yet ideal with the tooling. But the tooling exists and becomes better over time. I hope, I’ve encouraged you to give it a try. And I’m very interested to hear about other ways to work around a similar scenario.
 
