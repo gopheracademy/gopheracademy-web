@@ -275,6 +275,7 @@ ai %+v: {ACL:3 APIKey:***** Login:daffy}
 ai %#v: *main.AuthInfo{ACL:3 APIKey:***** Login:daffy}
 ```
 
-To summarize, the `fmt` package has many capabilities other than the trivial
-use. Once you'll familiarize yourself with these capabilities, I'm sure you find
-many interesting uses for them.
+# Conculsion
+The `fmt` package has many capabilities other than the trivial use. Once you'll
+familiarize yourself with these capabilities, I'm sure you find many
+interesting uses for them.
