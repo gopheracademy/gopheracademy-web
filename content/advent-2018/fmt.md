@@ -17,7 +17,7 @@ same semantics as `fmt.Printf`. Good and informative log messages are worth
 their weight in gold and adding some formatting support to your data structure
 will add valuable information to your log messages.
 
-## Verbs
+## Formatting Output
 
 Go formatted output supports several verbs, the most common ones are `%s` for
 strings, '%d` for integers and `%f` for floats. Let's see some more advanced verbs.
@@ -64,18 +64,20 @@ func main() {
 	nums := []int{12, 237, 3878, 3}
 	size := alignSize(nums)
 	for i, n := range nums {
-		fmt.Printf("%2d %*d\n", i, size, n)
+		fmt.Printf("%02d %*d\n", i, size, n)
 	}
 }
 ```
 
 will print
 ```
-0   12
-1  237
-2 3878
-3    3
+00   12
+01  237
+02 3878
+03    3
 ```
+
+Making it easier for us to compare the numbers.
 
 ### Refernce by Position
 
@@ -124,12 +126,13 @@ example you'd like one string representation for an error when it is shown to th
 user and another, more detailed, when it is written to log.
 
 One good exeample is the excellent
-[`github.com/pkg/errors`](https://github.com/pkg/errors). Say you'd like to load
-our configuration file with and you have an error. You can print a short error to
-the user (or return it in API ...) and print a more detailed error to the log.
+[`github.com/pkg/errors`](https://github.com/pkg/errors) is makeing use of
+`fmt.Formatter`. Say you'd like to load our configuration file with and you have
+an error. You can print a short error to the user (or return it in API ...) and
+print a more detailed error to the log.
 
 ```go
-cfg, err := loadConfig("/no/such/file.toml")
+cfg, err := loadConfig("/no/such/config.toml")
 if err != nil {
 	fmt.Printf("error: %s\n", err)
 	log.Printf("can't load config\n%+v", err)
@@ -144,13 +147,13 @@ error: can't open config file: open /no/such/file.toml: no such file or director
 and to the log file
 
 ```
-2018/11/28 07:49:02 can't load config
+2018/11/28 10:43:00 can't load config
 open /no/such/file.toml: no such file or directory
 can't open config file
 main.loadConfig
-	/home/miki/Projects/gopheracademy-web/fmt.go:100
+	/home/miki/Projects/gopheracademy-web/content/advent-2018/fmt.go:101
 main.main
-	/home/miki/Projects/gopheracademy-web/fmt.go:134
+	/home/miki/Projects/gopheracademy-web/content/advent-2018/fmt.go:135
 runtime.main
 	/usr/lib/go/src/runtime/proc.go:201
 runtime.goexit

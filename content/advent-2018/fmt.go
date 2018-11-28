@@ -1,3 +1,5 @@
+// Example code for GopherAcacdemy blog post on fmt
+// Miki Tebeka <miki.tebeka@gmail.com>
 package main
 
 import (
@@ -11,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// alignSize return the required size for aligning all numbers in nums
 func alignSize(nums []int) int {
 	size := 0
 	for _, n := range nums {
@@ -28,6 +31,7 @@ type Point struct {
 	Y int
 }
 
+// Fields in AuthInfo struct
 var authInfoFields []string
 
 // ACL bits
@@ -90,11 +94,13 @@ func init() {
 	for i := 0; i < typ.NumField(); i++ {
 		authInfoFields[i] = typ.Field(i).Name
 	}
-	sort.Strings(authInfoFields)
+	sort.Strings(authInfoFields) // People are better with sorted data
 }
 
+// Config is a configuration
 type Config struct{}
 
+// loadConfig loads configuration from path
 func loadConfig(path string) (*Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -102,6 +108,7 @@ func loadConfig(path string) (*Config, error) {
 	}
 	defer file.Close()
 
+	// TODO: Parse configuration
 	return &Config{}, nil
 }
 
@@ -110,16 +117,25 @@ func main() {
 	fmt.Printf("e = %v (%T)\n", e, e)
 	fmt.Printf("%10d\n", 353)
 	fmt.Printf("%*d\n", 10, 353)
+
 	nums := []int{12, 237, 3878, 3}
 	size := alignSize(nums)
 	for i, n := range nums {
-		fmt.Printf("%2d %*d\n", i, size, n)
+		fmt.Printf("%02d %*d\n", i, size, n)
 	}
 
 	fmt.Printf("The price of %[1]s was $%[2]d. $%[2]d! imagine that.\n", "carrot", 23)
 
 	p := &Point{1, 2}
 	fmt.Printf("%v %+v %#v \n", p, p, p)
+
+	cfg, err := loadConfig("/no/such/config.toml")
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+		log.Printf("can't load config\n%+v", err)
+	}
+	fmt.Println("cfg", cfg)
+
 	ai := &AuthInfo{
 		Login:  "daffy",
 		ACL:    ReadACL | WriteACL,
@@ -132,11 +148,4 @@ func main() {
 	fmt.Printf("ai %%+v: %+v\n", ai)
 	fmt.Printf("ai %%#v: %#v\n", ai)
 
-	cfg, err := loadConfig("/no/such/file.toml")
-	if err != nil {
-		fmt.Printf("error: %s\n", err)
-		log.Printf("can't load config\n%+v", err)
-	}
-
-	fmt.Println("cfg", cfg)
 }
