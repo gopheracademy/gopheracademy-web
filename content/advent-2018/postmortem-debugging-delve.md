@@ -17,29 +17,38 @@ The source code and the details about the setup can be found in [GitHub reposito
 To debug the problem, we need to bump into the problem first. Let’s start the VM, build our HTTP service, run it and see what will happen.
 
 ```
-= vagrant ssh server-test-1
+$ vagrant up
+Bringing machine 'server-test-1' up with 'virtualbox' provider...
+···
+$ vagrant ssh server-test-1
 Welcome to Ubuntu 18.04.1 LTS (GNU/Linux 4.15.0-33-generic x86_64)
-
-:~$ cd /vagrant/example/server
-:/vagrant/example/server$ go build
-:/vagrant/example/server$ ./server --addr=:10080
-
+···
+vagrant@server-test-1:~$ cd /vagrant/example/server
+vagrant@server-test-1:/vagrant/example/server$ go build
+vagrant@server-test-1:/vagrant/example/server$ ./server --addr=:10080
 server listening addr=:10080
 ```
 
-Using [wrk][] HTTP benchmarking tool start adding some load. I run this demo on my MacBook with four cores. Running wrk with four threads and 1000 connections is enough to simulate the failure we want to debug. Run the following command in a new terminal panel:
+We can check the running server by sending a request using curl. Open a separate terminal window and run the following command from the outside of VM:
 
 ```
-= wrk -d1m -t4 -c1000 'http://server-test-1:10080'
+$ curl 'http://server-test-1:10080'
+OK
+```
+
+To simulate the failure we want to debug we need to send a bunch of request. We can use [wrk][] HTTP benchmarking tool for this. My MacBook has four cores, so running wrk with four threads and 1000 connections is usually be enough:
+
+```
+$ wrk -d1m -t4 -c1000 'http://server-test-1:10080'
 Running 1m test @ http://server-test-1:10080
   4 threads and 1000 connections
   ···
 ```
 
-After a brief period, the server gets stuck. Even after `wrk` finished the run, the service is unable to process an incoming request:
+After a brief period the server freezes. Even after `wrk` finished the run, the server is unable to process an incoming request:
 
 ```
-= curl --max-time 5 'http://server-test-1:10080/'
+$ curl --max-time 5 'http://server-test-1:10080/'
 curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
 ```
 
@@ -60,13 +69,15 @@ We can start with trying to inspect the running service with GDB (GNU Debugger).
 Connect to another SSH session on the VM, find server's process id, and attach to the process with the debugger:
 
 ```
-= vagrant ssh server-test-1
+$ vagrant ssh server-test-1
 Welcome to Ubuntu 18.04.1 LTS (GNU/Linux 4.15.0-33-generic x86_64)
-
-:~$ ps -ef | grep server
-vagrant   1628  1557  0 14:45 pts/0	00:00:01 ./server --addr=:10080
-
-:~$ sudo gdb --pid=1628 /vagrant/example/server/server
+···
+vagrant@server-test-1:~$ pgrep server
+1628
+vagrant@server-test-1:~$ cd /vagrant
+vagrant@server-test-1:/vagrant$ sudo gdb --pid=1628 example/server/server
+GNU gdb (Ubuntu 8.1-0ubuntu3) 8.1.0.20180409-git
+···
 ```
 
 With the debbuger attached to the process, we can run GDB's `bt` command (aka backtrace) to check the stack trace of the current thread:
@@ -86,14 +97,20 @@ With the debbuger attached to the process, we can run GDB's `bt` command (aka ba
 
 Honestly, I’m not a GDB expert, but it seems that Go runtime is putting threads to sleep. *But why?*
 
-Debugging a live process is “fun”, also let’s grab a coredump of the process to analyse it offline. We can do it with GDB's `gcore` command. The core file will be saved as `core.<process_id>` in the current working directory. Note, even for our simple server, the file will be pretty big. It’s likely to be huge for production service.
+Debugging a live process is “fun” but let’s grab a coredump of the process to analyse it offline. We can do it with GDB's `gcore` command. The core file will be saved as `core.<process_id>` in the current working directory. Note, even for our simple server, the file will be pretty big. It’s likely to be huge for production service.
 
 ```
 (gdb) gcore
 Saved corefile core.1628
 (gdb) quit
+A debugging session is active.
 
-= du -h core.1628
+	Inferior 1 [process 1628] will be detached.
+
+Quit anyway? (y or n) y
+Detaching from program: /vagrant/example/server/server, process 1628
+
+vagrant@server-test-1:/vagrant$ du -h core.1628
 1.2G    core.1628
 ```
 
@@ -110,13 +127,13 @@ I highly recommend a talk by Alessandro Arzilli “[Internal Architecture of Del
 Delve is written in Go so installing it as simple as running:
 
 ```
-= go get -u github.com/derekparker/delve/cmd/dlv
+$ go get -u github.com/derekparker/delve/cmd/dlv
 ```
 
 With Delve installed we can start analysing the core file by running `dlv core <path to service binary> <core file>`. We start by listing all goroutines that were running when the coredump was taken. Delve's `goroutines` command does exactly this:
 
 ```
-= dlv core example/server/server core.1628
+$ dlv core example/server/server core.1628
 
 (dlv) goroutines
   ···
@@ -133,7 +150,7 @@ We can run Delve in the "headless" mode to interact with the debugger via its [J
 Run the same `dlv core` command as we previously did, but this time specify that we need to start Delve’s API server:
 
 ```
-= dlv core example/server/server core.1628 --listen :44441 --headless --log
+$ dlv core example/server/server core.1628 --listen :44441 --headless --log
 API server listening at: [::]:44441
 INFO[0000] opening core file core.1628 (executable example/server/server)  layer=debugger
 ```
@@ -141,13 +158,13 @@ INFO[0000] opening core file core.1628 (executable example/server/server)  layer
 After debug server is running, we can send commands to its TCP port and store the output as raw JSON. Let's get the list of running goroutines once again, but this time saving the results to a file:
 
 ```
-= echo -n '{"method":"RPCServer.ListGoroutines","params":[],"id":2}' | nc -w 1 localhost 44441 > server-test-1_dlv-rpc-list_goroutines.json
+$ echo -n '{"method":"RPCServer.ListGoroutines","params":[],"id":2}' | nc -w 1 localhost 44441 > server-test-1_dlv-rpc-list_goroutines.json
 ```
 
 Now we have a (pretty big) JSON file with lots of information in it! To inspect any JSON data, I like to use [jq][]. To have an idea of what the data looks like, get the first five top objects from the JSON's `result` field:
 
 ```
-= jq '.result[0:5]' server-test-1_dlv-rpc-list_goroutines.json
+$ jq '.result[0:5]' server-test-1_dlv-rpc-list_goroutines.json
 [
   {
     "id": 1,
@@ -261,7 +278,7 @@ Every object in the JSON represents a single goroutine. By checking [“goroutin
 Of all goroutines in the JSON let's list unique function names with the exact line numbers where function got paused:
 
 ```
-= jq -c '.result[] | [.userCurrentLoc.function.name, .userCurrentLoc.line]' server-test-1_dlv-rpc-list_goroutines.json | sort | uniq -c
+$ jq -c '.result[] | [.userCurrentLoc.function.name, .userCurrentLoc.line]' server-test-1_dlv-rpc-list_goroutines.json | sort | uniq -c
 
    1 ["internal/poll.runtime_pollWait",173]
 1000 ["main.(*Metrics).CountS",113]
@@ -272,20 +289,18 @@ Of all goroutines in the JSON let's list unique function names with the exact li
    6 ["runtime.gopark",303]
 ```
 
-The majority of goroutines (1000) have stacked in `main.(*Metrics).CountS` at line 113. Now, this is the perfect time to look at the source code.
+The majority of goroutines (1000) have stuck in `main.(*Metrics).CountS` at line 113. Now, this is the perfect time to look at the source code.
 
-In the `main` package, find `Metrics` struct and look at its `CountS` method (see `example/server/metrics.go`):
+In the `main` package, find `Metrics` struct and look at its `CountS` method (see [`example/server/metrics.go`](https://github.com/narqo/postmortem-debug-go/blob/master/example/server/metrics.go)):
 
 ```go
 // CountS increments counter per second.
 func (m *Metrics) CountS(key string) {
-    // ···
-
     m.inChannel <- NewCountMetric(key, 1, second)
 }
 ```
 
-Our server has stacked on sending to the `inChannel` channel. Let’s find out who is supposed to read from this channel. After inspecting the code, we should find the following function (example/server/metrics.go):
+Our server has stuck on sending to the `inChannel` channel. Let’s find out who is supposed to read from this channel. After inspecting the code, we should find the following function (example/server/metrics.go):
 
 ```
 // starts a consumer for inChannel
@@ -307,29 +322,17 @@ When working with channels, there are only four possible "oopsies", according to
 
 "Send to a nil channel block forever" – at first sight, this seems like something possible. But, after double-checking with the code, `inChannel` is initialised in the `Metrics` constructor. So it can't be nil.
 
-Let’s look at the list of functions we’ve got above. Could this (buffered) channel become full because we've stacked somewhere in `(*Metrics).startInChannelConsumer()`?
+Let’s look at the list of functions we’ve got above. Could this (buffered) channel become full because we've stuck somewhere in `(*Metrics).startInChannelConsumer()`?
 
-As you may notice, there is no `startInChannelConsumer` method in the list at all. But what if we stacked somewhere below the method’s callstack?
+As you may notice, there is no `startInChannelConsumer` method in the list at all. But what if we stuck somewhere below the method’s callstack?
 
 Delve provides the start position from where we came to the user location, that is `startLoc` field in the JSON. Search for goroutines whose start location was in `startInChannelConsumer` function:
 
 ```
-= jq '.result[] | select(.startLoc.function.name | test("startInChannelConsumer$"))' server-test-1_dlv-rpc-list_goroutines.json
+$ jq '.result[] | select(.startLoc.function.name | test("startInChannelConsumer$"))' server-test-1_dlv-rpc-list_goroutines.json
 
 {
   "id": 20,
-  "currentLoc": {
-    "pc": 4387627,
-    "file": "/usr/local/go/src/runtime/proc.go",
-    "line": 303,
-    "function": {
-      "name": "runtime.gopark",
-      "value": 4387392,
-      "type": 0,
-      "goType": 0,
-      "optimized": true
-    }
-  },
   "userCurrentLoc": {
     "pc": 7355276,
     "file": "/vagrant/example/server/metrics.go",
@@ -337,18 +340,6 @@ Delve provides the start position from where we came to the user location, that 
     "function": {
       "name": "main.(*Metrics).SetM",
       "value": 7354992,
-      "type": 0,
-      "goType": 0,
-      "optimized": true
-    }
-  },
-  "goStatementLoc": {
-    "pc": 7354080,
-    "file": "/vagrant/example/server/metrics.go",
-    "line": 95,
-    "function": {
-      "name": "main.NewMetrics",
-      "value": 7353136,
       "type": 0,
       "goType": 0,
       "optimized": true
@@ -366,57 +357,24 @@ Delve provides the start position from where we came to the user location, that 
       "optimized": true
     }
   },
-  "threadID": 0
+  ···
 }
 ```
 
 There is a single item in the response. That's promising!
 
-A goroutine with id "20" started at `main.(*Metrics).startInChannelConsumer:167` and went up to `main.(*Metrics).SetM:145` (`userCurrentLoc` field) until it got stacked.
+A goroutine with id "20" started at `main.(*Metrics).startInChannelConsumer()` and went up to the `main.(*Metrics).SetM` (see `userCurrentLoc` field) until it got stuck.
 
 Knowing the id of the goroutine dramatically narrows down our scope of interest (we don't need to dig into raw JSON anymore, I promise :). With Delve's `goroutine` command we can change current goroutine to the one we've found, then we can use the `stack` command to print the stack trace of the goroutine:
 
 ```
-= dlv core example/server/server core.1628
+$ dlv core example/server/server core.1628
 
 (dlv) goroutine 20
 Switched from 0 to 20 (thread 1628)
 
 (dlv) stack -full
-0  0x000000000042f32b in runtime.gopark
-   at /usr/local/go/src/runtime/proc.go:303
-   	lock = unsafe.Pointer(0xc0000824d8)
-   	reason = waitReasonChanSend
-   	traceEv = 22
-   	traceskip = 3
-   	unlockf = (unreadable empty OP stack)
-   	gp = (unreadable could not find loclist entry at 0x2f3f8 for address 0x42f32b)
-   	mp = (unreadable could not find loclist entry at 0x2f45f for address 0x42f32b)
-   	status = (unreadable could not find loclist entry at 0x2f4c6 for address 0x42f32b)
-
-1  0x000000000042f3d3 in runtime.goparkunlock
-   at /usr/local/go/src/runtime/proc.go:308
-   	lock = (unreadable empty OP stack)
-   	reason = (unreadable empty OP stack)
-   	traceEv = (unreadable empty OP stack)
-   	traceskip = (unreadable empty OP stack)
-
-2  0x00000000004069cd in runtime.chansend
-   at /usr/local/go/src/runtime/chan.go:234
-   	block = true
-   	c = (*runtime.hchan)(0xc000082480)
-   	callerpc = (unreadable empty OP stack)
-   	ep = unsafe.Pointer(0xc000031e30)
-   	~r4 = (unreadable empty OP stack)
-   	gp = (*runtime.g)(0xc000001680)
-   	mysg = *(unreadable read out of bounds)
-   	t0 = 0
-
-3  0x00000000004067a5 in runtime.chansend1
-   at /usr/local/go/src/runtime/chan.go:125
-   	c = (unreadable empty OP stack)
-   	elem = (unreadable empty OP stack)
-
+···
 4  0x0000000000703b8c in main.(*Metrics).SetM
    at /vagrant/example/server/metrics.go:145
    	key = "metrics.raw_channel"
@@ -441,7 +399,7 @@ Switched from 0 to 20 (thread 1628)
 
 Bottom to top:
 
-(6) At `(*Metrics).startInChannelConsumer:184` a new value from the channel has been received
+(6) At `(*Metrics).startInChannelConsumer()`, line 184 a new value from the channel has been received
 
 (5) We called `(*Metrics).sendMetricsToOutChannel` first
 
