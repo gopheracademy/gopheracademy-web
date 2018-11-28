@@ -160,7 +160,7 @@ runtime.goexit
 
 To control how your objects are printed, you need to implement
 [`fmt.Formatter`](https://golang.org/pkg/fmt/#Formatter) interface and
-optionally [`fmt.Stringer](https://golang.org/pkg/fmt/#Stringer).
+optionally [`fmt.Stringer`](https://golang.org/pkg/fmt/#Stringer).
 
 Say you have an `AuthInfo` struct for a user
 
