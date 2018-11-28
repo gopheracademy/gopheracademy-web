@@ -189,7 +189,11 @@ First the easy case `fmt.Stringer`.
 ```go
 // String implements Stringer interface
 func (ai *AuthInfo) String() string {
-	return fmt.Sprintf("Login:%s, ACL:%08b, APIKey: %s", ai.Login, ai.ACL, keyMask)
+	key := ai.APIKey
+	if key != "" {
+		key = keyMask
+	}
+	return fmt.Sprintf("Login:%s, ACL:%08b, APIKey: %s", ai.Login, ai.ACL, key)
 }
 ```
 
@@ -236,10 +240,11 @@ func (ai *AuthInfo) Format(state fmt.State, verb rune) {
 			if state.Flag('#') || state.Flag('+') {
 				fmt.Fprintf(state, "%s:", name)
 			}
-			if name == "APIKey" {
+			fld := val.FieldByName(name)
+			if name == "APIKey" && fld.Len() > 0 {
 				fmt.Fprint(state, keyMask)
 			} else {
-				fmt.Fprint(state, val.FieldByName(name))
+				fmt.Fprint(state, fld)
 			}
 			if i < len(authInfoFields)-1 {
 				fmt.Fprint(state, " ")
@@ -279,3 +284,5 @@ ai %#v: *main.AuthInfo{ACL:3 APIKey:***** Login:daffy}
 The `fmt` package has many capabilities other than the trivial use. Once you'll
 familiarize yourself with these capabilities, I'm sure you find many
 interesting uses for them.
+
+You can view the code for this post [here](https://github.com/gopheracademy/gopheracademy-web/blob/master/content/advent-2018/fmt.go).
