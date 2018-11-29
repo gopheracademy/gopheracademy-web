@@ -315,8 +315,8 @@ The function reads values out of the channel and does something with them, one b
 
 When working with channels, there are only four possible "oopsies", according to Dave Cheney's [Channel Axioms](https://dave.cheney.net/2014/03/19/channel-axioms):
 
-- send to a nil channel block forever
-- receive from a nil channel block forever
+- send to a nil channel blocks forever
+- receive from a nil channel blocks forever
 - send to a closed channel panics
 - receive from a closed channel returns the zero value immediately.
 
