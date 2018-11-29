@@ -286,3 +286,15 @@ familiarize yourself with these capabilities, I'm sure you find many
 interesting uses for them.
 
 You can view the code for this post [here](https://github.com/gopheracademy/gopheracademy-web/blob/master/content/advent-2018/fmt.go).
+
+# About the Author
+Hi there, I'm Miki, nice to e-meet you ☺. I've been a long time developer and
+have been working with Go for about 8 years now. I write code professionally as
+a consultant and contribute a lot to open source. Apart from that I'm a [book
+author](https://www.amazon.com/Forging-Python-practices-lessons-developing-ebook/dp/B07C1SH5MP),
+an author on [LinkedIn
+learning](https://www.linkedin.com/learning/search?keywords=miki+tebeka), one of
+the organizers of [GopherCon Israel][https://www.gophercon.org.il/] and [an
+instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
+line](mailto:miki@353solutions.com) and let me know if you learned something
+new.
