@@ -1,5 +1,4 @@
-// Example code for GopherAcacdemy blog post on fmt
-// Miki Tebeka <miki.tebeka@gmail.com>
+// Example code for GopherAcacdemy Avdent 2018 "fmt" blog post
 package main
 
 import (
