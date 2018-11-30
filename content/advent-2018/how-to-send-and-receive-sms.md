@@ -18,14 +18,14 @@ In this post you'll learn what [UCP](https://wiki.wireshark.org/UCP) is and how 
 
 Messages from telco to subscriber. For example, weather update messages.
 
-![mobile-terminating](/static/postimages/advent-2018/mobile-terminating.png)
+![mobile-terminating](/postimages/advent-2018/mobile-terminating.png)
 
 
 ### Mobile Originating Message
 
 Messages from subscriber to telco. For example, texting a keyword to an accesscode for balance inquiry.
 
-![mobile-originating](/static/postimages/advent-2018/mobile-originating.png)
+![mobile-originating](/postimages/advent-2018/mobile-originating.png)
 
 ### Multi-part MTs and MOs
 
@@ -41,7 +41,7 @@ The multi-part mobile originating message also contains a message part number, t
 
 UCP is primarily used to connect to short message service centres (SMSCs), in order to send and receive short messages (SMS).
 
-![protocol](/static/postimages/advent-2018/emiucp.svg)
+![protocol](/postimages/advent-2018/emiucp.svg)
 
 ### session management operation
 
@@ -315,7 +315,6 @@ func readDeliveryNotif(/*....*/) {
 To read incoming mobile originating messages, we start the `readDeliveryMsg` goroutine.
 
 ```go
-
 // Reads all delivery short messages(mobile-originating messages) 
 // from the deliverMsgCh channel.
 func readDeliveryMsg(/*....*/) {
