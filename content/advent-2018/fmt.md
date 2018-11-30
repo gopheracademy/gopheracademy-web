@@ -8,9 +8,9 @@ draft = true
 
 We usually use the `fmt` package without giving it much thought. A `fmt.Printf`
 here, a `fmt.Sprintf` there and on we go. However, if you'll take a closer look,
-you'll be able to get much out of it.
+you'll be able to get much more out of it.
 
-Since Go is used a lot to write servers or services, our main mean of debugging
+Since Go is used a lot to write servers or services, our main debugging tool
 is the logging system. The `log` package provides `log.Printf` which has the
 same semantics as `fmt.Printf`. Good and informative log messages are worth
 their weight in gold and adding some formatting support to your data structure
@@ -18,13 +18,13 @@ will add valuable information to your log messages.
 
 ## Formatting Output
 
-Go formatted output supports several verbs, the most common ones are `%s` for
-strings, '%d` for integers and `%f` for floats. Let's see some more advanced verbs.
+Go `fmt` functions supports several verbs, the most common ones are `%s` for
+strings, `%d` for integers and `%f` for floats. Let's explore some more verbs.
 
 ### %v & %T
 
-`%v` will print any Go value and `%T` will print the type of the variable. Handy
-when trying. I use these verbse when debugging.
+`%v` will print any Go value and `%T` will print the type of the variable.  I
+use these verbse when debugging.
 
 ```go
 var e interface{} = 2.7182
@@ -45,9 +45,11 @@ width as `*`. For example:
 fmt.Printf("%*d\n", 10, 353)  // will print "       353"
 ```
 
-This is useful when print out number and would like to align them to the right.
+This is useful when you print list of numbers and would like to align them to
+the right for comparison.
 
 ```go
+// alignSize return the required size for aligning all numbers in nums
 func alignSize(nums []int) int {
 	size := 0
 	for _, n := range nums {
@@ -94,8 +96,8 @@ The price of carrot was $23. $23! imagine that.
 ```
 
 ### %v
-`%v` will print a Go value, it can be modified with `+` to print field names in
-a struct and with `#` to print field names and type.
+`%v` will print a Go value, it can be modified with `+` prefix to print field
+names in a struct and with `#` prefix to print field names and type.
 
 ```go
 // Point is a 2D point
@@ -124,7 +126,11 @@ Sometimes you'd like a finer control on how your objects are printed. For
 example you'd like one string representation for an error when it is shown to the
 user and another, more detailed, when it is written to log.
 
-One good exeample is the excellent
+To control how your objects are printed, you need to implement
+[`fmt.Formatter`](https://golang.org/pkg/fmt/#Formatter) interface and
+optionally [`fmt.Stringer`](https://golang.org/pkg/fmt/#Stringer).
+
+One good exeample is how the excellent
 [`github.com/pkg/errors`](https://github.com/pkg/errors) is makeing use of
 `fmt.Formatter`. Say you'd like to load our configuration file with and you have
 an error. You can print a short error to the user (or return it in API ...) and
@@ -159,12 +165,7 @@ runtime.goexit
 	/usr/lib/go/src/runtime/asm_amd64.s:1333
 ```
 
-
-To control how your objects are printed, you need to implement
-[`fmt.Formatter`](https://golang.org/pkg/fmt/#Formatter) interface and
-optionally [`fmt.Stringer`](https://golang.org/pkg/fmt/#Stringer).
-
-Say you have an `AuthInfo` struct for a user
+Here's a small example. Say you have an `AuthInfo` struct for a user
 
 ```go
 // AuthInfo is authentication information
@@ -176,7 +177,7 @@ type AuthInfo struct {
 ```
 
 You'd like to limit the chances that the `APIKey` will be printed out (say when
-you log). You decided to print a mask instead of the key
+you log). You can print a mask (`*****`) instead of the key
 
 ```
 const (
@@ -198,12 +199,13 @@ func (ai *AuthInfo) String() string {
 ```
 
 And now `fmt.Formatter` which gets a
-[`fmt.State`](https://golang.org/pkg/fmt/#State) and rune for the verb.
+[`fmt.State`](https://golang.org/pkg/fmt/#State) and a rune for the verb.
 `fmt.State` implements [`io.Writer`](https://golang.org/pkg/io/#Writer),
 enabling you to write directly to it.
 
-To know all the fields available in a struct, you can use the [`reflect`](https://golang.org/pkg/reflect/).
-package. This will make sure your code works even when `AuthInfo` changes.
+To know all the fields available in a struct, you can use the
+[`reflect`](https://golang.org/pkg/reflect/).  package. This will make sure
+your code works even when `AuthInfo` changes.
 
 ```go
 var authInfoFields []string
@@ -256,6 +258,7 @@ func (ai *AuthInfo) Format(state fmt.State, verb rune) {
 ```
 
 Let's try it out:
+
 ```go
 ai := &AuthInfo{
 	Login:  "daffy",
@@ -285,7 +288,8 @@ The `fmt` package has many capabilities other than the trivial use. Once you'll
 familiarize yourself with these capabilities, I'm sure you find many
 interesting uses for them.
 
-You can view the code for this post [here](https://github.com/gopheracademy/gopheracademy-web/blob/master/content/advent-2018/fmt.go).
+You can view the code for this post
+[here](https://github.com/gopheracademy/gopheracademy-web/blob/master/content/advent-2018/fmt.go).
 
 # About the Author
 Hi there, I'm Miki, nice to e-meet you ☺. I've been a long time developer and
@@ -297,4 +301,4 @@ learning](https://www.linkedin.com/learning/search?keywords=miki+tebeka), one of
 the organizers of [GopherCon Israel][https://www.gophercon.org.il/] and [an
 instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
 line](mailto:miki@353solutions.com) and let me know if you learned something
-new.
+new or if you'd like to learn more.
