@@ -1,5 +1,5 @@
 +++
-title = "Dive Into the `fmt` Package"
+title = "A Dive Into the `fmt` Package"
 date = "2018-11-24T16:07:17+02:00"
 series = ["Advent 2018"]
 author = ["Miki Tebeka"]
