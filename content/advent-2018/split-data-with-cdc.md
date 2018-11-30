@@ -5,7 +5,7 @@ date = 2018-12-04T00:00:00Z
 series = ["Advent 2018"]
 +++
 
-This post you'll learn what Content-Defined Chunking (CDC) is and how you can
+In this post you'll learn what Content-Defined Chunking (CDC) is and how you can
 use it to split large data into smaller blocks in a deterministic way. These
 blocks can be found again in other data later, even if the location of the
 block is different than the first time. I wrote a small Go package to do the
@@ -18,7 +18,7 @@ In my spare time, I'm working on a fast backup program called
 [restic](https://restic.net), which is written in Go. When a (possible large)
 file is read, the program needs to save the data somewhere so that it can be
 restored later. I think it is a good idea to split files into smaller parts,
-which are more manageable for a program and it allows detecting and efficiently
+which are more manageable for a program. It also allows detecting and efficiently
 handling small changes in big files, like virtual machine images. Once such a
 part of a file is saved, it can be referenced when the same data is contained
 in different files, so restic de-duplicates the data it reads. The parts are
@@ -26,10 +26,10 @@ identified based on the SHA-256 hash of the contents, so a list of these hashes
 can describe the content of a file.
 
 There are different strategies for splitting files, the most obvious one would
-be to just use static boundaries, e.g. after every megabyte of data. This gives
-us manageable chunks, but if the data in the file is shifted, for example by
-inserting a byte at the start of the file, all chunks will be different and
-need to be saved anew. We can do better than that.
+be to just use static boundaries, and e.g. split after every megabyte of data.
+This gives us manageable chunks, but if the data in the file is shifted, for
+example by inserting a byte at the start of the file, all chunks will be
+different and need to be saved anew. We can do better than that.
 
 Rabin fingerprints
 ==================
