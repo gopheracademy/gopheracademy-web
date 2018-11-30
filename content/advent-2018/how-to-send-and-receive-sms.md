@@ -386,7 +386,7 @@ func readDeliveryMsg(/*....*/) {
         case <-closeChan:
           return
         case mo := <-deliverMsgCh:
-          // intial processing ...... 
+          // initial processing ...... 
           
           if xserUdh, ok := xserData[udhXserKey]; ok {
             // handle multi-part mobile originating message
