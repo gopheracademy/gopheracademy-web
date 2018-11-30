@@ -45,6 +45,6 @@ To view the site on your local machine, you need to do the following:
 
 Once Hugo is installed, run it from the cloned repo using:
 
-	hugo server --watch
+	hugo server --watch --buildDrafts --buildFuture
 
 To view the site, visit the link provided by Hugo, usually `http://localhost:1313`.
