@@ -1,7 +1,7 @@
 +++
 author = ["Alexander Neumann"]
 title = "Splitting Data with Content-Defined Chunking"
-date = 2018-12-04T00:00:00Z
+date = 2018-12-01T00:00:00Z
 series = ["Advent 2018"]
 +++
 
