@@ -80,9 +80,9 @@ will print
 
 Making it easier for us to compare the numbers.
 
-### Refernce by Position
+### Reference by Position
 
-If you're referencing a variable several times inside a format string. You can
+If you're referencing a variable several times inside a format string, you can
 reference by position using `%[n]` where n is the index of the parameter (1
 based).
 
@@ -130,7 +130,7 @@ To control how your objects are printed, you need to implement
 [`fmt.Formatter`](https://golang.org/pkg/fmt/#Formatter) interface and
 optionally [`fmt.Stringer`](https://golang.org/pkg/fmt/#Stringer).
 
-One good exeample is how the excellent
+One good example is how the excellent
 [`github.com/pkg/errors`](https://github.com/pkg/errors) is makeing use of
 `fmt.Formatter`. Say you'd like to load our configuration file with and you have
 an error. You can print a short error to the user (or return it in API ...) and
@@ -298,7 +298,7 @@ a consultant and contribute a lot to open source. Apart from that I'm a [book
 author](https://www.amazon.com/Forging-Python-practices-lessons-developing-ebook/dp/B07C1SH5MP),
 an author on [LinkedIn
 learning](https://www.linkedin.com/learning/search?keywords=miki+tebeka), one of
-the organizers of [GopherCon Israel][https://www.gophercon.org.il/] and [an
+the organizers of [GopherCon Israel](https://www.gophercon.org.il/) and [an
 instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
 line](mailto:miki@353solutions.com) and let me know if you learned something
 new or if you'd like to learn more.
