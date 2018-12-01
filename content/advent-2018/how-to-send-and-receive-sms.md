@@ -65,7 +65,7 @@ Sent by the SMSC to the client on behalf of a subscriber's mobile originating SM
 
 ## Implementation
 
-We can treat UCP like a traditional client-server protocol. After etablishing a TCP connection, we send UCP requests with a sequence number(called transaction reference number in the spec) from 00 to 99 and the SMSC will respond with a UCP response message synchronously. However the SMSC can also send UCP requests, just like in the case of `delivery notification operation` and `delivery short message operation`. We also need to periodically send keepalive pings to the SMSC so that it wont treat the connection as stale and disconnect us. You can read the protocol specification [here](http://documents.swisscom.com/product/1000174-Internet/Documents/Landingpage-Mobile-Mehrwertdienste/UCP_R4.7.pdf).
+We can treat UCP like a traditional client-server protocol. After establishing a TCP connection, we send UCP requests with a sequence number (called "transaction reference number" in [the protocol specification](http://documents.swisscom.com/product/1000174-Internet/Documents/Landingpage-Mobile-Mehrwertdienste/UCP_R4.7.pdf)) from 00 to 99 and the SMSC will respond with a UCP response message synchronously. However, the SMSC can also send UCP requests, just like in the case of "delivery notification operation" and "delivery short message operation". We also need to periodically send keepalive pings to the SMSC so that it won't treat the connection as stale and disconnect us.
 
 
 
