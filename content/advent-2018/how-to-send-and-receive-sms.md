@@ -315,7 +315,7 @@ func readDeliveryNotif(/*....*/) {
 To read incoming mobile originating messages, we start the `readDeliveryMsg` goroutine.
 
 ```go
-// Reads all delivery short messages(mobile-originating messages) 
+// Reads all delivery short messages (mobile-originating messages) 
 // from the deliverMsgCh channel.
 func readDeliveryMsg(/*....*/) {
   wg.Add(1)
