@@ -222,7 +222,7 @@ func (c *Client) Close() {
 
 ### Read UCP packets
 
-To read packets from the UCP connection, we start the `readLoop` goroutine. A valid UCP packet is delimited by an end of text indicator [ETX](https://en.wikipedia.org/wiki/End-of-Text_character) or simply the byte `03`.
+To read packets from the UCP connection, we start the `readLoop` goroutine. A valid UCP packet is delimited by an [End-of-Text indicator (ETX)](https://en.wikipedia.org/wiki/End-of-Text_character), that is the byte `03`.
 `readLoop` will read up to `ETX`, parse the packet and send it to the appropriate channel.
 ```go
 // readLoop reads incoming messages from the SMSC using the underlying bufio.Reader
