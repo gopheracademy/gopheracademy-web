@@ -142,7 +142,7 @@ func hash() string {
 ### Reusing Mage Code
 
 Of course, all this code is mostly the same across projects, so sharing it
-between projects should be a priotity.  That's easy with the new mage:import
+between projects should be a priority.  That's easy with the new mage:import
 directive.  This will bring in all the mage targets from the given package as
 targets for anyone that runs this magefile.  If you import it without the _ you
 can use common helper functions from the package as well.  An easy way to
