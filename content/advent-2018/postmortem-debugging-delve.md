@@ -145,7 +145,7 @@ $ dlv core example/server/server core.1628
   Goroutine 4613 - User: /vagrant/example/server/metrics.go:113 main.(*Metrics).CountS (0x703948)
 ```
 
-Unfortunately, in a real case scenario, the list can be so big, it doesn't even fit into terminal's scroll buffer. Remember that the server spawns a goroutine for each incoming request, so “goroutines” command has shown us a list of almost a million items. Let's pretend that we faced exactly this and think of a way to work through this situation.
+Unfortunately, in a real case scenario, the list can be so big, it doesn't even fit into terminal's scroll buffer. Remember that the server spawns a goroutine for each incoming request, so `goroutines` command has shown us a list of almost a million items. Let's pretend that we faced exactly that and think of a way to work through this situation ;)
 
 Delve allows running it in the "headless" mode and interact with the debugger via [JSON-RPC API](https://github.com/derekparker/delve/tree/master/Documentation/api).
 
@@ -221,60 +221,8 @@ $ jq '.result[0:3]' server-test-1_dlv-rpc-list_goroutines.json
     "threadID": 0,
     "unreadable": ""
   },
-  {
-    "id": 2,
-    "currentLoc": {
-      "pc": 4380603,
-      "file": "/usr/local/go/src/runtime/proc.go",
-      "line": 303,
-      "function": {
-        "name": "runtime.gopark",
-        "value": 4380368,
-        "type": 0,
-        "goType": 0,
-        "optimized": true
-      }
-    },
-    "userCurrentLoc": {
-      "pc": 4380603,
-      "file": "/usr/local/go/src/runtime/proc.go",
-      "line": 303,
-      "function": {
-        "name": "runtime.gopark",
-        "value": 4380368,
-        "type": 0,
-        "goType": 0,
-        "optimized": true
-      }
-    },
-    "goStatementLoc": {
-      "pc": 4380005,
-      "file": "/usr/local/go/src/runtime/proc.go",
-      "line": 240,
-      "function": {
-        "name": "runtime.init.4",
-        "value": 4379952,
-        "type": 0,
-        "goType": 0,
-        "optimized": true
-      }
-    },
-    "startLoc": {
-      "pc": 4380032,
-      "file": "/usr/local/go/src/runtime/proc.go",
-      "line": 243,
-      "function": {
-        "name": "runtime.forcegchelper",
-        "value": 4380032,
-        "type": 0,
-        "goType": 0,
-        "optimized": true
-      }
-    },
-    "threadID": 0,
-    "unreadable": ""
-  },
-  ...
+  ···
+]
 ```
 
 Every object in the JSON represents a single goroutine. [`goroutines` command manual](https://github.com/derekparker/delve/blob/master/Documentation/cli/README.md#goroutines) tells us what Delve knows about each goroutine. We're interested in `userCurrentLoc` field, which is, as manual describes it, the "topmost stackframe in user code", meaning it is the last location in the service code the goroutine came across.
@@ -304,7 +252,7 @@ func (m *Metrics) CountS(key string) {
 }
 ```
 
-Our server has stuck on sending to the `inChannel` channel. Let’s find out who is supposed to read from this channel. After inspecting the code, we should find the following function ([example/server/metrics.go](https://github.com/narqo/postmortem-debug-go/blob/2c42ca73ebd500fe8da1c6ac8ecaf4af143aca78/example/server/metrics.go#L109)):
+Our server has stuck on sending to the `inChannel` channel. Let’s find out who is supposed to read from this channel. After inspecting the code, we should find the [following function](https://github.com/narqo/postmortem-debug-go/blob/2c42ca73ebd500fe8da1c6ac8ecaf4af143aca78/example/server/metrics.go#L109):
 
 ```
 // starts a consumer for inChannel
@@ -317,7 +265,7 @@ func (m *Metrics) startInChannelConsumer() {
 
 The function reads values out of the channel and does something with them, one by one. In what possible situations could the sending to this channel being blocked?
 
-When working with channels, there are only four possible "oopsies", according to Dave Cheney's [Channel Axioms](https://dave.cheney.net/2014/03/19/channel-axioms):
+When working with channels, there are only four possible "oopsies", according to Dave Cheney's "[Channel Axioms](https://dave.cheney.net/2014/03/19/channel-axioms)":
 
 - send to a nil channel blocks forever
 - receive from a nil channel blocks forever
@@ -326,7 +274,7 @@ When working with channels, there are only four possible "oopsies", according to
 
 "Send to a nil channel block forever" – at first sight, this seems like something possible. But, after double-checking with the code, `inChannel` is [initialised in the `Metrics` constructor](https://github.com/narqo/postmortem-debug-go/blob/2c42ca73ebd500fe8da1c6ac8ecaf4af143aca78/example/server/metrics.go#L73). So it can't be nil.
 
-As you may notice, there was no `startInChannelConsumer` method in the list of function we've previously collected with jq. Could this (buffered) channel become full because we've stuck somewhere inside `main.(*Metrics).startInChannelConsumer()`?
+As you may notice, there was no `startInChannelConsumer` method in the list of function we've previously collected with jq. Could this (buffered) channel become full because we've stuck somewhere inside [`main.(*Metrics).startInChannelConsumer`](https://github.com/narqo/postmortem-debug-go/blob/2c42ca73ebd500fe8da1c6ac8ecaf4af143aca78/example/server/metrics.go#L109)?
 
 Delve provides the start position from where we came to the location in the code described in `userCurrentLoc` field in the JSON. This location is stored in `startLoc` field. With the following jq command search for all goroutines whose start location was in `startInChannelConsumer` function:
 
@@ -433,7 +381,7 @@ Within a single goroutine, the function that reads values out of a buffered chan
 
 ----
 
-And that’s our story. Using the described technique we’ve managed to find the root cause of the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
+And that’s the story. Using the described technique we’ve managed to find the root cause of the problem. The original piece of code was written many years ago. Nobody even looked at it and never thought it might bring such issues.
 
 As you just saw not everything is ideal with the tooling yet. But the tools exist and become better over time. I hope, I’ve encouraged you to give them a try. And I’m very interested to hear about other ways to work around a similar scenario.
 
