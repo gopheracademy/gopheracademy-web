@@ -5,9 +5,6 @@ date = 2018-12-05T00:00:00Z
 series = ["Advent 2018"]
 +++
 
-# How to Send and Receive SMS: Implementing a GSM Protocol in Go
-
-
 When developers add an SMS component in their app either for verification or notification purposes, they usually do it via RESTful API like the ones provided by [Twilio](https://www.twilio.com/docs/sms/api). But what really happens behind the scenes? 
 
 In this post, you'll learn what [Universal Computer Protocol (UCP)](https://wiki.wireshark.org/UCP) is and how you can use it to directly communicate with a [Short Message Service Centre (SMSC)](https://en.wikipedia.org/wiki/Short_Message_service_center) to send and receive [SMS](https://en.wikipedia.org/wiki/SMS) using Go.
@@ -91,17 +88,15 @@ To generate valid transaction reference numbers ranging from 00 to 99, we can us
 ```go
 // Client represents a UCP client connection.
 type Client struct {
-  // IP:PORT address of the SMSC	
-  addr string
-  // SMSC username
-  user string
-  // SMSC pasword
-  password string
-  // SMSC accesscode
-  accessCode string
+  // skipped fields ...
+  
   // ring counter for sequence numbers 00-99
   ringCounter *ring.Ring 
 }
+```
+
+```go
+const maxRefNum = 100
 
 // initRefNum initializes the ringCounter counter from 00 to 99
 func (c *Client) initRefNum() {
@@ -130,14 +125,17 @@ After establishing the TCP connection, we can now send a `session management ope
 ```go
 type Client struct {
 
-  // ..... some  fields
+  // skipped fields ....
 
   conn net.Conn
   reader *bufio.Reader
   writer *bufio.Writer
 
-  // ..... some other fields
 }
+```
+
+```go
+const etx = 3
 
 func (c *Client) Connect() error {
   // initialize ring counter from 00-99
@@ -171,7 +169,7 @@ We can treat the different UCP operations as separate goroutines and channels.
  
 ```go
 type Client struct {
-  // ... some fields ...
+  // skipped fields ....
   // channel for handling submit short message responses from SMSC
   submitSmRespCh chan []string
   // channel for handling delivery notification requests from SMSC
@@ -187,8 +185,7 @@ type Client struct {
   // waitgroup for the running goroutines
   wg *sync.WaitGroup
   // guard against closing closeChan multiple times
-  once sync.Once 
-  // ... some other fields ...
+  once sync.Once
 }
 
 func (c *Client) Connect() error {
@@ -225,7 +222,8 @@ func (c *Client) Close() {
 To read packets from the UCP connection, we start the `readLoop` goroutine. A valid UCP packet is delimited by an [End-of-Text indicator (ETX)](https://en.wikipedia.org/wiki/End-of-Text_character), that is the byte `03`.
 `readLoop` will read up to `etx`, parse the packet and send it to the appropriate channel.
 ```go
-// readLoop reads incoming messages from the SMSC using the underlying bufio.Reader
+// readLoop reads incoming messages from the SMSC 
+// using the underlying bufio.Reader
 func readLoop(/*.....*/) {
   wg.Add(1)
   go func() {
@@ -321,32 +319,31 @@ func readDeliveryMsg(/*....*/) {
   wg.Add(1)
   go func() {
     defer wg.Done()
-      for {
-        select {
-        case <-closeChan:
-          return
-        case mo := <-deliverMsgCh:
-          xser := mo[xserIndex]
-          xserData := parseXser(xser)
-          msg := mo[moMsgIndex]
-          refNum := mo[refNumIndex]
-          sender := mo[moSenderIndex]
-          recvr := mo[moRecvrIndex]
-          scts := mo[moSctsIndex]
-          sysmsg := recvr + ":" + scts
-          msgID := sender + ":" + scts
+    for {
+      select {
+      case <-closeChan:
+        return
+      case mo := <-deliverMsgCh:
+        xser := mo[xserIndex]
+        xserData := parseXser(xser)
+        msg := mo[moMsgIndex]
+        refNum := mo[refNumIndex]
+        sender := mo[moSenderIndex]
+        recvr := mo[moRecvrIndex]
+        scts := mo[moSctsIndex]
+        sysmsg := recvr + ":" + scts
+        msgID := sender + ":" + scts
 
-          // send ack to SMSC with the same reference number
-          writer.Write(deliverySmAckPacket([]byte(refNum), sysmsg))
-          writer.Flush()
+        // send ack to SMSC with the same reference number
+        writer.Write(deliverySmAckPacket([]byte(refNum), sysmsg))
+        writer.Flush()
           
-          var incomingMsg deliverMsgPart
-          incomingMsg.sender = sender
-          incomingMsg.receiver = recvr
-          incomingMsg.message = msg
-          incomingMsg.msgID = msgID
-          // further processing    
-        }
+        var incomingMsg deliverMsgPart
+        incomingMsg.sender = sender
+        incomingMsg.receiver = recvr
+        incomingMsg.message = msg
+        incomingMsg.msgID = msgID
+        // further processing    
       }
     }
   }()
@@ -380,35 +377,34 @@ func readDeliveryMsg(/*....*/) {
   wg.Add(1)
   go func() {
     defer wg.Done()
-      for {
-        select {
-        case <-closeChan:
-          return
-        case mo := <-deliverMsgCh:
-          // initial processing ...... 
+    for {
+      select {
+      case <-closeChan:
+        return
+      case mo := <-deliverMsgCh:
+        // initial processing ...... 
           
-          if xserUdh, ok := xserData[udhXserKey]; ok {
-            // handle multi-part mobile originating message
-            // get the total message parts in the xser data
-            msgPartsLen := xserUdh[len(xserUdh)-4 : len(xserUdh)-2]
-            // get the current message part in the xser data
-            msgPart := xserUdh[len(xserUdh)-2:]
-            // get message part reference number
-            msgRefNum := xserUdh[len(xserUdh)-6 : len(xserUdh)-4]
-            // convert hexstring to integer
-            msgRefNumInt, _ := strconv.ParseInt(msgRefNum, 16, 0)
-            msgPartsLenInt, _ := strconv.ParseInt(msgPartsLen, 16, 64)
-            msgPartInt, _ := strconv.ParseInt(msgPart, 16, 64)
-            incomingMsg.currentPart = int(msgPartInt)
-            incomingMsg.totalParts = int(msgPartsLenInt)
-            incomingMsg.refNum = int(msgRefNumInt)
-            // send to partial channel
-            deliverMsgPartCh <- incomingMsg 
-          } else {
-          	// handle mobile originating message with only 1 part
-          	// send the incoming message to the complete channel
-          	deliverMsgCompleteCh <- incomingMsg
-          }
+        if xserUdh, ok := xserData[udhXserKey]; ok {
+          // handle multi-part mobile originating message
+          // get the total message parts in the xser data
+          msgPartsLen := xserUdh[len(xserUdh)-4 : len(xserUdh)-2]
+          // get the current message part in the xser data
+          msgPart := xserUdh[len(xserUdh)-2:]
+          // get message part reference number
+          msgRefNum := xserUdh[len(xserUdh)-6 : len(xserUdh)-4]
+          // convert hexstring to integer
+          msgRefNumInt, _ := strconv.ParseInt(msgRefNum, 16, 0)
+          msgPartsLenInt, _ := strconv.ParseInt(msgPartsLen, 16, 64)
+          msgPartInt, _ := strconv.ParseInt(msgPart, 16, 64)
+          incomingMsg.currentPart = int(msgPartInt)
+          incomingMsg.totalParts = int(msgPartsLenInt)
+          incomingMsg.refNum = int(msgRefNumInt)
+          // send to partial channel
+          deliverMsgPartCh <- incomingMsg 
+        } else {
+          // handle mobile originating message with only 1 part
+          // send the incoming message to the complete channel
+          deliverMsgCompleteCh <- incomingMsg
         }
       }
     }
