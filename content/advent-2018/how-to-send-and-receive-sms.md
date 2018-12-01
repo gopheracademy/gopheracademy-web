@@ -39,7 +39,7 @@ The multi-part mobile originating message also contains a message part number, t
 ## Universal Computer Protocol
 
 
-UCP is primarily used to connect to short message service centres (SMSCs), in order to send and receive short messages (SMS).
+Universal Computer Protocol or UCP is primarily used to connect to Short Message Service Centres (SMSC) to send and receive SMS.
 
 ![protocol](/postimages/advent-2018/emiucp.svg)
 
