@@ -10,6 +10,8 @@ project (and we have several Go projects).  Our use of mage has grown with the
 team and the projects, and it has been a big help keeping our dev practices
 uniform and shareable.  Here’s how we do it.
 
+### Retool
+
 One of the great things about Go is the tooling, not just the official tooling
 but all the community tooling.  The only downside is keeping track of everything
 you need to build your complicated projects.  That’s where
@@ -24,6 +26,29 @@ you're up to date.  Any other target that uses a build tool should define the
 Tools target as a dependency - `mg.Deps(Tools)`.  Thanks to Mage, no matter how
 many places that gets called in your build infrastructure, it'll only do the
 tools check once.
+
+```
+func Tools() error {
+	mg.Deps(checkProtoc)
+
+	update, err := envBool("UPDATE")
+	if err != nil {
+		return err
+	}
+	retool := "github.com/twitchtv/retool"
+
+	args := []string{"get", retool}
+	if update {
+		args = []string{"get", "-u", retool}
+	}
+
+	if err := sh.Run("go", args...); err != nil {
+		return err
+	}
+
+	return sh.Run("retool", "sync")
+}
+```
 
 Now that you have your tools synced, you need to make sure you run the version
 retool caches, instead of the one that is in your PATH.  This is easy with a
@@ -40,12 +65,16 @@ Here, we use mage's `sh` package to output nice error messages when things fail
 (instead of just "exiting with code 1"), support verbose or quiet output, and
 automatic expansion of $FOO style environment variables.  Prepending `retool do`
 on the front of the command, so makes it use retool to run the tool from
-retool's cache.
+retool's cache. 
+
+### Deps
 
 Have you ever forgotten to update your dependencies before rebuilding?  I think
 we all have. With mage, `mg.Deps(Dep)` at the beginning of any build target
 ensures that we've run `dep ensure` and our code isn't out of date.  (Yeah, we
 should move to modules at some point.)
+
+### Releases
 
 We generate releases uses the wonderful [goreleaser](https://goreleaser.com/),
 which automates creating releases for a multitude of release platforms, with a
@@ -109,6 +138,8 @@ func hash() string {
 	return hash
 }
 ```
+
+### Reusing Mage Code
 
 Of course, all this code is mostly the same across projects, so sharing it
 between projects should be a priotity.  That's easy with the new mage:import
