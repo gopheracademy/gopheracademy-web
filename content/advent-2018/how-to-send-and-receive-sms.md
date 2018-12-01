@@ -416,7 +416,7 @@ func readDeliveryMsg(/*....*/) {
 }
 ```
 
-The spawned a goroutine `readPartialDeliveryMsg()` will receive from`deliverMsgPartCh` channel and concatenate the incoming mobile originating message parts while the other spawned goroutine `readCompleteDeliveryMsg()` will receive from `deliverMsgCompleteCh` channel and execute the callback for mobile originating messages.
+The goroutine spawned in `readPartialDeliveryMsg` will read from `deliverMsgPartCh` channel and concatenate the incoming mobile originating message parts. The goroutine spawned in `readCompleteDeliveryMsg` will receive from `deliverMsgCompleteCh` channel and execute the callback for mobile originating messages.
 
  
 
