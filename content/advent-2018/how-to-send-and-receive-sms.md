@@ -462,7 +462,7 @@ func (c *Client) Send(sender, receiver, message string) ([]string, error) {
 
 `encodeMessage` takes care of creating a valid `submit short message orperation` request packet with the appropriate reference number. It handles text encoding to [UCS2](https://en.wikipedia.org/wiki/Universal_Coded_Character_Set) for unicode messages as well as masking the sender name. 
 
-To get the response from the SMSC, we use a `select` statement between the `submitSmRespCh` channel and a given timeout.
+To get the response from the SMSC, we use `select` statement, that blocks until the data from the `submitSmRespCh` channel can be read or a given timeout occurred.
 
 `Send` returns a list of message identifiers indicating that the SMSC received the `submit short message operation` request. This response is synchronous. For example, if we send a multi-part SMS consisting of five message parts, `Send` will return a list of five strings.
 
