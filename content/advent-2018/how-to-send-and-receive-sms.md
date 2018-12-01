@@ -10,7 +10,7 @@ series = ["Advent 2018"]
 
 When developers add an SMS component in their app either for verification or notification purposes, they usually do it via RESTful API like the ones provided by [Twilio](https://www.twilio.com/docs/sms/api). But what really happens behind the scenes? 
 
-In this post you'll learn what [UCP](https://wiki.wireshark.org/UCP) is and how we can use it to directly communicate with an [SMSC](https://en.wikipedia.org/wiki/Short_Message_service_center) to send and receive [SMS](https://en.wikipedia.org/wiki/SMS) messages using Go.
+In this post, you'll learn what [Universal Computer Protocol (UCP)](https://wiki.wireshark.org/UCP) is and how you can use it to directly communicate with a [Short Message Service Centre (SMSC)](https://en.wikipedia.org/wiki/Short_Message_service_center) to send and receive [SMS](https://en.wikipedia.org/wiki/SMS) using Go.
 
 ## Terminology
 
