@@ -516,7 +516,7 @@ To simulate a mobile-originating message from a subscriber, we can send the foll
 ```
 curl -H "Content-Type: application/json" -d '{"sender":"09191234567", "receiver":"2929", "message":"This is a mobile-originating message"}' http://localhost:16003/mo
 ```
-Here simulate the subscriber with a mobile number of `09191234567` sending the message 
+Here we simulate the subscriber with a mobile number of `09191234567` sending the message 
 `This is a mobile-originating message` to accesscode `2929`.
 
 We can see that the CLI received the mobile-originating message and verify using Wireshark.
