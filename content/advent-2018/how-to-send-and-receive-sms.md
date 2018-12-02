@@ -254,7 +254,7 @@ func readLoop(/*.....*/) {
 
 To send periodic pings to the SMSC, we start the `sendAlert` goroutine.
 We use [time.NewTicker](https://golang.org/pkg/time/#NewTicker) to create a ticker that will fire periodically.
-`ping` creates a valid `alert operation` request packet with the appropriate transaction reference number.
+`createAlertReq` creates a valid `alert operation` request packet with the appropriate transaction reference number.
 
 ```go
 // sendAlert sends a keepalive packet periodically to the SMSC
@@ -280,7 +280,8 @@ func sendAlert(/*....*/) {
 ### Read Delivery Notification
 
 To read SMS delivery notification status, we start the `readDeliveryNotif` goroutine.
-Once a `delivery notification operation` message is read, it sends an acknowledgement response packet to the SMSC.
+Once a `delivery notification operation` message is read, it sends an acknowledgement 
+response packet to the SMSC.
 ```go
 // readDeliveryNotif reads delivery notifications from deliverNotifCh channel. 
 func readDeliveryNotif(/*....*/) {
@@ -302,6 +303,7 @@ func readDeliveryNotif(/*....*/) {
         // scts is the service center time stamp
         scts := dr[drSctsIndex]
         msgID := recvr + ":" + scts
+        // send ack to SMSC
         writer.Write(createDeliveryNotifAck([]byte(refNum), msgID))
         writer.Flush()
       }
