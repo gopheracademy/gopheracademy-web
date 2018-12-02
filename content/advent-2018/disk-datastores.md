@@ -17,18 +17,18 @@ hot-swap its whole dataset gracefully.
 A short taxonomy of Go data storage libraries
 ============================================
 
-I've had used SQLite, BerkeleyDB and knew about InnoDB but for some reason
-I've never spent too much energy on them as I did on database servers.
+I've used SQLite, BerkeleyDB and knew about InnoDB but for some reason
+I've never spent as much energy on them as I did on database servers.
 
-But local data storages really hit me when I've read LevelDB's design document; 
-it made me think on how well thought it was, using SST files and bloom filters 
-to reduce disk usage. The [documentation](https://github.com/google/leveldb/blob/master/doc/index.md) is very practical.
+But local data stores really made an impression on me when I've read 
+LevelDB's design document; it impressed me how well thought through it was, 
+using SST files and bloom filters to reduce disk usage. The [documentation](https://github.com/google/leveldb/blob/master/doc/index.md) is very practical.
 
 Databases like this offers very little concurrency management - actually very 
 little management tools at all. The database lives in a directory and can be accessed 
 by one process at time. 
 
-Its not anything new: the query pattern is Key/Value: you GET, PUT or DELETE 
+It's not anything new: the query pattern is Key/Value: you GET, PUT or DELETE 
 a value under a Key. There is an iterator interface plus some sort of 
 transaction or isolation control.
 
@@ -36,31 +36,32 @@ The taxonomy I use is simple:
 
 - What is the performance profile ? Databases based on variations of BTree 
 will be great for reads, LSM Trees are great for writes.
-- How is the data organized in the disk ? Single big file that and locking so
-goroutines can coordinate to write, SST and WAL files that append data and 
-lower the locking burden
-- Is it Native Go code ? Easier to understand and contribute too (and frankly 
+- How is the data organized on disk ? Single big file or folder ? File wide
+locking so goroutines can coordinate to write or SST and WAL files that 
+append data and lower the locking burden
+- Is it Native Go code ? Easier to understand and contribute to (and frankly 
 I had a bad time with signals while testing bindings to LevelDB).
 - Does it implements iterators ? Can I order they keys under some criteria ?
-- Does it implements transactions - most of them do and it is not like RDBMS transactions 
-where you can commit or rollback concurrently. But they are useful for isolation.
+- Does it implements transactions ? Most of them do, but not like RDBMS 
+transactions where you can commit or rollback concurrently. 
+But they are useful for isolation.
 - Compactions, snapshots and journaling are interesting features to explore.
 
 Beano: born of a case of legacy 
 ================================
 
-I was working with a set of legacy applications that were had performance issues
-every time new data came in twice a day. There was had a rigorous process 
-and availability requirements that regulated such company, and all applications 
-were written in frameworks that made a change to the database implementation 
-something that could not be done in less than one year. I needed to modify 
+I was working with a set of legacy applications that had performance issues
+every time new data came in twice a day. The company had a rigorous process 
+and availability requirements, and all applications were written in 
+frameworks that made a change to the database implementation 
+something that could not be done in less than a year. I needed to modify 
 the dataset quickly without changing the main database schema.
 
-Among all elements present in this architecture it used a service bus, which 
-had a cache implementation based on Memcached.
+All elements in this architecture used a service bus, which had a cache 
+implementation based on Memcached.
 
 We had had a script to warm up the cache by running pre-defined queries 
-and setting the right keys on Memcached, which done wrong would case a
+and setting the right keys on Memcached, which done wrong would cause a
 lot of trouble as the database latency was high.
 
 The reason I've built [Beano]((https://github.com/gleicon/beano)) is that improving 
@@ -72,9 +73,9 @@ But before `Beano` I've tried to implement a way of loading pre-defined
 datasets into Memcached and swap them in runtime. It is kind of what you 
 can do with `Redis` using the select command.
 
-My first shot used new Memcached feature at the time, which made GA later: pluggable backends. 
-I've built [a LevelDB backend](https://github.com/gleicon/memcached_fs_engine) for Memcached, 
-and while at that [a meaningless Redis backend](https://github.com/gleicon/memcached_redis_engine).
+My first attempt used a Memcached feature that was very new at the time: 
+pluggable backends. I built [a LevelDB backend](https://github.com/gleicon/memcached_fs_engine) 
+for Memcached, and while at it [a meaningless Redis backend](https://github.com/gleicon/memcached_redis_engine).
 
 That worked but not as I wanted mostly because the level of C 
 programming was beyond me. I was learning Go and the idea of implementing 
@@ -82,7 +83,7 @@ parts of Memcached that interested me and coupling with a local database
 was interesting so I looked at the new tech I was impressed: LevelDB.
 
 After some interactions with non-native LevelDB wrappers, signal issues and 
-wire debugging to learn the memcached protocol I've had a server that would 
+wire debugging to learn the memcached protocol I've got a server that would 
 switch databases on the fly if you posted to a REST api while communicating 
 through memcached clients or the abstractions I've had.
 
@@ -91,8 +92,8 @@ Beano's internals
 
 ![architecture](/postimages/advent-2018/disk-datastores/beano_arch.png)
 
-Initially `Beano` had a single database backend but I've found out native 
-Go implementations what I wanted to try. I've refactored the server code 
+Initially `Beano` had a single database backend but I've found native 
+Go implementations that I wanted to try. I've refactored the server code 
 to accept pluggable backends through an interface. 
 
 ```go
@@ -127,7 +128,7 @@ The Memcached protocol parser accepts this interface to execute commands in
 the backend.
 
 The process which swaps these backends communicates through a channel named 
-`messages` in `src/networking.go` and coordinates with new and current 
+`messages` in `src/networking.go` and coordinates with new and currently 
 active connections.
 
 There is a provision for a new memcached command but currently I'm using 
@@ -180,10 +181,10 @@ func loadDB(backend string, filename string) BackendDatabase {
 }
 ```
 
-All backends are identified by a name and get a filename. There is a memory 
-backed backend that wont use it but that's the information that is passed 
-through the channel so it serves both as signaling to change databases and 
-the path as payload.
+All backends are identified by a name and receive a filename. There is a memory 
+backed backend that won't use the filename but that's the information that is 
+passed through the channel so it serves both as signaling to change databases 
+and the path as payload.
 
 There is a watchdog goroutine that receives these messages through the channel 
 and will prepare the database for new connections, and right after that the `accept()` 
