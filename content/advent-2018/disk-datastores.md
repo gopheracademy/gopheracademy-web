@@ -17,33 +17,28 @@ hot-swap its whole dataset gracefully.
 A short taxonomy of Go data storage libraries
 ============================================
 
-
 I've had used SQLite, BerkeleyDB and knew about InnoDB but for some reason
 I've never spent too much energy on them as I did on database servers.
 
 But local data storages really hit me when I've read LevelDB's design document; 
 it made me think on how well thought it was, using SST files and bloom filters 
-to reduce disk usage.
+to reduce disk usage. The [documentation](https://github.com/google/leveldb/blob/master/doc/index.md) is very practical.
 
-Databases like LevelDB offers very little concurrency management - actually very 
+Databases like this offers very little concurrency management - actually very 
 little management tools at all. The database lives in a directory and can be accessed 
-by one process at time. The [documentation](https://github.com/google/leveldb/blob/master/doc/index.md) is focused on C++ and 
-its internals in a very practical way.
+by one process at time. 
 
 Its not anything new: the query pattern is Key/Value: you GET, PUT or DELETE 
-data by a Key. There are an iterator interface plus some sort of transaction.
+a value under a Key. There is an iterator interface plus some sort of 
+transaction or isolation control.
 
-What is important to us is that among the databases that we will find in the 
-Go ecosystem we will find databases based on LevelDB or some evolution of it 
-as BadgerDB, some of them implemented after the venerable LMDB and completely 
-novel designs. In most sense their APIs are not that distinct.
-
-In that diverse world the taxonomy that I use is simple:
+The taxonomy I use is simple:
 
 - What is the performance profile ? Databases based on variations of BTree 
 will be great for reads, LSM Trees are great for writes.
-- How is the data organized in the disk ? Single big file that all goroutines 
-will write to, SST and WAL files that append data and lower the locking burden
+- How is the data organized in the disk ? Single big file that and locking so
+goroutines can coordinate to write, SST and WAL files that append data and 
+lower the locking burden
 - Is it Native Go code ? Easier to understand and contribute too (and frankly 
 I had a bad time with signals while testing bindings to LevelDB).
 - Does it implements iterators ? Can I order they keys under some criteria ?
@@ -51,37 +46,40 @@ I had a bad time with signals while testing bindings to LevelDB).
 where you can commit or rollback concurrently. But they are useful for isolation.
 - Compactions, snapshots and journaling are interesting features to explore.
 
-Beano: born of a case of legacy migrations
-==========================================
+Beano: born of a case of legacy 
+================================
 
-I was working with a set of legacy applications that had a rigorous process 
-and availability requirements, in languages that would be hard to change the  
-database implementation in less than one year. I needed to patch the dataset 
-data quickly without changing the main database schema.
+I was working with a set of legacy applications that were had performance issues
+every time new data came in twice a day. There was had a rigorous process 
+and availability requirements that regulated such company, and all applications 
+were written in frameworks that made a change to the database implementation 
+something that could not be done in less than one year. I needed to modify 
+the dataset quickly without changing the main database schema.
 
-I'll show an application called [beano](https://github.com/gleicon/beano),
-is a Key Value database server that understands most of Memcached protocol,
-stores data locally and can swap the whole dataset live.
-
-The reason I've built Beano is that I was dealing with a set of applications
-that were hard to change, coupled to a service bus that already exposed a 
-cache abstraction that ran Memcached under it and the data at the Memcached 
-servers were basically a denormalized version of the main database schema.
+Among all elements present in this architecture it used a service bus, which 
+had a cache implementation based on Memcached.
 
 We had had a script to warm up the cache by running pre-defined queries 
 and setting the right keys on Memcached, which done wrong would case a
 lot of trouble as the database latency was high.
 
-Based on that I've tried to implement a way of loading pre-defined datasets 
-into Memcached and swap them in runtime. My first shot was a new Memcached 
-feature at the time, which made GA later: pluggable backends. 
+The reason I've built [Beano]((https://github.com/gleicon/beano)) is that improving 
+the application using cache was the easiest thing we could do in a short span of time.
+The data preloaded in Memcached was basically a denormalized version of the 
+main database schema.
+
+But before `Beano` I've tried to implement a way of loading pre-defined 
+datasets into Memcached and swap them in runtime. It is kind of what you 
+can do with `Redis` using the select command.
+
+My first shot used new Memcached feature at the time, which made GA later: pluggable backends. 
 I've built [a LevelDB backend](https://github.com/gleicon/memcached_fs_engine) for Memcached, 
 and while at that [a meaningless Redis backend](https://github.com/gleicon/memcached_redis_engine).
 
-That worked but not as I wanted mostly because that level of C 
+That worked but not as I wanted mostly because the level of C 
 programming was beyond me. I was learning Go and the idea of implementing 
-the parts of Memcached that interested me and coupling with a local database 
-was interesting. 
+parts of Memcached that interested me and coupling with a local database 
+was interesting so I looked at the new tech I was impressed: LevelDB.
 
 After some interactions with non-native LevelDB wrappers, signal issues and 
 wire debugging to learn the memcached protocol I've had a server that would 
@@ -93,10 +91,9 @@ Beano's internals
 
 ![architecture](/postimages/advent-2018/disk-datastores/beano_arch.png)
 
-Finding out the proper database was and still what I work most so I've 
-refactored the server code to allow for a pluggable backend through an 
-interface. That allowed me, for example, to implement a [bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) in 
-front of BoltDB at the time to match with LevelDB architecture.
+Initially `Beano` had a single database backend but I've found out native 
+Go implementations what I wanted to try. I've refactored the server code 
+to accept pluggable backends through an interface. 
 
 ```go
 package main
@@ -125,13 +122,17 @@ type BackendDatabase interface {
 ```
 
 All the operations to be implemented in a new datastore backend are defined 
-on src/backend.go. These functions follow the Memcached protocol loosely. At
-the file src/networking.go there's a channel that listen to database paths.
+on src/backend.go. These functions follow the Memcached protocol loosely. 
+The Memcached protocol parser accepts this interface to execute commands in 
+the backend.
 
-The process which swaps these backends communicates through this channel and 
-coordinates with current active connections to be drained if it is a different db.
+The process which swaps these backends communicates through a channel named 
+`messages` in `src/networking.go` and coordinates with new and current 
+active connections.
 
-There is a provision for a new command but currently I'm using an API route `/api/v1/switchdb`
+There is a provision for a new memcached command but currently I'm using 
+an API route `/api/v1/switchdb` so this operation won't require a client 
+change.
 
 ```go
 func switchDBHandler(w http.ResponseWriter, req *http.Request) {
@@ -150,7 +151,7 @@ func switchDBHandler(w http.ResponseWriter, req *http.Request) {
 ```
 
 The only function that knows the implementations of backend interfaces is 
-the following, in the same file:
+the `loadDB`, in the same file:
 
 ```go
 func loadDB(backend string, filename string) BackendDatabase {
@@ -179,9 +180,14 @@ func loadDB(backend string, filename string) BackendDatabase {
 }
 ```
 
-There is a watchdog to receive the messages through the channel which will 
-prepare the db for the new connections, and right after that lives the `accept()` 
-loop that calls the protocol parsing function
+All backends are identified by a name and get a filename. There is a memory 
+backed backend that wont use it but that's the information that is passed 
+through the channel so it serves both as signaling to change databases and 
+the path as payload.
+
+There is a watchdog goroutine that receives these messages through the channel 
+and will prepare the database for new connections, and right after that the `accept()` 
+loop that calls the (long) protocol parsing function:
 
 ```go
 if err == nil {
@@ -201,7 +207,8 @@ if err == nil {
 ```
 
 This is all to separate networking from the backend and implement hot swap. 
-The parsing knows the backend interface, not the implementation details:
+The protocol parsing function knows the backend interface, not the 
+implementation details:
 
 ```go
 func (ms MemcachedProtocolServer) Parse(conn net.Conn, vdb BackendDatabase) {
@@ -220,14 +227,18 @@ func (ms MemcachedProtocolServer) Parse(conn net.Conn, vdb BackendDatabase) {
 }
 ```
 
-With that structure we could create a new database with a standalone beano 
-instance, using the warm-up scripts, transfer through rsync or other methods 
-and have them hot swapped safely.
+With that structure we could create a new database with a standalone `Beano` 
+instance, populate it with the warm-up scripts, transfer through rsync or 
+store on S3 to be retrieved later so they can be swapped safely.
 
-Datastorages
+Datastores
 ============
 
-Now getting to the datastores, each one has a semantic around its transactions. Let's see the GET method on BadgerDB
+Each database library has a semantic around transactions and iterators. 
+Isolating them with an interface makes it easier to plug in and test new 
+backends.
+
+Let's see the GET method on BadgerDB
 
 ```go
 func (be badgerBackend) NormalizedGet(key []byte) ([]byte, error) {
@@ -260,13 +271,15 @@ func (be LevelDBBackend) NormalizedGet(key []byte, ro *opt.ReadOptions) ([]byte,
 
 There is a comment about `levigo`, because at some point in time I've used 
 both libraries to provide native and non-native-with-wrapper LevelDB and 
-compare performance and safety before switching libraries.
+compare performance and safety before switching libraries. Some libraries 
+will return empty if the key was not found, others as BadgerDB have detailed 
+error codes and all that can be abstracted to match the protocol.
 
-I've kept the `BoltDB` implementation around even after the project was 
-archived to document what is possible with these abstraction. BoltDB 
-had no layer between the request and hitting the disk, as LevelDB presents 
-with a probabilistic data structure called `bloom filter` to provide a space 
-aware key cache. 
+I've kept the `BoltDB` implementation around after it was discontinued and 
+archived to document what is possible with these abstraction. As I've 
+mentioned before, BoltDB was wrapped under a cache similar to how LevelDB 
+uses a probabilistic data structure called [bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) 
+to avoid disks hits.
 
 ```go
 type KVBoltDBBackend struct {
@@ -279,10 +292,9 @@ type KVBoltDBBackend struct {
 }
 ```
 
-
 Every time a `GET` is performed, it has to check if the key was seen. 
 Same for `PUT` and `ADD` - both functions have to load the bloom filter 
-with the keys they are committing.
+with the keys they are committing. 
 
 
 ```go
@@ -309,33 +321,36 @@ func (be KVBoltDBBackend) Get(key []byte) ([]byte, error) {
 }
 ```
 
-When a key is requested, `bf := be.keyCache[be.bucketName].Test(key)` 
-tests if the key was added to the cache at some point in time. Bloom filters 
-are biased to false positives but never to false negatives, meaning that if 
-it never saw the key you could return `NOT FOUND` safely while if it saw 
-the key there was a chance of a false positive result that would force a 
-disk read to check and fetch. 
+When a read operation is started, instead of going straight for the database
+the statement `bf := be.keyCache[be.bucketName].Test(key)` tests if the 
+key was added to the cache at some point in time. 
+
+Bloom filters are biased to false positives but are trustable on negatives, 
+meaning that if it never saw the key you could return `NOT FOUND` safely 
+while if it saw the key there was a chance of a false positive result 
+that would force a disk read to check and fetch. 
 
 That helped run LevelDB and BoltDB with close performance for reads, 
-while keeping the details local to the BoltDB implementation.
+while keeping the details local to the BoltDB backend implementation.
 
 I've used BoltDB until it was archived and switched to BadgerDB when 
 it got transactions. I recommend going with BadgerDB as the support is 
-great, there is a blossoming community around it.
+great, there is a great community around it.
 
 Conclusion
 ==========
 
-Among more complex applications for fast local datastores, there are solutions
-like `segment.io` [message de-duplication for kafka](https://segment.com/blog/exactly-once-delivery/),
-time-series based software as [ts-cli](https://github.com/gleicon/ts-cli) 
-and a range of software in the middle.
+I've shown one case of local data storage but there are interesting 
+applications out there. For instance connectors that filter and detect 
+repeated data on streams like `segment.io` [message de-duplication for kafka](https://segment.com/blog/exactly-once-delivery/),
+time-series based software as [ts-cli](https://github.com/gleicon/ts-cli)
+and [Dgraph](https://dgraph.io/), a graph database in Go.
 
-Beano's repository sits at [github](https://github.com/gleicon/beano) - 
-ideas, issues, PRs are welcome. My plans are to look for new databases and 
+Beano's repository is on [github](https://github.com/gleicon/beano) - 
+new ideas, issues, PRs are welcome. My plan is to look for new databases and 
 fork the Memcached protocol parsing out of it. 
 
-If you like using known protocols to perform other functions, check my 
+If you like using known protocols to perform specific functions, check my 
 `redis` compatible server that only implements PFADD/PFCOUNT using 
 HyperLogLog: [nazare](https://github.com/gleicon/nazare).
 
