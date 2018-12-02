@@ -11,7 +11,7 @@ But they are an important building block to know if you are looking for real fas
 temporary storage or can build your own replication.
 
 In this post I will show how I've used key/value local databases in Go to 
-build a database server named `Beano` that speaks memcached protocol and can 
+build a database server named `Beano` that speaks Memcached protocol and can 
 hot-swap its whole dataset gracefully.
 
 A short taxonomy of Go data storage libraries
@@ -42,7 +42,7 @@ In that diverse world the taxonomy that I use is simple:
 
 - What is the performance profile ? Databases based on variations of BTree 
 will be great for reads, LSM Trees are great for writes.
-- How's the data organised in the disk ? Single big file that all goroutines 
+- How is the data organized in the disk ? Single big file that all goroutines 
 will write to, SST and WAL files that append data and lower the locking burden
 - Is it Native Go code ? Easier to understand and contribute too (and frankly 
 I had a bad time with signals while testing bindings to LevelDB).
@@ -65,22 +65,22 @@ stores data locally and can swap the whole dataset live.
 
 The reason I've built Beano is that I was dealing with a set of applications
 that were hard to change, coupled to a service bus that already exposed a 
-cache abstraction that ran memcached under it and the data at the memcached 
-servers were basically a denormalised version of the main database schema.
+cache abstraction that ran Memcached under it and the data at the Memcached 
+servers were basically a denormalized version of the main database schema.
 
 We had had a script to warm up the cache by running pre-defined queries 
-and setting the right keys on memcached, which done wrong would case a
+and setting the right keys on Memcached, which done wrong would case a
 lot of trouble as the database latency was high.
 
 Based on that I've tried to implement a way of loading pre-defined datasets 
-into memcached and swap them in runtime. My first shot was a new memcached 
+into Memcached and swap them in runtime. My first shot was a new Memcached 
 feature at the time, which made GA later: pluggable backends. 
-I've built [a LevelDB backend](https://github.com/gleicon/memcached_fs_engine) for memcached, 
-and while at that [a meaningless redis backend](https://github.com/gleicon/memcached_redis_engine).
+I've built [a LevelDB backend](https://github.com/gleicon/memcached_fs_engine) for Memcached, 
+and while at that [a meaningless Redis backend](https://github.com/gleicon/memcached_redis_engine).
 
 That worked but not as I wanted mostly because that level of C 
 programming was beyond me. I was learning Go and the idea of implementing 
-the parts of memcached that interested me and coupling with a local database 
+the parts of Memcached that interested me and coupling with a local database 
 was interesting. 
 
 After some interactions with non-native LevelDB wrappers, signal issues and 
@@ -280,9 +280,9 @@ type KVBoltDBBackend struct {
 ```
 
 
-Everytime a `GET` is performed, it has to check if the key was seen. 
+Every time a `GET` is performed, it has to check if the key was seen. 
 Same for `PUT` and `ADD` - both functions have to load the bloom filter 
-with the keys they are commiting.
+with the keys they are committing.
 
 
 ```go
@@ -326,14 +326,14 @@ great, there is a blossoming community around it.
 Conclusion
 ==========
 
-Among more complex applications for fast local datastorages, there are solutions
-like `segment.io` [message deduper for kafka](https://segment.com/blog/exactly-once-delivery/),
-timeseries based software as [ts-cli](https://github.com/gleicon/ts-cli) 
+Among more complex applications for fast local datastores, there are solutions
+like `segment.io` [message de-duplication for kafka](https://segment.com/blog/exactly-once-delivery/),
+time-series based software as [ts-cli](https://github.com/gleicon/ts-cli) 
 and a range of software in the middle.
 
 Beano's repository sits at [github](https://github.com/gleicon/beano) - 
 ideas, issues, PRs are welcome. My plans are to look for new databases and 
-fork the memcached protocol parsing out of it. 
+fork the Memcached protocol parsing out of it. 
 
 If you like using known protocols to perform other functions, check my 
 `redis` compatible server that only implements PFADD/PFCOUNT using 
