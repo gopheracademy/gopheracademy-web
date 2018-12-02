@@ -66,7 +66,7 @@ We can treat UCP like a traditional client-server protocol. After establishing a
 
 
 
-Lets start with a `Client` struct containing the login credentials to the SMSC.
+Lets start with a `Client` struct containing the login credentials to the SMSC. The login credentials are provided by the telco but for testing purposes, we can use an [SMSC simulator](https://github.com/jcaberio/ucp-smsc-sim).
 ```go
 // Client represents a UCP client connection.
 type Client struct {
@@ -150,7 +150,7 @@ func (c *Client) Connect() error {
   c.writer = bufio.NewWriter(conn)
 
   // login to SMSC
-  c.writer.Write(login(c.nextRefNum(), c.user, c.password))
+  c.writer.Write(createLoginReq(c.nextRefNum(), c.user, c.password))
   c.writer.Flush()
   resp, _ := c.reader.ReadString(etx)
   err = parseSessionResp(resp)
@@ -160,7 +160,7 @@ func (c *Client) Connect() error {
   return err
 }
 ```
-`login` creates a `session management operation` request packet containing our credentials.
+`createLoginReq` creates a `session management operation` request packet containing our credentials.
 `parseSessionResp` parses the `session management operation` response packet from the SMSC. If our credentials are invalid, it will return an `error` otherwise it will return `nil`.
 
 ### Channels and Goroutines
@@ -188,15 +188,16 @@ type Client struct {
   once sync.Once
 }
 
+// Connect will establish a TCP connection with the SMSC
+// and send a login request. 
 func (c *Client) Connect() error {
-  // after login
+  // after login, spawn goroutines
   sendAlert(/*....*/)
   readLoop(/*....*/)
   readDeliveryNotif(/*....*/)
   readDeliveryMsg(/*....*/)
   readPartialDeliveryMsg(/*....*/)
   readCompleteDeliveryMsg(/*....*/)
-
   return err
 }
 
@@ -256,6 +257,7 @@ We use [time.NewTicker](https://golang.org/pkg/time/#NewTicker) to create a tick
 `ping` creates a valid `alert operation` request packet with the appropriate transaction reference number.
 
 ```go
+// sendAlert sends a keepalive packet periodically to the SMSC
 func sendAlert(/*....*/) {
   wg.Add(1)
   ticker := time.NewTicker(alertInterval)
@@ -267,7 +269,7 @@ func sendAlert(/*....*/) {
         ticker.Stop()
         return
       case <-ticker.C:
-        writer.Write(ping(transRefNum, user))
+        writer.Write(createAlertReq(transRefNum, user))
         writer.Flush()
       }
     }
@@ -280,7 +282,7 @@ func sendAlert(/*....*/) {
 To read SMS delivery notification status, we start the `readDeliveryNotif` goroutine.
 Once a `delivery notification operation` message is read, it sends an acknowledgement response packet to the SMSC.
 ```go
-// Read deliver notifications from deliverNotifCh channel. 
+// readDeliveryNotif reads delivery notifications from deliverNotifCh channel. 
 func readDeliveryNotif(/*....*/) {
   wg.Add(1)
   go func() {
@@ -300,7 +302,7 @@ func readDeliveryNotif(/*....*/) {
         // scts is the service center time stamp
         scts := dr[drSctsIndex]
         msgID := recvr + ":" + scts
-        writer.Write(deliveryNotifAckPacket([]byte(refNum), msgID))
+        writer.Write(createDeliveryNotifAck([]byte(refNum), msgID))
         writer.Flush()
       }
     }
@@ -313,8 +315,8 @@ func readDeliveryNotif(/*....*/) {
 To read incoming mobile originating messages, we start the `readDeliveryMsg` goroutine.
 
 ```go
-// Reads all delivery short messages (mobile-originating messages) 
-// from the deliverMsgCh channel.
+// readDeliveryMsg reads all delivery short messages 
+// (mobile-originating messages) from the deliverMsgCh channel.
 func readDeliveryMsg(/*....*/) {
   wg.Add(1)
   go func() {
@@ -335,7 +337,7 @@ func readDeliveryMsg(/*....*/) {
         msgID := sender + ":" + scts
 
         // send ack to SMSC with the same reference number
-        writer.Write(deliverySmAckPacket([]byte(refNum), sysmsg))
+        writer.Write(createDeliverySmAck([]byte(refNum), sysmsg))
         writer.Flush()
           
         var incomingMsg deliverMsgPart
@@ -371,8 +373,8 @@ To handle multi-part mobile originating SMS, we send partial mobile originating 
 
 ```go
 
-// Reads all deliver sm messages(mobile-originating messages) 
-// from the deliverMsgCh channel.
+// readDeliveryMsg reads all delivery short messages 
+// (mobile-originating messages) from the deliverMsgCh channel.
 func readDeliveryMsg(/*....*/) {
   wg.Add(1)
   go func() {
@@ -465,11 +467,55 @@ To get the response from the SMSC, we use `select` statement, that blocks until 
 ```go
 [09191234567:130817221851, 09191234567:130817221852, 09191234567:130817221853, 09191234567:130817221854, 09191234567:130817221855]
 ```
- Each identifier has the form `recipient:timestamp`
+ Each identifier has the form `recipient:timestamp`. The `timestamp` can be parsed with the layout `020106150405` using [time.Parse](https://golang.org/pkg/time/#Parse). If you're more familiar with [strftime](http://strftime.org/), you can use the format `%d%m%y%H%M%S`.
  
+## Demo
+
+I've written a [CLI](https://github.com/go-gsm/ucp-cli) to demonstrate this library. We'll use an [SMSC simulator](https://github.com/jcaberio/ucp-smsc-sim) and view the UCP packets on [Wireshark](https://www.wireshark.org/).
+
+First, `go get` the CLI and simulator and make sure that [redis](https://redis.io/) is running on `localhost:6379`:
+```
+$ go get github.com/go-gsm/ucp-cli
+$ go get github.com/jcaberio/ucp-smsc-sim
+```
+Export the following environment variables:
+```
+$ export SMSC_HOST=127.0.0.1
+$ export SMSC_PORT=16004
+$ export SMSC_USER=emi_client
+$ export SMSC_PASSWORD=password
+$ export SMSC_ACCESSCODE=2929
+```
+Run the simulator and visit `localhost:16003` on your browser.
+
+```
+$ ucp-smsc-sim
+```
+
+Run the CLI
+```
+$ ucp-cli
+```
+
+Let send `Hello, 世界` to `09191234567` with a sender mask of `Gopher`.
+The simulator responded with a message id of `[09191234567:021218195604]`. 
+We can also see the delivery notification message from the simulator.
+
+![cli](/postimages/advent-2018/send-via-cli.png)
+
+We can look at the UCP packets in detail via Wireshark.
+
+![wireshark](/postimages/advent-2018/wireshark.png)
+
+Finally, we can view the SMS in the browser.
+
+![sim](/postimages/advent-2018/simulator.png)
+
+
+
 ## Conclusion
 
-Go's built-in features such as goroutines and channels enabled us to implement the UCP protocol. We used Go's message-passing style for concurrently processing different types of UCP messages. We treat the independent operations as goroutines and communicate with them via channels. We also relied heavily on the standard library to implement the protocol operations. If you work on the telco field and have an access to an SMSC, feel free to try the [ucp package](https://github.com/go-gsm/ucp). It has additional features such as rate limiting and tariff charging. I've also written a [CLI](https://github.com/go-gsm/ucp-cli) to test it out. Suggestions and recommendations are welcome.
+Go's built-in features such as goroutines and channels enabled us to implement the UCP protocol. We used Go's message-passing style for concurrently processing different types of UCP messages. We treat the independent operations as goroutines and communicate with them via channels. We also relied heavily on the standard library to implement the protocol operations. If you work on the telco field and have an access to an SMSC, feel free to try the [ucp package](https://github.com/go-gsm/ucp). It has additional features such as rate limiting and tariff charging. Suggestions and recommendations are welcome.
 
 Thanks!
  
