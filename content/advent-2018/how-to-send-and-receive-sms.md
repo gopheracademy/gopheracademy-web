@@ -497,7 +497,7 @@ $ ucp-cli
 ```
 
 Let send `Hello, 世界` to `09191234567` with a sender mask of `Gopher`.
-The simulator responded with a message id of `[09191234567:021218195604]`. 
+The simulator responded with a message id of `[09191234567:021218201629]`. 
 We can also see the delivery notification message from the simulator.
 
 ![cli](/postimages/advent-2018/send-via-cli.png)
