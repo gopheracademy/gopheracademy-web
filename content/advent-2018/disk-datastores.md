@@ -2,7 +2,7 @@
 author = ["Gleicon Moraes"]
 title = "Golang and local datastores - fast and flexible data storage"
 linktitle = "golang local datastores"
-date = 2014-02-06T06:40:42Z
+date = 2018-12-04T00:00:00Z
 +++
 
 Local datastores may not be a fit if you are building a web application 
@@ -22,7 +22,7 @@ I've had used SQLite, BerkeleyDB and knew about InnoDB but for some reason
 I've never spent too much energy on them as I did on database servers.
 
 But local data storages really hit me when I've read LevelDB's design document; 
-it made me think on how well thought it was, using SST files andbloom filter 
+it made me think on how well thought it was, using SST files and bloom filters 
 to reduce disk usage.
 
 Databases like LevelDB offers very little concurrency management - actually very 
@@ -95,7 +95,7 @@ Beano's internals
 
 Finding out the proper database was and still what I work most so I've 
 refactored the server code to allow for a pluggable backend through an 
-interface. That allowed me, for example, to implement a bloom filter in 
+interface. That allowed me, for example, to implement a [bloom filter](https://en.wikipedia.org/wiki/Bloom_filter) in 
 front of BoltDB at the time to match with LevelDB architecture.
 
 ```go
@@ -160,27 +160,22 @@ func loadDB(backend string, filename string) BackendDatabase {
 	case "boltdb":
 		vdb, err = NewKVBoltDBBackend(filename, "memcached", 1000000)
 		break
-
 	case "badger":
 		vdb, err = NewBadgerBackend(filename)
 		break
-
 	case "inmem":
 		vdb, err = NewInmemBackend(1000000)
 		break
-
 	default:
 	case "leveldb":
 		vdb, err = NewLevelDBBackend(filename)
 		break
-
 	}
 	if err != nil {
 		log.Error("Error opening db %s", err)
 		return nil
 	}
 	return vdb
-
 }
 ```
 
@@ -204,8 +199,6 @@ if err == nil {
 	log.Fatal(err.Error())
 }
 ```
-
-Note that `ms.Parse(conn, vdb)` will 
 
 This is all to separate networking from the backend and implement hot swap. 
 The parsing knows the backend interface, not the implementation details:
