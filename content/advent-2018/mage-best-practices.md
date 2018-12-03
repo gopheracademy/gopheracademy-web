@@ -2,7 +2,7 @@
 author = ["Nate Finch"]
 title = "Best Practices for Using Mage To Build Your Project"
 linktitle = "Mage Best Practices"
-date = 2018-11-02T06:40:42Z
+date = 2018-12-03T00:00:00Z
 +++
 
 On my team at Mattel, we have a [magefile](https://magefile.org) for every Go
