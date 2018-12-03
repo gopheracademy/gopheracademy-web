@@ -152,7 +152,7 @@ function itself. All they need to do is implement `io.ReaderFrom` or
 `io.WriterTo`. The standard library does this in many places. For example:
 
 * `*bytes.Buffer` has both a [WriteTo](https://golang.org/pkg/bytes/#Buffer.WriteTo),
-  which drains the buffer into an `io.Writer`, an a
+  which drains the buffer into an `io.Writer`, and a
   [ReadFrom](https://golang.org/pkg/bytes/#Buffer.ReadFrom) which fills
   the buffer from an `io.Reader`
 
