@@ -64,7 +64,7 @@ We had had a script to warm up the cache by running pre-defined queries
 and setting the right keys on Memcached, which done wrong would cause a
 lot of trouble as the database latency was high.
 
-The reason I've built [Beano]((https://github.com/gleicon/beano)) is that improving 
+The reason I've built [Beano](https://github.com/gleicon/beano) is that improving 
 the application using cache was the easiest thing we could do in a short span of time.
 The data preloaded in Memcached was basically a denormalized version of the 
 main database schema.
@@ -256,7 +256,7 @@ func (be badgerBackend) NormalizedGet(key []byte) ([]byte, error) {
 }
 ```
 
-Now on LevelDB by means of [goleveldb, the library I've used](github.com/syndtr/goleveldb/leveldb):
+Now on LevelDB by means of [goleveldb, the library I've used](https://github.com/syndtr/goleveldb/leveldb):
 
 ```go
 func (be LevelDBBackend) NormalizedGet(key []byte, ro *opt.ReadOptions) ([]byte, error) {
