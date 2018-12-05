@@ -44,19 +44,17 @@ This project is meant to help improve the flow and make it this:
 
 * Let us register our Bot with Slack [here](https://api.slack.com/apps).
 
-//IMAGE
+![Create a Slack App](/postimages/advent-2018/building-ci-cd-slack-bot/create-slack-app.png)
 
 * Next, we need to register the permission scope `chat:write:bot`.
 
-//IMAGE
+![Slack App Permissions](/postimages/advent-2018/building-ci-cd-slack-bot/slack-scopes.png)
 
 * Now we set up a request URL for interactions. Let's put that at `http://our-bot-url.test/slack-interactions`.
 
-//IMAGE
+![Slack Interactions Request URL](/postimages/advent-2018/building-ci-cd-slack-bot/slack-interactions-request-url.png)
 
 * Once all those are done, we install the app into our workspace, and copy the slack token.
-
-//IMAGE
 
 ### Structuring our Slack Client
 
@@ -733,29 +731,29 @@ When a build comes in, what we want to achieve is this:
 
 * First, a notification is sent to the general channel that a build was completed and a deployment will then we attempted.
 
-// IMAGE
+![Attempting Deployment](/postimages/advent-2018/building-ci-cd-slack-bot/attempting-deployment.png)
 
 * If the deployment fails, the previous message is updated to let everyone know. Also, the failure reason (the error given when the deployment was attempted) is shown.
 
-// IMAGE
+![Deployment Failed](/postimages/advent-2018/building-ci-cd-slack-bot/deployment-failed.png)
 
 * If the deployment was successful, the general message is updated to let everyone know. A link to the deployed project is also given.
 
-// IMAGE
+![Deployment Successful](/postimages/advent-2018/building-ci-cd-slack-bot/deployment-successful.png)
 
 * The project owners will then be sent personal messages which in addition to the link will show:
     * The users that are to do QA
     * A button to deploy the build to production
     * A button to close the build
 
-// IMAGE
+![Owner Message](/postimages/advent-2018/building-ci-cd-slack-bot/owner-message.png)
 
 * The members of the QA team are then sent personal messages which will have the following:
     * A link to the project
     * A button to approve the build 
     * A button to reject the build
 
-// IMAGE
+![Perform QA](/postimages/advent-2018/building-ci-cd-slack-bot/perform-qa.png)
 
 Our final `buildProcessor()` came to look like this:
 
@@ -903,14 +901,6 @@ For brevity, I will not show the other functions here, but if you're interested,
 
 When an interaction comes in, it it first sorted. We currently have only 2 types of interactions, identified by their `callback_id`. "QA Response" or "Deploy Decision".
 
-* If it is a QA response, we will inform the owners of this response. We will send this as a threaded reply to the original Owner message for that build.
-
-// IMAGE
-
-* If it is a Deploy Decision, we will remove the "Deploy/Close" buttons from all the owner messages (since the decision has been made), and we will make an announcement on the channel.
-
-// IMAGE
-
 So, our `interactionProcessor()` can look like this:
 
 ```go
@@ -933,7 +923,12 @@ func (s *server) interactionProcessor() {
 When handling the QA response, we have to do the following:
 
 1. Update the QA message to remove the options and state what was chosen.
+    ![QA Approved Self](/postimages/advent-2018/building-ci-cd-slack-bot/qa-approved-self.png)
+    ![QA Rejected Self](/postimages/advent-2018/building-ci-cd-slack-bot/qa-rejected-self.png)
 2. Inform the owners of the verdict from that QA member.
+    ![QA Approved Thread](/postimages/advent-2018/building-ci-cd-slack-bot/qa-approved-thread.png)
+    ![QA Rejected Thread](/postimages/advent-2018/building-ci-cd-slack-bot/qa-rejected-thread.png)
+
 
 Here is the final function: 
 
@@ -1032,8 +1027,9 @@ If the deployment is closed, we'll do the following:
 * Remove the "Deploy/Close" buttons from all the Owner messages.
 * Add an attachment to the owner messages showing that it has been closed.
 
-Our `handleCloseDeployment()` function will look like this:
+![Deployment Closed](/postimages/advent-2018/building-ci-cd-slack-bot/deployment-closed.png)
 
+Our `handleCloseDeployment()` function will look like this:
 
 ```
 //-------------------------------------
@@ -1076,14 +1072,15 @@ When a production deployment is triggered, we first attempt to deploy.
 
 * If the deploy fails, we send an announcement to the channel with the failure reason.
 
-// IMAGE 
+![Production Deployment Failed](/postimages/advent-2018/building-ci-cd-slack-bot/production-deployment-failed.png)
 
 * If the deploy is successful, we will:
     * Send an announcement to the channel that a new deployment to production was done and who triggered it.
     * Remove the "Deploy/Close" buttons from all the Owner messages.
     * Add an attachment to the owner messages showing the deploy decision.
 
-// IMAGE
+![Deployed to Production](/postimages/advent-2018/building-ci-cd-slack-bot/deployed-to-production.png)
+![New Production Deployment](/postimages/advent-2018/building-ci-cd-slack-bot/new-production-deployment.png)
 
 Our `handleDeployToProd()` function will look like this:
 
