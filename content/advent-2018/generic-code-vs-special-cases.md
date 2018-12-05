@@ -94,7 +94,7 @@ concerns itself with platform-specific bits, and it knows about
 operating systems, networking, and so on. It used to be nice and
 generic, but it is now a difficult to maintain mess of special cases.
 
-It seems like something has gone wrong. This `Copy` _does_ accomodate
+It seems like something has gone wrong. This `Copy` _does_ accommodate
 both special cases and generic code, but it pays a terrible price to
 do so, and it imposes terrible restrictions upon the rest of the world.
 
