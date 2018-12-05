@@ -3,6 +3,7 @@ author = ["Gleicon Moraes"]
 title = "Golang and local datastores - fast and flexible data storage"
 linktitle = "golang local datastores"
 date = 2018-12-04T00:00:00Z
+series = ["Advent 2018"]
 +++
 
 Local datastores may not be a fit if you are building a web application 
