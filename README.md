@@ -17,13 +17,13 @@ draft = true
 ```
 
 The easiest way to do this is to have [hugo](http://gohugo.io) create
-the new post for you.
+the new post for you from the repository root.
 
     hugo new "section/title of post"
 
 For example if I was writing a post for the 2014 advent called "go awesome":
 
-    hugo new "advent-2014/go-awesome.md"
+    hugo new "content/advent-2014/go-awesome.md"
 
 Hugo will automatically create the file and put the proper metadata in place.
 Just make sure to review the metadata and adjust as needed.
