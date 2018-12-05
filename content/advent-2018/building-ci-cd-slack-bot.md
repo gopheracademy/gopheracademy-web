@@ -14,7 +14,7 @@ Like many companies, we use Kubernetes to manage our deployments, and Slack for 
 
 At Africa's Talking, each project is written with comprehensive unit testing, also, before a change is approved, several people have to take a look at it and do some manual testing themselves. We'll refer to these people as the QA team.
 
-After a the change is approved, the project can only be deployed to production by a few people. We'll call these people the project owners.
+After the change is approved, the project can only be deployed to production by a few people. We'll call these people the project owners.
 
 ## The Flow
 
@@ -31,7 +31,7 @@ This project is meant to help improve the flow and make it this:
 
 1. A commit is made to the Git repository
 2. Our CI tool does some automated testing.
-3. The CI tool should then build a docker image with a unique tag and push to a company registry
+3. The CI tool should then build a Docker image with a unique tag and push to a company registry
 4. Once all the tests pass, the CI tool will then notify our Bot.
 5. The bot deploys the new docker image to a specific internal URL based on the branch/tag that was committed to.
 6. The bot would inform the QA team on Slack. Each of the people in the QA team would then be able to approve or reject the change through Slack.
@@ -54,14 +54,14 @@ This project is meant to help improve the flow and make it this:
 
 ![Slack Interactions Request URL](/postimages/advent-2018/building-ci-cd-slack-bot/slack-interactions-request-url.png)
 
-* Once all those are done, we install the app into our workspace, and copy the slack token.
+* Once all those are done, we install the app into our workspace and copy the slack token.
 
 ### Structuring our Slack Client
 
 Let us describe the Slack objects in Go. We will create structs for the slack message object, and what we receive from Slack when an interaction happens.
 To send out our messages, we need to use the token we got after we installed our application to our Slack workspace.
 
-In this example, I'm using [viper](https://github.com/spf13/viper) to load `slackToken` from the config. Later during the `init()` function, we'll set up [viper](https://github.com/spf13/viper) so we load the config from the right place.
+In this example, I'm using [Viper](https://github.com/spf13/viper) to load `slackToken` from the config. Later during the `init()` function, we'll set up [Viper](https://github.com/spf13/viper) so we load the config from the right place.
 
 ```go
 // slack.go
@@ -115,8 +115,8 @@ type SlackAction struct {
     URL     string            `json:"url,omitempty"`
 }
 
-// SlackInteraction is a struct that descibes what we
-// would receive on our intereactions endpoint from slack
+// SlackInteraction is a struct that describes what we
+// would receive on our interactions endpoint from slack
 type SlackInteraction struct {
     Type        string            `json:"type,omitempty"`
     Actions     []SlackAction     `json:"actions,omitempty"`
@@ -391,7 +391,7 @@ type Build struct {
 
 To deploy we're going to make use of Kubernetes. Thankfully, there is an amazing [Go client](https://github.com/kubernetes/client-go) to help us interact with our cluster.
 
-We're going to write a couple functions that take a `Build` struct and does the deployment. One of them will be to deploy to auto-generated URLs, the other to deploy to production.
+We're going to write a couple of functions that take a `Build` struct and does the deployment. One of them will be to deploy to auto-generated URLs, the other to deploy to production.
 
 In this case, I am using [Ambassador](https://www.getambassador.io/) for routing. It is assumed that Ambassador is already set up on the cluster, so I will only need to add a service with the [proper annotations](https://www.getambassador.io/user-guide/getting-started#5-adding-a-service) to set up my routing to the deployment.
 
@@ -603,7 +603,7 @@ import (
 type Handlers map[string]func() http.HandlerFunc
 
 // The is used to load a handler by name
-// It send a http 500 error if the handler does not exist
+// It sends a http 500 error if the handler does not exist
 func (h Handlers) use(name string) http.HandlerFunc {
     method, ok := h[name]
     if ok == false {
@@ -808,9 +808,9 @@ func (s *server) buildProcessor() {
 
 The tricky part was storing the details of the build without having to resort to using a database, to keeping it in memory where it can be lost upon restart.
 
-In particular the details that needs to be persisted are:
+In particular, the details that need to be persisted are:
 
-1. The build details that was sent. The docker image, branch/tag and target
+1. The build details that was sent. The docker image, branch/tag, and target
 2. The `ts`(timestamps use to identify slack messages) of the messages that were sent to the owners. This is necessary so we can inform the owners when any member of the QA team approves/rejects the build or if a different owner deploys or closes the build.
 
 To "store" these details, we can make use of the `value` parameter of Slack message actions.
@@ -895,11 +895,11 @@ func sendOwnerMessages(build Build, url string) (
 //----------------------------------
 ```
 
-For brevity, I will not show the other functions here, but if you're interested, be sure to checkout the [git repository](https://github.com/stephenafamo/ci-bot).
+For brevity, I will not show the other functions here, but if you're interested, be sure to check out the [git repository](https://github.com/stephenafamo/ci-bot).
 
 #### The Interaction Processor
 
-When an interaction comes in, it it first sorted. We currently have only 2 types of interactions, identified by their `callback_id`. "QA Response" or "Deploy Decision".
+When an interaction comes in, it is first sorted. We currently have only 2 types of interactions, identified by their `callback_id`. "QA Response" or "Deploy Decision".
 
 So, our `interactionProcessor()` can look like this:
 
@@ -1143,10 +1143,10 @@ There are some functions not shown here, if you'd like to see how it was impleme
 
 ## Conclusion
 
-We did it! We've build a Proof-of-Concept slack bot that allows us to manage our deployment process within Slack.
+We did it! We've built a Proof-of-Concept slack bot that allows us to manage our deployment process within Slack.
 It was a nice process and I'll definitely be looking to make it more production ready.
 
-I'd definitely love to get thoughts and contributions on this, so please leave a comment here, or you can to contact me through any of these ways:
+I'd definitely love to get thoughts and contributions on this, so please leave a comment here, or you can contact me through any of these ways:
 
 Source   | Handle
 ---------|--------
