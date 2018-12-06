@@ -74,7 +74,7 @@ camera.Position.Set(1000, 50, 1500)
 scene := three.NewScene()
 renderer := three.NewWebGLRenderer()
 renderer.SetSize(w, h, true)
-light := three.NewAmbientlLight(three.NewColor("white"))
+light := three.NewAmbientLight(three.NewColor("white"))
 scene.Add(light)
 ```
 
@@ -167,7 +167,9 @@ func main() {
 
 All you have to do now is just run:
 
+```
 gopherjs build
+```
 
 and in a split of a second, it'll generate two files - `go-webgl-example.js` and `go-webgl-example.js.map` in the current directory.
 
