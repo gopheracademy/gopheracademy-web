@@ -131,7 +131,7 @@ To control how your objects are printed, you need to implement
 optionally [`fmt.Stringer`](https://golang.org/pkg/fmt/#Stringer).
 
 One good example is how the excellent
-[`github.com/pkg/errors`](https://github.com/pkg/errors) is makeing use of
+[`github.com/pkg/errors`](https://github.com/pkg/errors) makes use of
 `fmt.Formatter`. Say you'd like to load our configuration file with and you have
 an error. You can print a short error to the user (or return it in API ...) and
 print a more detailed error to the log.
