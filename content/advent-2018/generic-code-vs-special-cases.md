@@ -1,6 +1,6 @@
 +++
 author = ["Andrei Tudor Călin"]
-date = "2018-12-08T08:00:00Z"
+date = "2018-12-06T00:00:00Z"
 title = "On the tension between generic code and special cases"
 linktitle = "generic code vs special cases"
 series = ["Advent 2018"]
