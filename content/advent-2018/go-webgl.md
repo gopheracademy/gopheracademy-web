@@ -348,11 +348,9 @@ The result, while still being a work in progress, is so much more than I had ima
 
 You can see a demo of the app here:
 
-{{< youtube z2Zrfz6xxng >}}
+{{< youtube m5BwbkCxeLo >}}
 
-You can try it right now online as well (without the simulation part):
-
-link to the online app
+You can try it right yourself online at https://divan.github.io/whispervis/ as well (without the simulation part).
 
 # Conclusions
 
@@ -383,3 +381,5 @@ And finally, while learning and working with GopherJS, Vecty and three.js bindin
 - https://github.com/gopherjs/gopherjs
 - https://github.com/gopherjs/vecty
 - https://github.com/divan/whispervis
+- https://github.com/divan/graphx
+- https://divan.github.io/whispervis/
