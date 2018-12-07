@@ -350,6 +350,8 @@ You can see a demo of the app here:
 
 {{< youtube m5BwbkCxeLo >}}
 
+It's not finished yet, and definitely not the coolest WebGL app you've seen, but it's pretty good for pure Go code, right?
+
 You can try it right yourself online at https://divan.github.io/whispervis/ as well (without the simulation part).
 
 # Conclusions
@@ -382,4 +384,4 @@ And finally, while learning and working with GopherJS, Vecty and three.js bindin
 - https://github.com/gopherjs/vecty
 - https://github.com/divan/whispervis
 - https://github.com/divan/graphx
-- https://divan.github.io/whispervis/
+- https://divan.github.io/whispervis
