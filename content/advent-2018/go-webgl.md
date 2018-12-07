@@ -235,7 +235,17 @@ func main() {
 }
 ```
 
-Run `gopherjs build` and open `index.html`:
+Run `gopherjs build` and open `index.html`, which is as simple as this:
+
+```html
+<!DOCTYPE html>
+<html>
+	<head> <meta charset=utf-8> <title>Vecty Hello, World</title> </head>
+	<body> <script src="vecty-demo.js"></script> </body>
+</html>
+```
+
+
 
 ![vecty hello world](/postimages/advent-2018/go-webgl/vecty_hello.png)
 
