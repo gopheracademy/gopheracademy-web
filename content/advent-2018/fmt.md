@@ -1,9 +1,8 @@
 +++
 title = "A Dive Into the `fmt` Package"
-date = "2018-11-24T16:07:17+02:00"
+date = "2018-12-08T00:00:00+00:00"
 series = ["Advent 2018"]
 author = ["Miki Tebeka"]
-draft = true
 +++
 
 We usually use the `fmt` package without giving it much thought. A `fmt.Printf`
