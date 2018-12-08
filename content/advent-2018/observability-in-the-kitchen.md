@@ -11,13 +11,13 @@ I have many different interests, including baking, open-source software, and mor
 
 
 ### Sourdough Bread and the Difficulty with Maintaining Natural Yeast
-A while ago, I became interested in the art of making one’s own sourdough bread.  This is a type of bread that, due to its fermentation process, is a much healthier alternative to the store bought bread that we are used to seeing. The naturally occurring acids and long fermentation help to break down the proteins and gluten, making it more digestible and easy for the body to absorb. 
+A while ago, I became interested in the art of making one’s own sourdough bread.  This is a type of bread that, due to its fermentation process, is a much healthier alternative to the store-bought bread that we are used to seeing. The naturally occurring acids and long fermentation help to break down the proteins and gluten, making it more digestible and easy for the body to absorb. 
 
-Sourdough is the traditional way of making bread until around a hundred years ago.  The process involves cultivating your own wild yeast and allowing time for fermentation.  The sourdough bread-making process is a fascinating combination of biology and physics, but working with natural starters can be difficult since they are very sensitive to temperature and humidity. The cultures are very funnicky and can easily turn to mold or not grow as fast as you would like. Parameters such as temperature and humidity need to be closely observed and monitored...perhaps with a systems monitoring tool!
+Sourdough is the traditional way of making bread until around a hundred years ago.  The process involves cultivating your own wild yeast and allowing time for fermentation.  The sourdough bread-making process is a fascinating combination of biology and physics, but working with natural starters can be difficult since they are very sensitive to temperature and humidity. The cultures are very finicky and can easily turn to mold or not grow as fast as you would like. Parameters such as temperature and humidity need to be closely observed and monitored...perhaps with a systems monitoring tool!
 
 
 ### The Prometheus Project
-Prometheus is an open-source systems monitoring and alerting toolkit written in Go that has become very popular. It is the second project in the CNCF to [graduate](https://www.cncf.io/announcement/2018/08/09/prometheus-graduates/), the first one being Kubernetes.  It’s ecosystem consists of the server itself, a time-series database, it’s own query language, an alert manager, client libraries, and special exporters.  It has a dimensional data model and dashboarding and alerting all based on the same query language. The Prometheus server collects time series metrics from instrumented targets, stores them and makes them query-able with their query language.  You can use the information for dashboards and alerting. 
+Prometheus is an open-source systems monitoring and alerting toolkit written in Go. It is particularly suitable for containers and cloud workloads where instances can have a short lifespan, which made it very popular in the last few years. It is the second project in the CNCF to [graduate](https://www.cncf.io/announcement/2018/08/09/prometheus-graduates/), the first one being Kubernetes.  It’s ecosystem consists of the server itself, a time-series database, it’s own query language, an alert manager, client libraries, and special exporters.  It has a dimensional data model and dashboarding and alerting all based on the same query language. The Prometheus server collects time series metrics from instrumented targets, stores them and makes them query-able with their query language.  You can use the information for dashboards and alerting. 
 
 
 ### Observability in the Kitchen
@@ -42,7 +42,7 @@ Then I installed [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) on 
 
 
 ### Prometheus Exporters
-Now I need a way to export metrics in the Prometheus format for the sensor, which means that I need a Prometheus exporter. Exporters are tools that let you translate metrics from other systems into a format that Prometheus can understand. You may be able to find an exporter for your system on the Prometheus website, by searching the Internet, [mailing list](https://groups.google.com/forum/#!forum/prometheus-announce), looking on GitHub, or you can always write your own (which can be done in any programming language).
+Now I need a way to export metrics in the Prometheus format for the sensor, which means that I need a Prometheus exporter. Exporters are tools that let you translate metrics from other systems into a format that Prometheus can understand. You may be able to find an exporter for your system on the Prometheus [website](https://prometheus.io/docs/instrumenting/exporters/), by searching the Internet, [mailing list](https://groups.google.com/forum/#!forum/prometheus-announce), or looking on GitHub. You can also write your own exporter. That's what I did, and while I did it in Go, it can be done in any programming language.
  
 
 ### Writing an Exporter in Go
@@ -68,9 +68,9 @@ type collector struct {
 }
 ```
 
-In Go your collectors must implement the [prometheus.Collector](https://github.com/prometheus/client_golang/blob/master/prometheus/collector.go) interface. That is to say, the collectors must be objects with the Describe and Collect methods with a specific signature.
+In Go your collectors must implement the [prometheus.Collector](https://github.com/prometheus/client_golang/blob/master/prometheus/collector.go) interface. That is to say, the collectors must be objects with the `Describe` and `Collect` methods with a specific signature.
 
-The Describe method returns a description of the metrics that it will produce, in particular the metric name, label names, and help string.  This method is used to avoid duplicate registration of metrics and is called at registration time. 
+The `Describe` method returns a description of the metrics that it will produce, in particular the metric name, label names, and help string.  This method is used to avoid duplicate registration of metrics and is called at registration time. 
 
 ```
 var (
@@ -84,9 +84,9 @@ func (c collector) Describe(ch chan<- *prometheus.Desc) {
 }
 ```
 
-The Collect method fetches all the data you need from the application instance and send the metrics back to the client library. Prometheus client libraries offer four core metric types (counters, gauges, histograms, summaries) but only the gauge is needed for this exporter since the metric needs to represent a value that can either go up or down. These metrics will then be returned by the scrape of the `/metrics` endpoint.
+The `Collect` method fetches all the data you need from the application instance and send the metrics back to the client library. Prometheus client libraries offer four core metric types (counters, gauges, histograms, summaries) but only the gauge is needed for this exporter since the metric needs to represent a value that can either go up or down. These metrics will then be returned by the scrape of the `/metrics` endpoint.
 
-Metrics should be created with the [MustNewConstMetric constructor](https://github.com/prometheus/client_golang/blob/master/prometheus/value.go) from the client library, which returns a throwaway metric instance with one fixed value that cannot be changed. If it is not used, the client will continue to export the last value for those time-series forever.  Exporters only translate existing metrics, which means that they are just proxying state from a third party system and not tracking it. This differs from normal "whitebox" instrumentation directly from a service that requires you to do the tracking yourself. Thus, it is not necessary to use normal metric type APIs with functions to increment, set, or observe values for exporters. It is better to create throwaway metrics upon every scrape that get set to the correct value upon their creation and are never modified.
+Exporters don't need to constantly track the value of their metrics internally. Instead, all they need to do is provide the current value whenever they are accessed by the Prometheus server. This means that our code doesn't need to create (and update) a metric variable. Instead, each time our `Collect` method is called, it will create a throwaway constant metric holding the current value. It turns out that the Prometheus client library provides a method to precisely create such a constant metric: [MustNewConstMetric](https://github.com/prometheus/client_golang/blob/master/prometheus/value.go).
 
 ```
 func (c collector) Collect(ch chan<- prometheus.Metric) {
@@ -188,6 +188,10 @@ Example:  `curl http://localhost:8080/metrics | promtool check metrics`
 
 ### Dashboarding, PromQL, Alertmanager
 Once the scraped data is stored in the time-series database, we can use it to create dashboards. Grafana is a popular choice and has support for querying Prometheus.  All you have to do is create a Prometheus data source in Grafana and you can start creating graphs by querying your scraped data.
+
+![Example Graph](https://cdn.pbrd.co/images/HQO4X2T.jpg)
+[enlarge](https://cdn.pbrd.co/images/HQO4X2T.jpg)
+
 
 PromQL is the Prometheus Query Language. It can help you answer a lot of ad-hoc questions about your system, but for this simple use case with one-dimensional gauges, I can just display the values as they are.
 
