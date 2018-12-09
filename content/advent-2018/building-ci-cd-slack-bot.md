@@ -2,7 +2,7 @@
 author = ["Stephen Afam-Osemene"]
 title = "Building a CI/CD Bot with Slack and Kubernetes."
 linktitle = "Building a CI/CD Bot with Slack and Kubernetes."
-date = 2018-12-05
+date = 2018-12-09
 series = ["Advent 2018"]
 +++
 
