@@ -4,7 +4,6 @@ title = "Creating WebGL apps with Go"
 linktitle = "Creating WebGL web apps with Go"
 date = 2018-12-10
 series = ["Advent 2018"]
-draft = true
 +++
 
 *TL;DR In this article I'll share my experience building an interactive 3D WebGL-based application for peer-to-peer messaging protocol simulation without writing any single line in JS. You'll learn how GopherJS and Vecty framework can dramatically lower the complexity of building WebGL-enabled web apps in Go.*
