@@ -3,6 +3,8 @@ languageCode = "en-us"
 title = "Gopher Academy Blog"
 disqusShortname = "gopheracademy"
 theme = "gaweb"
+pygmentscodefences = true
+pygmentsStyle = "vs"
 [taxonomies]
    author = "authors"
    series = "series"
