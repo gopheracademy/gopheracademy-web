@@ -13,6 +13,8 @@ I have many different interests, including baking, open-source software, and mor
 ### Sourdough Bread and the Difficulty with Maintaining Natural Yeast
 A while ago, I became interested in the art of making one’s own sourdough bread.  This is a type of bread that, due to its fermentation process, is a much healthier alternative to the store-bought bread that we are used to seeing. The naturally occurring acids and long fermentation help to break down the proteins and gluten, making it more digestible and easy for the body to absorb. 
 
+![Sourdough Culture](https://cdn.pbrd.co/images/HR7tyY3.jpg)
+
 Sourdough is the traditional way of making bread until around a hundred years ago.  The process involves cultivating your own wild yeast and allowing time for fermentation.  The sourdough bread-making process is a fascinating combination of biology and physics, but working with natural starters can be difficult since they are very sensitive to temperature and humidity. The cultures are very finicky and can easily turn to mold or not grow as fast as you would like. Parameters such as temperature and humidity need to be closely observed and monitored...perhaps with a systems monitoring tool!
 
 
@@ -84,7 +86,7 @@ func (c collector) Describe(ch chan<- *prometheus.Desc) {
 }
 ```
 
-The `Collect` method fetches all the data you need from the application instance and send the metrics back to the client library. Prometheus client libraries offer four core metric types (counters, gauges, histograms, summaries) but only the gauge is needed for this exporter since the metric needs to represent a value that can either go up or down. These metrics will then be returned by the scrape of the `/metrics` endpoint.
+The `Collect` method fetches all the data you need from the application instance and sends the metrics back to the client library. Prometheus client libraries offer four core metric types (counters, gauges, histograms, summaries) but only the gauge is needed for this exporter since the metric needs to represent a value that can either go up or down. These metrics will then be returned by the scrape of the `/metrics` endpoint.
 
 Exporters don't need to constantly track the value of their metrics internally. Instead, all they need to do is provide the current value whenever they are accessed by the Prometheus server. This means that our code doesn't need to create (and update) a metric variable. Instead, each time our `Collect` method is called, it will create a throwaway constant metric holding the current value. It turns out that the Prometheus client library provides a method to precisely create such a constant metric: [MustNewConstMetric](https://github.com/prometheus/client_golang/blob/master/prometheus/value.go).
 
@@ -125,7 +127,7 @@ collector := &collector{sensorDriver: bme280}
 registry.MustRegister(collector)
 ```
 
-Then set up a HTTP handler and expose the standard `/metrics` endpoint and start listening for HTTP connections.
+Then set up an HTTP handler and expose the standard `/metrics` endpoint and start listening for HTTP connections.
 
 ```
 http.Handle("/metrics", promhttp.Handler())
@@ -189,8 +191,8 @@ Example:  `curl http://localhost:8080/metrics | promtool check metrics`
 ### Dashboarding, PromQL, Alertmanager
 Once the scraped data is stored in the time-series database, we can use it to create dashboards. Grafana is a popular choice and has support for querying Prometheus.  All you have to do is create a Prometheus data source in Grafana and you can start creating graphs by querying your scraped data.
 
-![Example Graph](https://cdn.pbrd.co/images/HQO4X2T.jpg)
-[enlarge](https://cdn.pbrd.co/images/HQO4X2T.jpg)
+![Example Graph](https://cdn.pbrd.co/images/HR7eHyW.jpg)
+[enlarge](https://cdn.pbrd.co/images/HR7eHyW.jpg)
 
 
 PromQL is the Prometheus Query Language. It can help you answer a lot of ad-hoc questions about your system, but for this simple use case with one-dimensional gauges, I can just display the values as they are.
@@ -201,4 +203,12 @@ In the Prometheus ecosystem, two components are involved in alerting: Prometheus
 ### Summary
 This project is still a work in progress but the process has been a really fun and useful way for me to learn more about sourdough breadmaking, Raspberry Pis, IoT, and Prometheus! There are still so many things about all of those items for me to discover and I have many ideas on how to build upon it.  
 
-Feel free to reach out to [me](https://twitter.com/1nfoverload). Happy Holidays!
+![Setup](https://cdn.pbrd.co/images/HR7sGfe.jpg)
+
+Feel free to reach out to me. I welcome your thoughts.  Happy Holidays! :)
+
+
+Source   | Handle
+---------|--------
+Website  | [infoverload.ca](https://infoverload.ca)
+Twitter  | [@1nfoverload](https://twitter.com/1nfoverload)
