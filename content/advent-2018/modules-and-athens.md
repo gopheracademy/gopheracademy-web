@@ -165,7 +165,7 @@ proxy (a proxy in a proxy - inception!) in front of the public proxy.
 
 ### Federation
 
-Federation is important tome because it promotes collaboration and open-ness. 
+Federation is important to me because it promotes collaboration and open-ness. 
 I don't want the community to end up with a single module registry that holds
 all the code, and nobody else can participate.
 
