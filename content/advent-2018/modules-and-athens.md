@@ -2,7 +2,7 @@
 author = ["Aaron Schlesinger"]
 title = "Bringing Sanity to your Dependencies with Go Modules and Athens"
 linktitle = "golang modules"
-date = 2018-12-15T00:00:00Z
+date = 2018-12-13T00:00:00Z
 series = ["Advent 2018"]
 +++
 
