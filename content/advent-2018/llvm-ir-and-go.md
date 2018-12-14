@@ -23,14 +23,11 @@ _(For those already familiar with LLVM IR, feel free to [skip this section](#llv
 
 [LLVM IR](https://llvm.org/docs/LangRef.html) is a low-level intermediate representation used by the [LLVM compiler framework](http://llvm.org/). You can think of LLVM IR as a platform-independent assembly language with an infinite number of function local registers.
 
-When developing compilers there are huge benefits with compiling your source language to an intermediate representation (IR) which is then compiled to a target architecture, instead of directly compiling to the target architecture.
-
-<!-- a huge benefit with using an intermediate representation (IR) is that the majority of the optimization passes (e.g. constant propagation, dead code elimination) may be developed once to target the IR instead of once per platform you intend to support (e.g. Intel, ARM, ...).-->
+When developing compilers there are huge benefits with compiling your source language to an intermediate representation (IR) instead of directly compiling to a target architecture (e.g. x86). As many optimization techniques are general (e.g. dead code elimination, constant propagation), these optimization passes may be performed directly on the IR level and thus shared by all targets[^1].
 
 ![LLVM compiler pipeline](/postimages/advent-2018/llvm-ir-and-go/llvm_compiler_pipeline.png)
 
-
-The benefit of developing a compiler which targets an intermediate representation (IR) instead of a specific hardware instruction set -- such as x86 or ARM -- is that the tools and algorithms used for optimizations and analysis may be developed once for the IR, instead of once per hardware architecture and source language. _n + m_ instead fo _n * m_.
+### Example Program in LLVM IR Assembly
 
 To get a glimps of what LLVM IR assembly may look like, lets consider the following C program:
 
@@ -44,7 +41,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-Using [Clang](https://clang.llvm.org/)[^1], the above C code compiles to the following LLVM IR assembly.
+Using [Clang](https://clang.llvm.org/)[^2], the above C code compiles to the following LLVM IR assembly.
 
 
 ```llvm
@@ -62,13 +59,15 @@ define i32 @main(i32 %argc, i8** %argv) {
 }
 ```
 
-By looking at the LLVM IR above, we may observe a few noteworthy details about LLVM IR. It is statically typed (e.g. 32-bit integer values are denoted with the type `i32`), and uses in each function an incrementing counter of local IDs (e.g. `%1`) to assign temporary values to unnamed registers.
+By looking at the LLVM IR above, we may observe a few noteworthy details about LLVM IR, namely:
 
-, is that tools may be written to optimize and analyze this IR instead of a specific hardware architecture -- such as Intel or ARM --
+* LLVM IR is statically typed (i.e. 32-bit integer values are denoted with the `i32` type).
+* Local variables are scoped to each function (i.e. `%1` in the `@main` function is different from `%1` in the `@f` function).
+* Unnamed (temporary) registers are assigned local IDs (e.g. `%1`, `%2`) from an incrementing counter in each function.
+* Each function may use an infinite number of registers (i.e. we are not limited to 32 general purpose registers).
+* Global identifiers (e.g. `@f`) and local identifiers (e.g. `%a`, `%1`) are distinguished by their prefix (`@` and `%`, respectively).
 
-LLVM IR is often used to build compilers, and this will be the focus of this post, specifically how one may go about developing a compiler in Go.
-
- A common architecture for building compilers is to devide it into three parts, the front-end, middle-end and back-end. The front-end of a compiler is responsible for parsing the source code of the language being compiled, translating this code into an Abstract Syntax Tree (AST)
+<!--A common architecture for building compilers is to devide it into three parts, the front-end, middle-end and back-end. The front-end of a compiler is responsible for parsing the source code of the language being compiled, translating this code into an Abstract Syntax Tree (AST)-->
 
 ## LLVM IR library in pure Go
 
@@ -119,4 +118,5 @@ There is a very well written [chapter about LLVM](http://www.aosabook.org/en/llv
 
 Inspiration for the API was taken from github.com/bongo227/goory.
 
-[^1]: Compile C to LLVM IR using: `clang -S -emit-llvm -o foo.ll foo.c`.
+[^1]: Using an IR reduces the number of compiler combinations required for _n_ source languages (front-ends) and _m_ target architectures (back-ends) from _n * m_ to _n + m_.
+[^2]: Compile C to LLVM IR using: `clang -S -emit-llvm -o foo.ll foo.c`.
