@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-Using [Clang](https://clang.llvm.org/)<sup id="anchor_1">[1](#footnote_1)</sup>, the above C code compiles to the following LLVM IR assembly.
+Using [Clang](https://clang.llvm.org/)[^1], the above C code compiles to the following LLVM IR assembly.
 
 
 ```llvm
@@ -115,6 +115,4 @@ Anyone interested in writing compilers targetting LLVM IR, I can warmly recommen
 
 Inspiration for the API was taken from github.com/bongo227/goory.
 
----
-
-<b id="footnote_1">[1]</b> Compile C to LLVM IR using: `clang -S -emit-llvm -o foo.ll foo.c`. [↩](#anchor_1)
+[^1]: Compile C to LLVM IR using: `clang -S -emit-llvm -o foo.ll foo.c`.
