@@ -5,24 +5,32 @@ author = ["Robin Eklind"]
 series = ["Advent 2018"]
 +++
 
-
-1. Quick primer on LLVM IR
-2. LLVM IR libraries in Go
-3. Building a toy compiler in Go
-4. Inspirational projects
-5. Further resources
-
-
 <!-- TODO: remember to update date to 2018 -->
 <!-- TODO: add table of contents? -->
 
 In this post, we'll look at how to build Go programs -- such as compilers and static analysis tools -- that interact with the LLVM compiler framework using the LLVM IR assembly language.
 
-# Quick primer to LLVM IR
+_**TL;DR** we wrote a library for interacting with LLVM IR in pure Go. Links to [code](https://github.com/llir/llvm) and [example projects](https://github.com/llir/llvm#users)._
 
-_(For those already familiar with LLVM IR, feel free to skip to section [Foobar](#foobar))._
+1. [Quick primer on LLVM IR](#quick-primer-on-llvm-ir)
+2. [LLVM IR library in pure Go](#llvm-ir-library-in-pure-go)
+3. Building a toy compiler in Go
+4. Further resources
 
-[LLVM IR](https://llvm.org/docs/LangRef.html) is a low-level intermediate representation used by the [LLVM compiler framework](http://llvm.org/). You can think of LLVM IR as a platform-independent assembly language with access to an infinite number of function local registers. The benefit of developing a compiler which targets an intermediate representation (IR) instead of a specific hardware instruction set -- such as x86 or ARM -- is that the tools and algorithms used for optimizations and analysis may be developed once for the IR, instead of once per hardware architecture and source language. _n + m_ instead fo _n * m_.
+## Quick primer on LLVM IR
+
+_(For those already familiar with LLVM IR, feel free to [skip this section](#llvm-ir-library-in-pure-go))._
+
+[LLVM IR](https://llvm.org/docs/LangRef.html) is a low-level intermediate representation used by the [LLVM compiler framework](http://llvm.org/). You can think of LLVM IR as a platform-independent assembly language with an infinite number of function local registers.
+
+When developing compilers there are huge benefits with compiling your source language to an intermediate representation (IR) which is then compiled to a target architecture, instead of directly compiling to the target architecture.
+
+<!-- a huge benefit with using an intermediate representation (IR) is that the majority of the optimization passes (e.g. constant propagation, dead code elimination) may be developed once to target the IR instead of once per platform you intend to support (e.g. Intel, ARM, ...).-->
+
+![LLVM compiler pipeline](/postimages/advent-2018/llvm-ir-and-go/llvm_compiler_pipeline.png)
+
+
+The benefit of developing a compiler which targets an intermediate representation (IR) instead of a specific hardware instruction set -- such as x86 or ARM -- is that the tools and algorithms used for optimizations and analysis may be developed once for the IR, instead of once per hardware architecture and source language. _n + m_ instead fo _n * m_.
 
 To get a glimps of what LLVM IR assembly may look like, lets consider the following C program:
 
@@ -62,13 +70,7 @@ LLVM IR is often used to build compilers, and this will be the focus of this pos
 
  A common architecture for building compilers is to devide it into three parts, the front-end, middle-end and back-end. The front-end of a compiler is responsible for parsing the source code of the language being compiled, translating this code into an Abstract Syntax Tree (AST)
 
-## Further reading
-
-There is a very well written [chapter about LLVM](http://www.aosabook.org/en/llvm.html) in the Architecture of Open Source Applications book, by Chris Lattner who wrote the initial design of LLVM.
-
-<!-- ![noice reduction](/postimages/advent-2018/llvm-ir-and-go/headphones.jpg) -->
-
-## The Evolution of an LLVM IR library in pure Go
+## LLVM IR library in pure Go
 
 There primarily exist three libraries for working with LLVM IR from Go.
 
@@ -99,19 +101,21 @@ func main() {
 }
 ```
 
-## Libraries for interacting with LLVM IR in Go
+### Libraries for interacting with LLVM IR in Go
 
-## Why develop a pure Go library for interacting with LLVM IR?
+### Why develop a pure Go library for interacting with LLVM IR?
 
 The motivation behind developing a pure Go library for interacting with LLVM IR was to make it more fun to code compilers, interpreters and static analysis tools that rely on and interact with the LLVM compiler framework through LLVM IR.
 
 The [official Go bindings for LLVM](https://godoc.org/llvm.org/llvm/bindings/go/llvm) is a good fit for many projects, as they expose the LLVM C API which is very powerful and also quite stable.
 
-## Further resources
+### Further resources
 
 Anyone interested in writing compilers targetting LLVM IR, I can warmly recommend checkout out the gitbook [Mapping High Level Constructs to LLVM IR](https://mapping-high-level-constructs-to-llvm-ir.readthedocs.io/).
 
-## Inspiration
+There is a very well written [chapter about LLVM](http://www.aosabook.org/en/llvm.html) in the Architecture of Open Source Applications book, by Chris Lattner who wrote the initial design of LLVM.
+
+### Inspiration
 
 Inspiration for the API was taken from github.com/bongo227/goory.
 
