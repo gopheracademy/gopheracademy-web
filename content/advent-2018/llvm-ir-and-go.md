@@ -5,6 +5,14 @@ author = ["Robin Eklind"]
 series = ["Advent 2018"]
 +++
 
+
+1. Quick primer on LLVM IR
+2. LLVM IR libraries in Go
+3. Building a toy compiler in Go
+4. Inspirational projects
+5. Further resources
+
+
 <!-- TODO: remember to update date to 2018 -->
 <!-- TODO: add table of contents? -->
 
@@ -90,6 +98,14 @@ func main() {
     fmt.Println(m)
 }
 ```
+
+## Libraries for interacting with LLVM IR in Go
+
+## Why develop a pure Go library for interacting with LLVM IR?
+
+The motivation behind developing a pure Go library for interacting with LLVM IR was to make it more fun to code compilers, interpreters and static analysis tools that rely on and interact with the LLVM compiler framework through LLVM IR.
+
+The [official Go bindings for LLVM](https://godoc.org/llvm.org/llvm/bindings/go/llvm) is a good fit for many projects, as they expose the LLVM C API which is very powerful and also quite stable.
 
 ## Further resources
 
