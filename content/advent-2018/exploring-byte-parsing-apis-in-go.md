@@ -1,6 +1,6 @@
 +++
 author = ["Matt Layher"]
-date = "2018-12-16T08:00:00+00:00"
+date = "2018-12-14T00:00:00+00:00"
 title = "Exploring byte parsing APIs in Go"
 series = ["Advent 2018"]
 +++
