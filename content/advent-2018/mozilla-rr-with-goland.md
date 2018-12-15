@@ -2,7 +2,7 @@
 author = ["Florin Pățan"]
 title = "Debugging with Mozilla rr project and GoLand"
 linktitle = "Debugging with Mozilla rr project and GoLand"
-date = 2018-12-14T00:00:00Z
+date = 2018-12-15T00:00:00Z
 series = ["Advent 2018"]
 +++
 
