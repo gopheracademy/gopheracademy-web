@@ -11,7 +11,7 @@ In this post, we'll look at how to build Go programs -- such as compilers and st
 
 _**TL;DR** we wrote a library for interacting with LLVM IR in pure Go, see links to [code](https://github.com/llir/llvm) and [example projects](https://github.com/llir/llvm#users)._
 
-<!-- TODO: remove 3. Building a toy compiler in Go section? -->
+<!-- TODO: remove 3. Building a toy compiler in Go section? If time allows, add it :) -->
 
 1. [Quick primer on LLVM IR](#quick-primer-on-llvm-ir)
 2. [LLVM IR library in pure Go](#llvm-ir-library-in-pure-go)
