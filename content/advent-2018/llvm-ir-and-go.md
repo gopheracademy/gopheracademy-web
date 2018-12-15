@@ -98,8 +98,6 @@ The primary motivation for developing a pure Go library for interacting with LLV
 
 So, what may we wish to do with LLVM IR? Firstly, we may want to *parse* LLVM IR produced by other tools, such as Clang and the LLVM optimizer `opt`. Secondly, we may want to *process* LLVM IR to perform analysis of our own (e.g. custom optimization passes) or implement interpreters and Just-in-Time compilers. Thirdly, we may want to *produce* LLVM IR to be consumed by other tools. This is the approach taken when developing a front-end for a new programming language. In this post, we shall look at each of these through the following examples.
 
-<!--Fork of x/tools `strings` tool, to do the inverse: `string2enum`.-->
-
 ### Input Example - Parsing LLVM IR
 
 ```go
