@@ -123,10 +123,12 @@ func main() {
 ### Analysis Example - Processing LLVM IR
 
 <!-- TODO: write analysis section -->
+TODO
 
 ### Output Example - Producing LLVM IR
 
 <!-- TODO: write output section -->
+TODO
 
 ### Closing notes
 
