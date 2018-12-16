@@ -297,7 +297,7 @@ of a struct that has a `Name` and `Nice` field.
 
 Reflection in Go is implemented using interfaces and the `reflect` package.
 There's no magic to it -- when you use reflection, you directly access parts of
-the underlying interface and values stored within.
+an interface and values stored within.
 
 In this way an interface almost behaves like a mirror, allowing a program to
 examine itself.
