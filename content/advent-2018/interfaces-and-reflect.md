@@ -31,7 +31,7 @@ We can clearly see the three parts of the interface in that diagram: the
 `itab` encodes the method set.
 
 When a function accepts an interface as a parameter, passing a value to that
-function assigns the value, method set, and type  to the interface.
+function packs the value, method set, and type into the interface.
 
 # Examining Interface Data At Runtime with the Reflect Package
 
