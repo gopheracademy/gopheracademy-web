@@ -138,7 +138,7 @@ Now we’ll construct a more complex pipeline, that demonstrates some other feat
 
 We will skip over the details of the color extraction algorithm, and provide that in a later article. Here we’ll focus on how to create a pipeline to accomplish this task.
 
-We start by reading a csv file that contains metadata for each painting, such as the artist, year it was painted, and a GCS path to a jpg of the painting. The paintings will then be grouped by the decade they were painted, and then the color palette for each group will be determined. Each palette will saved to a png file, as well as all the palette saved to a single large json file. To finish it off, the pipeline will be productionised, so it easier to debug, and re-run. The full source code will be available here. TODO
+We start by reading a csv file that contains metadata for each painting, such as the artist, year it was painted, and a GCS path to a jpg of the painting. The paintings will then be grouped by the decade they were painted, and then the color palette for each group will be determined. Each palette will saved to a png file, as well as all the palette saved to a single large json file. To finish it off, the pipeline will be productionised, so it easier to debug, and re-run. The full source code is [available here](https://github.com/bramp/dataflow-art).
 
 To start with, the main function for the pipeline looks like this:
 
@@ -227,9 +227,9 @@ func buildPipeline(s beam.Scope) {
 ...
 ```
 
-The very first step uses [`csvio.Read`](TODO) to read the CSV file specified by the `--index` flag, and returns a PCollection of Painting structs. In all the examples we’ve seen before we only pass basic types, strings, ints, etc in PCollections. But more complex types, such as a slices and structs are allowed (but not maps and interfaces). This makes it easier to pass rich information between the steps. The only caveat is the type must be JSON-serialisable. This is because in a distributed pipeline, the steps could be processed on separate machines, and the PCollection needs to be passed between them.
+The very first step uses [`csvio.Read`](https://godoc.org/github.com/bramp/morebeam/csvio#Read) to read the CSV file specified by the `--index` flag, and returns a PCollection of Painting structs. In all the examples we’ve seen before the PCollections only contains basic types, e.g. strings, ints, etc. More complex types, such as a slices and structs are allowed (but not maps and interfaces). This makes it easier to pass rich information between the PTransforms. The only caveat is the type must be JSON-serialisable. This is because in a distributed pipeline, the PTransforms could be processed on different machines, and the PCollection needs to be marshalled to be passed between them.
 
-For Beam to successfully unmarshal your data, the types must be registered. This is done within the init() function, by called `beam.RegisterType`.
+For Beam to successfully unmarshal your data, the types must also be registered. This is typically done within the init() function, by called [`beam.RegisterType`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam#RegisterType).
 
 ```go
 func init() {
@@ -237,7 +237,7 @@ func init() {
 }
 ```
 
-If you forget to register the type, a error will occur at Runtime, such as:
+If you forget to register the type, a error will occur at Runtime, for example:
 
 ```
 java.util.concurrent.ExecutionException: java.lang.RuntimeException: Error received from SDK harness for instruction -224: execute failed: panic: reflect: Call using main.Painting as type struct { Artist string; Title string; ... } goroutine 70 [running]:
@@ -245,7 +245,7 @@ java.util.concurrent.ExecutionException: java.lang.RuntimeException: Error recei
 
 This can be a little frustrating, as when running the pipeline locally with the `direct` runner, it does not marshal your data, so errors like this aren’t exposed until running on Dataflow.
 
-Now we have a collection of Paintings, we group them:
+Now we have a collection of Paintings, we group them by decade:
  
 ```go
 // GroupByDecade takes a PCollection<Painting> and returns a 
@@ -263,13 +263,13 @@ func GroupByDecade(s beam.Scope, paintings beam.PCollection) beam.PCollection {
 }
 ```
 
-The first line in this function, `s.Scope("GroupBy Decade")` allows us to name this step, and group multiple sub-steps. For example, in the above diagram “GroupBy Decade” is a single step, which can be expanded to show a `AddKey` and `GroupByKey` step.
+The first line in this function, `s.Scope("GroupBy Decade")` allows us to name this step, and group multiple sub-steps. For example, in the above diagram “GroupBy Decade” is a single step, which can be expanded to show a [`AddKey`](https://godoc.org/github.com/bramp/morebeam#AddKey) and [`GroupByKey`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam#GroupByKey) step.
 
-`GroupByDecade` returns a PCollection<CoGBK<string, Painting>>. The CoGBK, is short for **Co**mmon **G**roup **B**y **K**ey. It is a special collection, where (as you’ll see later) each element is a tuple of a key, and an iterable collection of items. The key in this case is the Decade the painting was painted. The PCollection<Painting> is transformed into a PCollection<KV<String,Painting>> by the `morebeam.AddKey` step, adding a key to each value. Then the `GroupByKey` will use that key to produce the final PCollection.
+`GroupByDecade` returns a `PCollection<CoGBK<string, Painting>>`. The CoGBK, is short for **Co**mmon **G**roup **B**y **K**ey. It is a special collection, where (as you’ll see later) each element is a tuple of a key, and an iterable collection of elements. The key in this case is the decade the painting was painted. The PCollection<Painting> is transformed into a PCollection<KV<String,Painting>> by the [`morebeam.AddKey`](https://godoc.org/github.com/bramp/morebeam#AddKey) step, adding a key to each value. Then the `GroupByKey` will use that key to produce the final PCollection.
 
-Next up is the `ExtractHistogram`. This takes the PCollection<CoGBK<string, Painting>>, and this time returns two PCollections. The first is a PCollection<KV<string, Histogram>>, which is for every group of paintings in a decade, a [Histogram](https://en.wikipedia.org/wiki/Color_histogram) which represents the colors used in those paintings.
+Next up is the `ExtractHistogram`, which takes the `PCollection<CoGBK<string, Painting>>`, and returns two PCollections. The first PCollection is a `PCollection<KV<string, Histogram>>`, which contains a [color histogram](https://en.wikipedia.org/wiki/Color_histogram) for every decade of paintings. The second PCollection is related to error handling.
 
-ExtractHistogram demonstrates three new concerns, `Stateful functions`, `Data enrichment`, and `Dead Letter error handling`.
+The ExtractHistogram function demonstrates three new concepts, “Stateful functions”, “Data enrichment”, and “error handling”.
 
 ## Stateful functions
 
@@ -299,20 +299,20 @@ func ExtractHistogram(s beam.Scope, files beam.PCollection)
 }
 ```
 
-Instead of passing a simple function to `beam.ParDo`, instead a struct is passed containing two fields. The exported field, `ArtPrefix` is the path to where the painting jpgs are stored, and the unexported field, `fs`, is a filesystem client for reading externally. 
+Instead of passing a simple function to `beam.ParDo`, a struct containing two fields is passed. The exported field, `ArtPrefix` is the path to where the painting jpgs are stored, and the unexported field, `fs`, is a filesystem client for reading these jpgs. 
 
-When the pipeline runs, no global state is allowed, and the value of the command line flags are lost. For example, when running this pipeline we may start it like so:
+When the pipeline runs, no global variables are allowed, including the command line flag variables. For example, when running this pipeline we may start it like so:
 
 ```shell
-go run image2palette.go \
+go run main.go \
   --art gs://${BUCKET?}/art/ \
   --runner dataflow \
   ...
 ```
 
-However, when the code actually runs on the Dataflow instances, the `--art` flag is not specified. Thus the `*artPrefix` value will use the default value. To pass state like this, it must be part of the DoFn struct that is passed to `beam.ParDo`. So in this example, we create a `extractHistogramFn` struct, with the exported `ArtPrefix` field set to the value of the `--art` flag. Since this extractHistogramFn is then marshalled and passed to the workers, it must also be registered with beam, during the init.
+When the code actually runs on the Dataflow workers, the `--art` flag is not specified. Thus the `*artPrefix` value will use the default value. To pass this to the Dataflow workers, it must be part of the DoFn struct that is passed to [`beam.ParDo`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam#ParDo). So in this example, we create a `extractHistogramFn` struct, with the exported `ArtPrefix` field set to the value of the `--art` flag. This `extractHistogramFn` is then marshalled and passed to the workers. As with the unmarshalled PCollection values, the extractHistogramFn must also be registered with beam during `init`.
 
-When the pipeline wants to execute this step, it calls the `extractHistogramFn`’s `ProcessElement` method. This method works in a similar way to a simple function, with the arguments and return value being mapped to the PCollections being processed and returned.
+When the pipeline wants to execute this step, it calls the `extractHistogramFn`’s `ProcessElement` method. This method works in a similar way to a simple DoFn functions. The arguments and return value are reflected at runtime and mapped to the PCollections being processed and returned.
 
 ## Iterating over a CoGBK
 
@@ -338,15 +338,15 @@ errors func(string, string)) HistogramResult {
 }
 ```
 
-ProcessElement is called once for every unique group in the `PCollection<CoGBK<string, Painting>`. The `key string` argument will be the key for that group, and a `values func(*Painting) bool` is used to iterate all values within the group. The contact, is `values` is passed a pointer to a `Painting` struct, and returns true as long as there are more paintings to process in the group. As soon as it returns false, the group has been processed fully. This iterator pattern is unique to the `CoGBK` and make it convient to apply a operation to every element.
+`ProcessElement` is called once for every unique group in the `PCollection<CoGBK<string, Painting>`. The `key string` argument will be the key for that group, and a `values func(*Painting) bool` is used to iterate all values within the group. The contact, is `values` is passed a pointer to a `Painting` struct, which is poluated on each interaction. As long as there are more paintings to process in the group the values function returns true. Once it returns false, the group has been fully processed. This iterator pattern is unique to the `CoGBK` and makes it convient to apply an operation to every element in the group.
 
 In this case, for each Painting, extractHistogram is called with fetches a jpg of the artwork, and extract a histogram of colors. The histograms from each painting is combined, and finally one result is returned for that group.
 
 ## Data enrichment
 
-Reading the paintings from an external service (such as GCS) demonstrates a data enrichment step. This is where an external service is used to “enrich” the dataset the pipeline is process. You could imagine a user service be called when processing log entries, or a stock taking service when processing purchases. It should be noted, that any external action should be [idempotent](https://en.wikipedia.org/wiki/Idempotence). The pipeline may process the same element multiple times, if for example during processing the worker fails, the work is rescheduled on another worker and reprocessed. 
+Reading the paintings from an external service (such as [GCS](https://cloud.google.com/storage/)) demonstrates a data enrichment step. This is where an external service is used to “enrich” the dataset the pipeline is processing. You could imagine a user service being called when processing log entries, or a product service when processing purchases. It should be noted, that any external action should be [idempotent](https://en.wikipedia.org/wiki/Idempotence). If a worker fails, it is possible the same element is retried, and thus processed multiple times. Dataflow keeps track of failures and ensures the final result only has each element processed once.
 
-When calling an external service, typically some kind of client is constructed to initiate the connection. In this pipeline we read the images from GCS, thus setting up GCS client is useful. Since we are using a struct based DoFn, there are some additional methods that can be defined.
+When calling a remote service, some kind of client is needed to initiate the connection. In this pipeline we read the images from GCS, thus setting up GCS client at startup is useful. Since we are using a struct based DoFn, there are some additional methods that can be defined.
 
 ```go
 func (fn *extractHistogramFn) Setup(ctx context.Context) error {
@@ -363,9 +363,9 @@ func (fn *extractHistogramFn) Teardown() error {
 }
 ```
 
-When the DoFn is initialized on the worker, the `Setup` method is called. Here we construct a new [Filesystem client](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam/io/filesystem) and store it in the struct’s fs field. Later, when the DoFn is no longer needed, the `Teardown` method is called, giving us opportunity to cleanup the client. With all things distributed, don’t expect the `Teardown` to ever be called.
+When the DoFn is initialized on the worker, the `Setup` method is called. Here a new [Filesystem client](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam/io/filesystem) is created and store it in the struct’s `fs` field. Later, when the DoFn is no longer needed, the `Teardown` method is called, giving us opportunity to cleanup the client. With all things distributed, don’t expect the `Teardown` to ever be called.
 
-There are some simple best practices, that should be following when calling an external services around catching errors.
+There are also some simple best practices around error handling that should be following when calling an external services.
 
 ```go
 func (fn *extractHistogramFn) extractHistogram(ctx context.Context,
@@ -388,13 +388,15 @@ key, filename string) (palette.Histogram, error) {
 }
 ```
 
-The function begins by using a `context.WithTimeout`. This ensures that if the external service does not respond in a timely manner the context will be cancelled and a error returned. If this timeout wasn’t set, the external call may never end, and the pipeline never terminate.
+The function begins by using a [`context.WithTimeout`](https://golang.org/pkg/context/#WithTimeout). This ensures that if the external service does not respond in a timely manner the context will be cancelled and a error returned. If this timeout wasn’t set, the external call may never end, and the pipeline never terminates.
 
-The external service, may also return errors. Thus a new pattern is used called dead letter.
+Since the pipeline could be running across 100s of machines, it could generate significant load on a remote service. It is wise to implement appropriate [backoff and retry logic](https://cloud.google.com/storage/docs/exponential-backoff). In some cases even rate limiting your pipeline’s execution, or tagging your pipeline’s traffic at a [lower QoS](https://www.usenix.org/conference/srecon17asia/program/presentation/sheerin) so it can be easily shed.
+
+The external service, may also return permanent errors. Thus a more robust error handling pattern is needed.
 
 ## Error handling and dead letters.
 
-When Beam processes a PCollection, is bundles up multiple items into a bundle and processes one bundle at a time. If the PTransform return an error, panics, or otherwise fails (such as running out of memory), the bundle is retried. With Dataflow, Bundles are [retried up to four times](https://cloud.google.com/dataflow/docs/resources/faq#how-are-java-exceptions-handled-in-cloud-dataflow), after which the entire pipeline is aborted. This can be inconvenient, so instead we use a [dead letter pattern](https://en.wikipedia.org/wiki/Dead_letter_queue). This is a new PCollection that collects processing errors. These errors can then be stored at the end of the pipeline, manually inspected, and processed again later.
+When Beam processes a PCollection, is bundles up multiple elements and processes one bundle at a time. If the PTransform return an error, panics, or otherwise fails (such as running out of memory), the full bundle is retried. With Dataflow, Bundles are [retried up to four times](https://cloud.google.com/dataflow/docs/resources/faq#how-are-java-exceptions-handled-in-cloud-dataflow), after which the entire pipeline is aborted. This can be inconvenient, so where appropriate instead of returning an error we we use a [dead letter queue](https://en.wikipedia.org/wiki/Dead_letter_queue). This is a new PCollection that collects processing errors. These errors can then be persisted at the end of the pipeline, manually inspected, and processed again later.
 
 ```go
 return beam.ParDo2(s, &extractHistogramFn{
@@ -402,11 +404,11 @@ return beam.ParDo2(s, &extractHistogramFn{
 }, files)
 ```
 
-A keen observer would have noticed that `beam.ParDo2` was used by ExtractHistogram, instead of `beam.ParDo`. This function works the same, but returns two PCollections. In our case, the first is the normal output, and the second is a PCollection<KV<string, string>>. This second collection is keyed on the unique id of the painting have an issue, and the value the error message.
+A keen observer would have noticed that [`beam.ParDo2`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam#ParDo2) was used by ExtractHistogram, instead of [`beam.ParDo`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam#ParDo). This function works the same, but returns two PCollections. In our case, the first is the normal output, and the second is a PCollection<KV<string, string>>. This second collection is keyed on the unique identifer of the painting having an issue, and the value is the error message.
 
 Since returning a error is optional, the errors PCollection was passed to `extractHistogramFn`’s `ProcessElement` as a `errors func(string, string)`.
 
-Throughout we use this kind of errors PCollection from every stage, and at the end of the pipeline they are collected together and output to a errors log file:
+Throughout we use this kind of error PCollections from every stage, and at the end of the pipeline they are collected together and output to a single errors log file:
 
 ```go
 // WriteErrorLog takes multiple PCollection<KV<string,string>>s combines them
@@ -425,14 +427,14 @@ func WriteErrorLog(s beam.Scope, filename string, errors ...beam.PCollection) {
 
 Since the output is key, comma, value, the file can easily be re-read to try just the failed keys.
 
-The rest of the pipeline is much of the same. `CalculateColorPalette` takes the color histograms and runs a K-Means clustering algorithm to extract the color palettes for those paintings. Those palettes are written out to png files with the `DrawColorPalette`, and finally all the palettes are written out to a JSON file in `WriteIndex`. 
+The rest of the pipeline is much of the same, and thus won’t be explained in detail. `CalculateColorPalette` takes the color histograms and runs a K-Means clustering algorithm to extract the color palettes for those paintings. Those palettes are written out to png files with the `DrawColorPalette`, and finally all the palettes are written out to a JSON file in `WriteIndex`.
 
 ## Gotchas
 
 ### Marshing
 Always remember to register the types that will be transmitted between workers. This is anything that’s inside a PCollection, as well as any DoFn. Not all types are allowed, but slices, structs, and primitives are. For other types, custom JSON marshalling can be used.
 
-It should also be reminded that state is not allowed. Flags, and other global variables will not always be populated when running on a remote worker. Also, examples like this may catch you out:
+It should also be reminded that global state is not allowed. Flags and other global variables will not always be populated when running on a remote worker. Also, examples like this may catch you out:
 
 ```go
 prefix := “X”
@@ -442,12 +444,12 @@ c = beam.ParDo(s, func(value string) string {
 }, c)
 ```
 
-This simple example, may appear to add “X” to the beginning of each element, however, it will prefix nothing. This is because, the simple anonymous function is marshalled, and unmarshalled on the worker. When it is then called on the worker, it does not capture the value of prefix. Instead prefix is the zero value. For this example to work, prefix must be defined inside the anonymous function, or a DoFn struct used which contains the prefix as a marshalled field.
+This simple example appears to add “X” to the beginning of each element, however, it will prefix nothing. This is because, the simple anonymous function is marshalled, and unmarshalled on the worker. When it is then invoked on the worker, it does not have the closure, and thus has not captured the value of prefix. Instead prefix is the zero value. For this example to work, prefix must be defined inside the anonymous function, or a DoFn struct used which contains the prefix as a marshalled field.
 
 ### Errors
-Since the pipeline could be running across 100s of workers, errors are to be expected. Thus making aggressive use of `log.Infof`, `log.Debugf`, etc is useful. This can make it very useful to debug why the pipeline gets stuck, or fails mysteriously.
+Since the pipeline could be running across 100s of workers, errors are to be expected. Extensively using  [`log.Infof`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam/log#Infof), [`log.Debugf`](https://godoc.org/github.com/apache/beam/sdks/go/pkg/beam/log#Debugf), etc will make your lives better. They can make it very easy to debug why the pipeline got stuck, or mysteriously failed.
 
-While debugging this pipeline, it would fail occasionally due to exceeding the memory limits of the Dataflow VMs. To help debug this you can use [Go’s pprof](https://golang.org/pkg/net/http/pprof/) infrastructure.
+While debugging this pipeline, it would occasionally fail due to exceeding the memory limits of the Dataflow worker’s. Standard Go infrastructure can be used to help debug this, such as [pprof](https://golang.org/pkg/net/http/pprof/).
 
 ```go
 import (
@@ -465,15 +467,17 @@ func main() {
 }
 ```
 
-This configures a webserver which can be used to export useful stats, and for grabbing profiling data.
+This configures a webserver which can export useful stats, and used for grabbing pprof profiling data.
 
 ### Difference between direct and dataflow runners
 
-Running the pipeline locally is a quick way to validate the pipeline is setup, and that is runs as expected. However, running locally won’t run the pipeline in parallel, and it is obviously constrained to a single machine. There are some other difference, mostly around marshalling data. It’s always a good idea to test on Dataflow, perhaps smaller or sampled dataset as input, that can be used as a smoke test.
+Running the pipeline locally is a quick way to validate the pipeline is setup, and that is runs as expected. However, running locally won’t run the pipeline in parallel, and it is obviously constrained to a single machine. There are some other difference, mostly around marshalling data. It’s always a good idea to test on Dataflow, perhaps with a smaller or sampled dataset as input, that can be used as a smoke test.
 
 # Conclusion
 
-This article has covered the basics of creating an Apache Beam pipeline with the Go SDK, while also covering some more advanced topics. The results of the specific pipeline example will be revealed in a later article. Until then the code is available here.
+This article has covered the basics of creating an Apache Beam pipeline with the Go SDK, while also covering some more advanced topics. The results of the specific pipeline will be revealed in a later article. Until then the [code is available here](https://github.com/bramp/dataflow-art).
 
-While the Beam Go SDK is still experimental, there are many great tutorials and example using the more mature Java and Python Beam SDKs [[1](https://medium.com/google-cloud/popular-java-projects-on-github-that-could-use-some-help-analyzed-using-bigquery-and-dataflow-dbd5753827f4), [2](https://medium.com/@vallerylancey/error-handling-elements-in-apache-beam-pipelines-fffdea91af2a)]. Google themselves even published a series of generic articles [[part 1](https://cloud.google.com/blog/products/gcp/guide-to-common-cloud-dataflow-use-case-patterns-part-1), [part 2](https://cloud.google.com/blog/products/gcp/guide-to-common-cloud-dataflow-use-case-patterns-part-2)].
+While the Beam Go SDK is still experimental, there are many great tutorials and example using the more mature Java and Python Beam SDKs [[1](https://medium.com/google-cloud/popular-java-projects-on-github-that-could-use-some-help-analyzed-using-bigquery-and-dataflow-dbd5753827f4), [2](https://medium.com/@vallerylancey/error-handling-elements-in-apache-beam-pipelines-fffdea91af2a)]. Google themselves even published a series of generic articles [[part 1](https://cloud.google.com/blog/products/gcp/guide-to-common-cloud-dataflow-use-case-patterns-part-1), [part 2](https://cloud.google.com/blog/products/gcp/guide-to-common-cloud-dataflow-use-case-patterns-part-2)] explaining common use cases.
+
+If you have any questions or comments, please reach out to me at [@TheBramp](http://twitter.com/@TheBramp) or visit my [website and blog](https://bramp.net) for more articles.
 
