@@ -51,7 +51,6 @@ int main() {
 
 Using [Clang](https://clang.llvm.org/)[^3], the above C code compiles to the following LLVM IR assembly.
 
-
 ```llvm
 define i32 @f(i32 %a, i32 %b) {
 ; <label>:0
@@ -101,7 +100,7 @@ entry:
 block_1:
     %tmp = add i32 20, 1
     %result = mul i32 %tmp, 2
-    ret i32 %resullt
+    ret i32 %result
 
 ; Basic block with zero non-branching instructions and a return terminator.
 block_2:
@@ -126,7 +125,7 @@ To handle variables that are assigned more than once in the original source code
 For a concrete example, consider the following LLVM IR function.
 
 ```llvm
-define i32 @f(i32 %x) {
+define i32 @f(i32 %a) {
 ; <label>:0
     switch i32 %a, label %default [
         i32 42, label %case1
@@ -141,7 +140,7 @@ default:
     br label %ret
 
 ret:
-    x.0 = phi i32 [ %x.2, %default ], [ %x.1, %case1 ]
+    %x.0 = phi i32 [ %x.2, %default ], [ %x.1, %case1 ]
     ret i32 %x.0
 }
 ```
@@ -149,7 +148,6 @@ ret:
 The `phi` instruction (sometimes referred to as `phi` nodes) in the above example essentially models the set of possible incoming values as distinct assignment statements, exactly one of which is executed based on the control flow path taken to reach the basic block of the `phi` instruction during execution. One way to illustrate the corresponding data flow is as follows:
 
 <img alt="phi instruction" src="/postimages/advent-2018/llvm-ir-and-go/phi_instruction.png" width="300">
-
 
 ## LLVM IR library in pure Go
 
@@ -234,17 +232,20 @@ func main() {
 // callgraph returns the callgraph in Graphviz DOT format of the given LLVM IR
 // module.
 func callgraph(m *ir.Module) []byte {
-    buf := &bytes.Builder{}
+    buf := &bytes.Buffer{}
     buf.WriteString("digraph {\n")
     for _, f := range m.Funcs {
+        // Add caller node.
         caller := f.Ident()
+        fmt.Fprintf(buf, "\t%q\n", caller)
         for _, block := range f.Blocks {
             for _, inst := range block.Insts {
                 // Type switch on instruction to find call instructions.
                 switch inst := inst.(type) {
                 case *ir.InstCall:
                     callee := inst.Callee.Ident()
-                    fmt.Fprintf(buf, "   %q -> %q\n", caller, callee)
+                    // Add edges from caller to callee.
+                    fmt.Fprintf(buf, "\t%q -> %q\n", caller, callee)
                 }
             }
         }
