@@ -12,12 +12,12 @@ In this post, we'll look at how to build Go programs -- such as compilers and st
 _**TL;DR** we wrote a library for interacting with LLVM IR in pure Go, see links to [code](https://github.com/llir/llvm) and [example projects](https://github.com/llir/llvm#users)._
 
 <!-- TODO: remove 3. Building a toy compiler in Go section? If time allows, add it :) -->
+<!-- 3. Building a toy compiler in Go -->
 
 1. [Quick primer on LLVM IR](#quick-primer-on-llvm-ir)
 2. [LLVM IR library in pure Go](#llvm-ir-library-in-pure-go)
-3. Building a toy compiler in Go
-4. [Closing notes](#closing-notes)
-5. [Further resources](#further-resources)
+3. [Closing notes](#closing-notes)
+4. [Further resources](#further-resources)
 
 ## Quick primer on LLVM IR
 
@@ -76,12 +76,80 @@ By looking at the LLVM IR assembly above, we may observe a few noteworthy detail
 * Global identifiers (e.g. `@f`) and local identifiers (e.g. `%a`, `%1`) are distinguished by their prefix (`@` and `%`, respectively).
 * Most instructions do what you'd think, `mul` performs multiplication, `add` addition, etc.
 
-<!--
-### Control-flow in LLVM IR
+### The structure of LLMV IR assembly
 
-To handle control-flow, LLVM IR the notion of [Basic Blocks](https://en.wikipedia.org/wiki/Basic_block) is used.
+The contents of an LLVM IR assembly file denotes a [module](https://llvm.org/docs/LangRef.html#module-structure). A module contains zero or more top-level entities, such as [global variables](https://llvm.org/docs/LangRef.html#global-variables) and [functions](https://llvm.org/docs/LangRef.html#functions).
 
--->
+A function declaration contains zero basic blocks and a function definition contains one or more basic blocks (i.e. the body of the function).
+
+#### Basic block
+
+A [basic block](https://en.wikipedia.org/wiki/Basic_block) is a sequence of zero or more non-branching instructions followed by a branching instruction (referred to as the terminator instruction). The key idea behind a basic block is that if a single instruction of the basic block is executed, then all instructions of the basic block are executed. This notion simplifies control flow analysis.
+
+```llvm
+; f returns 42 if the condition cond is true, and 0 otherwise.
+define i32 @f(i1 %cond) {
+; Entry basic block of function.
+entry:
+    ; Conditional branch terminator.
+    ;
+    ; Transfer control flow to block_1 if %cond is true, and to block_2
+    ; otherwise.
+    br i1 %cond, label %block_1, label %block_2
+
+; Basic block containing two non-branching instructions and a return terminator.
+block_1:
+    %tmp = add i32 20, 1
+    %result = mul i32 %tmp, 2
+    ret i32 %resullt
+
+; Basic block with zero non-branching instructions and a return terminator.
+block_2:
+    ret i32 0
+}
+```
+
+#### Instruction
+
+An instruction is a non-branching LLVM IR instruction, usually performing a computation or accessing memory (e.g. [add](https://llvm.org/docs/LangRef.html#add-instruction), [load](https://llvm.org/docs/LangRef.html#load-instruction)), but not changing the control flow of the program.
+
+#### Terminator instruction
+
+A [terminator instruction](https://llvm.org/docs/LangRef.html#terminator-instructions) is at the end of each basic block, and determines where to transfer control flow once the basic block finishes executing. For instance [ret](https://llvm.org/docs/LangRef.html#ret-instruction) terminators returns control flow back to the caller function, and [br](https://llvm.org/docs/LangRef.html#br-instruction) terminators branches control flow either conditionally or unconditionally.
+
+### Static Single Assignment form
+
+One very important property of LLVM IR is that it is in [SSA](https://sv.wikipedia.org/wiki/SSA_(static_single_assignment_form))-form (Static Single Assignment), which essentially means that each register is assigned exactly once. This property simplifies data flow analysis.
+
+To handle variables that are assigned more than once in the original source code, a notion of [phi](https://llvm.org/docs/LangRef.html#phi-instruction) instructions are used in LLVM IR. A `phi` instruction essentially returns one value from a set of incoming values, based on the control flow path taken during execution to reach the phi instruction. Each incoming value is therefore associated with a predecessor basic block.
+
+For a concrete example, consider the following LLVM IR function.
+
+```llvm
+define i32 @f(i32 %x) {
+; <label>:0
+    switch i32 %a, label %default [
+        i32 42, label %case1
+    ]
+
+case1:
+    %x.1 = mul i32 %a, 2
+    br label %ret
+
+default:
+    %x.2 = mul i32 %a, 3
+    br label %ret
+
+ret:
+    x.0 = phi i32 [ %x.2, %default ], [ %x.1, %case1 ]
+    ret i32 %x.0
+}
+```
+
+The `phi` instruction (sometimes referred to as `phi` nodes) in the above example essentially models the set of possible incoming values as distinct assignment statements, exactly one of which is executed based on the control flow path taken to reach the basic block of the `phi` instruction during execution. One way to illustrate the corresponding data flow is as follows:
+
+<img alt="phi instruction" src="/postimages/advent-2018/llvm-ir-and-go/phi_instruction.png" width="300">
+
 
 ## LLVM IR library in pure Go
 
@@ -110,11 +178,13 @@ Firstly, we may want to *parse* LLVM IR produced by other tools, such as Clang a
 
 Secondly, we may want to *process* LLVM IR to perform analysis of our own (e.g. custom optimization passes) or implement interpreters and Just-in-Time compilers (see [analysis example](#analysis-example-processing-llvm-ir) below).
 
-Thirdly, we may want to *produce* LLVM IR to be consumed by other tools. This is the approach taken when developing a front-end for a new programming language. In this post, we shall look at each of these through the following examples (see [output example](#output-example-producing-llvm-ir) below).
+Thirdly, we may want to *produce* LLVM IR to be consumed by other tools. This is the approach taken when developing a front-end for a new programming language (see [output example](#output-example-producing-llvm-ir) below).
 
 #### Input example - Parsing LLVM IR
 
 ```go
+// This example program parses the LLVM IR assembly file foo.ll, and prints the
+// parsed module to standard output.
 package main
 
 import "github.com/llir/llvm/asm"
@@ -134,8 +204,55 @@ func main() {
 
 #### Analysis example - Processing LLVM IR
 
-<!-- TODO: write analysis section -->
-TODO
+```go
+// This example program analyses the LLVM IR
+package main
+
+import (
+    "bytes"
+    "fmt"
+    "io/ioutil"
+
+    "github.com/llir/llvm/asm"
+    "github.com/llir/llvm/ir"
+)
+
+func main() {
+    // Parse LLVM IR assembly file.
+    m, err := asm.ParseFile("foo.ll")
+    if err != nil {
+        panic(err)
+    }
+    // Produce callgraph of module.
+    g := callgraph(m)
+    // Output callgraph in Graphviz DOT format.
+    if err := ioutil.WriteFile("callgraph.dot", g, 0644); err != nil {
+        panic(err)
+    }
+}
+
+// callgraph returns the callgraph in Graphviz DOT format of the given LLVM IR
+// module.
+func callgraph(m *ir.Module) []byte {
+    buf := &bytes.Builder{}
+    buf.WriteString("digraph {\n")
+    for _, f := range m.Funcs {
+        caller := f.Ident()
+        for _, block := range f.Blocks {
+            for _, inst := range block.Insts {
+                // Type switch on instruction to find call instructions.
+                switch inst := inst.(type) {
+                case *ir.InstCall:
+                    callee := inst.Callee.Ident()
+                    fmt.Fprintf(buf, "   %q -> %q\n", caller, callee)
+                }
+            }
+        }
+    }
+    buf.WriteString("}")
+    return buf.Bytes()
+}
+```
 
 #### Output example - Producing LLVM IR
 
