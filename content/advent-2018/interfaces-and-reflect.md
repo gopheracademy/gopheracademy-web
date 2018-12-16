@@ -21,7 +21,6 @@ the stored value.
 
 The structure for an interface looks like the following:
 
-When you assign an interface value all three of those sections are populated.
 
 ![interface-diagram](/postimages/advent-2018/interfaces-and-reflect/interface.svg)
 
@@ -29,19 +28,10 @@ When a function accepts an interface, passing a value to that function
 effectively assigns that value to the interface at which time the compiler will
 store the type, value, and method data.
 
-```
-var myReader io.Reader = bytes.NewBuffer(nil)
-```
-
-interface myReader
- itab   -> Read([]byte) (int, error) 
- type   -> bytes.Buffer
- value  -> some pointer
-
 # Examining Interface Data At Runtime with the Reflect Package
 
 Once a value is stored in an inteface, you can use the `reflect` package to
-examine its parts.  The `reflect.Type` `reflect.Value` types  provide methods
+examine its parts.  The `reflect.Type` and `reflect.Value` types  provide methods
 to access portions of the interface.  `reflect.Type` focuses purely on
 operating on types and is therefore confined to the `_type` portion of the
 structure while `reflect.Value` has to combine type information with the value
