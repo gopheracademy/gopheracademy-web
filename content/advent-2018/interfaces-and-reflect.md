@@ -19,16 +19,16 @@ approachable!
 
 # Assigning a Value to an Interface
 
-An interface encodes three things: a value, a method set, and the type of
-the stored value.
+An interface encodes three things: a value, a method set, and the type of the
+stored value.
 
 The structure for an interface looks like the following:
 
 ![interface-diagram](/postimages/advent-2018/interfaces-and-reflect/interface.svg)
 
-We can clearly see the three parts of the interface in that diagram: the `_type`
-is type information, `*data` is a pointer to the actual value, and the `itab`
-encodes the method set.
+We can clearly see the three parts of the interface in that diagram: the
+`_type` is type information, `*data` is a pointer to the actual value, and the
+`itab` encodes the method set.
 
 When a function accepts an interface as a parameter, passing a value to that
 function assigns the value, method set, and type  to the interface.
@@ -38,7 +38,7 @@ function assigns the value, method set, and type  to the interface.
 Once a value is stored in an interface, you can use the `reflect` package to
 examine its parts.  We can't examine the interface struct directly; instead the
 reflect package maintains its own copies of the interface structure to which we
-do have access to.
+do have access.
 
 Even though we're accessing the interface via reflect objects, there's a direct
 correlation to the underlying interface.
@@ -174,13 +174,11 @@ and displays the name of each method:
 
 ## reflect.Value -- Examining Values
 
-The `reflect.ValueOf()` function 
-
 So far we've only talked about type information -- fields, methods, etc.
 `reflect.Value` gives us information about the actual value stored by an
 interface.
 
-Methods associated with `reflect.Values` necessarily combine type information
+Methods associated with `reflect.Value`s necessarily combine type information
 with the actual value.  For example, in order to extract fields from a struct,
 the reflect package has to combine knowledge of the layout of the struct --
 particularly information about the fields and field offsets stored in the
@@ -303,7 +301,7 @@ Reflection in Go is implemented using interfaces and the `reflect` package.
 There's no magic to it -- when you use reflection, you directly access parts of
 the underlying interface and values stored within.
 
-In this way, an interface almost behaves like a mirror which allows a program
+In this way an interface almost behaves like a mirror, allowing a program to
 examine itself.
 
 Though Go is a staticly-typed language, reflection and interfaces combine to
