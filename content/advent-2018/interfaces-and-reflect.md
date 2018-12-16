@@ -216,13 +216,13 @@ func nice(i interface{}) {
 	// interface.
 	v := reflect.ValueOf(i)
 
-	// we're only interested in slices to lets check what kind of value v is. if
+	// we're only interested in slices to let's check what kind of value v is. if
 	// it isn't a slice, return immediately.
 	if v.Kind() != reflect.Slice {
 		return
 	}
 
-	// v is a slice.  now lets ensure that it is a slice of structs.  if not,
+	// v is a slice.  now let's ensure that it is a slice of structs.  if not,
 	// return immediately.
 	if e := v.Type().Elem(); e.Kind() != reflect.Struct {
 		return
