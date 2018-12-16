@@ -81,24 +81,24 @@ The contents of an LLVM IR assembly file denotes a [module](https://llvm.org/doc
 
 A function declaration contains zero basic blocks and a function definition contains one or more basic blocks (i.e. the body of the function).
 
-#### Basic block
-
-A [basic block](https://en.wikipedia.org/wiki/Basic_block) is a sequence of zero or more non-branching instructions followed by a branching instruction (referred to as the terminator instruction). The key idea behind a basic block is that if a single instruction of the basic block is executed, then all instructions of the basic block are executed. This notion simplifies control flow analysis.
+A more detailed example of an LLVM IR module is given below, including the global definition `@foo` and the function definition `@f` containing three basic blocks (`%entry`, `%block_1` and `%block_2`).
 
 ```llvm
+; Global variable initialized to the 32-bit integer value 32.
+@foo = global i32 21
+
 ; f returns 42 if the condition cond is true, and 0 otherwise.
 define i32 @f(i1 %cond) {
-; Entry basic block of function.
+; Entry basic block of function containing zero non-branching instructions and a
+; conditional branching terminator instruction.
 entry:
-    ; Conditional branch terminator.
-    ;
-    ; Transfer control flow to block_1 if %cond is true, and to block_2
-    ; otherwise.
+    ; The conditional br terminator transfers control flow to block_1 if %cond
+    ; is true, and to block_2 otherwise.
     br i1 %cond, label %block_1, label %block_2
 
 ; Basic block containing two non-branching instructions and a return terminator.
 block_1:
-    %tmp = add i32 20, 1
+    %tmp = load i32, i32* @foo
     %result = mul i32 %tmp, 2
     ret i32 %result
 
@@ -107,6 +107,10 @@ block_2:
     ret i32 0
 }
 ```
+
+#### Basic block
+
+A [basic block](https://en.wikipedia.org/wiki/Basic_block) is a sequence of zero or more non-branching instructions followed by a branching instruction (referred to as the terminator instruction). The key idea behind a basic block is that if a single instruction of the basic block is executed, then all instructions of the basic block are executed. This notion simplifies control flow analysis.
 
 #### Instruction
 
