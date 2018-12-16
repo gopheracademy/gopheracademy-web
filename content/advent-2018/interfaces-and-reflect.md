@@ -260,8 +260,6 @@ func main() {
 		{Name: "Nancy", Grade: 5, Nice: true},
 	}
 
-	children = children
-
 	adults := []Adult{
 		{Name: "Bob", Occupation: "Carpenter", Nice: true},
 		{Name: "Steve", Occupation: "Clerk", Nice: true},
