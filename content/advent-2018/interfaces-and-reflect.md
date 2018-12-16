@@ -1,14 +1,14 @@
 +++
 title = "Making Reflection Clear"
-date = "2018-12-08T00:00:00+00:00"
+date = "2018-12-16T00:00:00+00:00"
 series = ["Advent 2018"]
 author = ["Ayan George"]
 +++
 
 Interfaces are one of the fundamental tools for abstraction in Go. They store
 type information when assigned a value and a program can inspect portions of
-the interface structure to examine itself at runtime using the `reflect`
-package.
+the interface structure to examine and even modify itself at runtime using the
+`reflect` package.
 
 I've found that understanding a bit about how a feature is implemented can lead
 to a better understanding its use.  With this post I hope to illustrate how the
@@ -16,11 +16,10 @@ reflect package uses parts of the inteface structure.
 
 # Assigning a Value to an Interface
 
-An inteface encodes three things: a value, a method set (itab), and the type of
+An inteface encodes three things: a value, a method set, and the type of
 the stored value.
 
 The structure for an interface looks like the following:
-
 
 ![interface-diagram](/postimages/advent-2018/interfaces-and-reflect/interface.svg)
 
@@ -28,15 +27,21 @@ When a function accepts an interface, passing a value to that function
 effectively assigns that value to the interface at which time the compiler will
 store the type, value, and method data.
 
+We can clearly see the three parts of the inteface in that diagram: the `_type`
+is type information, `*data` is a pointer to the actual value, and the `itab`
+encodes the method set.
+
 # Examining Interface Data At Runtime with the Reflect Package
 
 Once a value is stored in an inteface, you can use the `reflect` package to
-examine its parts.  The `reflect.Type` and `reflect.Value` types  provide methods
-to access portions of the interface.  `reflect.Type` focuses purely on
-operating on types and is therefore confined to the `_type` portion of the
-structure while `reflect.Value` has to combine type information with the value
-to allow programmers to examine and manipulate values and therefore has to peek
-into the `_type` as well as the `data`.
+examine its parts.  The `reflect.Type` and `reflect.Value` types  provide
+methods to access portions of the interface.
+
+`reflect.Type` focuses on operating exposing data about types and is therefore
+confined to the `_type` portion of the structure while `reflect.Value` has to
+combine type information with the value to allow programmers to examine and
+manipulate values and therefore has to peek into the `_type` as well as the
+`data`.
 
 ## reflect.Type
 
@@ -75,9 +80,10 @@ offset data stored in the `_type` -- with the actual value pointed to by the
 
 # Conclusion
 
-When using the reflect package, I've learned to think about it in terms of
-extracting portions and modifying portions of an interface and the values that
-the
+When using the reflect package you are quite literally accessing portions of
+the underlying interface.  In this way, an interface almost behaves like a
+mirror which allows a program examine iteself. When using the `reflect`
+package, I've learned to think about it in terms.
 
 # About the Author
 
