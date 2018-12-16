@@ -1,0 +1,29 @@
+digraph G {
+  rankdir="LR";
+  subgraph X {
+    node [shape=record]
+    subgraph cluster_0 {
+      label = "struct iface";
+			bgcolor=grey;
+      iface [ label = " <iftab> *tab  | <data> *data " ];
+    }
+    subgraph cluster_1 {
+      label = "struct itab";
+			bgcolor=palegreen1;
+      itable [ label = " <itab> *inter  | <type> *_type | hash | ... | <func0> *fun[0] | <func1> *fun[1] | ... | <funcn> *fun[n] " ];
+    }
+    subgraph cluster_3 {
+      label = "struct _type";
+			bgcolor=grey;
+      type [ label = " <size> size | ... | <kind> kind | ...| <name> str (name) | ptr | <fields> []fields (structs)" ];
+    }
+  }
+
+	node [fontname=courier, shape=none]
+	"reflect.Type.Method(0)" -> itable:func0;
+	"reflect.Type.MethodByName(\"Read\")" -> itable:func1;
+	"reflect.Type.NumMethod()" -> itable:funcn;
+
+  itable:type -> type;
+  iface:iftab -> itable:itab;
+}
