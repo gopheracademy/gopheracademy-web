@@ -265,7 +265,7 @@ func main() {
 	adults := []Adult{
 		{Name: "Bob", Occupation: "Carpenter", Nice: true},
 		{Name: "Steve", Occupation: "Clerk", Nice: true},
-		{Name: "Sarah", Occupation: "Doctor", Nice: true},
+		{Name: "Nikki", Occupation: "Rad Tech", Nice: false},
 		{Name: "Hank", Occupation: "Go Programmer", Nice: false},
 	}
 
@@ -280,8 +280,8 @@ func main() {
 ```
 
 ```
-2018/12/16 12:00:00 adults before nice: [{Bob Carpenter true} {Steve Clerk true} {Sarah Doctor true} {Hank Go Programmer false}]
-2018/12/16 12:00:00 adults after nice: [{Bob Carpenter true} {Steve Clerk true} {Sarah Doctor true} {Hank Go Programmer true}]
+2018/12/16 12:00:00 adults before nice: [{Bob Carpenter true} {Steve Clerk true} {Nikki Rad Tech false} {Hank Go Programmer false}]
+2018/12/16 12:00:00 adults after nice: [{Bob Carpenter true} {Steve Clerk true} {Nikki Rad Tech false} {Hank Go Programmer true}]
 2018/12/16 12:00:00 children before nice: [{Sue 1 true} {Ava 3 true} {Hank 6 false} {Nancy 5 true}]
 2018/12/16 12:00:00 children after nice: [{Sue 1 true} {Ava 3 true} {Hank 6 true} {Nancy 5 true}]
 ```
