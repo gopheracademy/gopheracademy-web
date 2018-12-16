@@ -5,7 +5,7 @@ digraph G {
     subgraph cluster_1 {
       label = "struct itab";
 			bgcolor=grey;
-      itable [ label = " <itab> *itab  | <type> *_type | *link  | ... | <func> *fun[0] | *fun[1] | ... | *fun[n] " ];
+      itable [ label = " <itab> *inter  | <type> *_type | hash | ... | *fun[0] | *fun[1] | ... | *fun[n] " ];
     }
     subgraph cluster_2  {
       label = "0xf7fc4380"
