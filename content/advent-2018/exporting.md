@@ -10,7 +10,7 @@ series = ["Advent 2018"]
 
 I am periodically reminded that many people don't realize that C actually allows the creation of opaque data types. This is a possibly-surprising side effect of the option of never completing a type. Consider:
 
-```
+```c
 /* export.h */
 struct foo;
 typedef struct foo *foo_t;
@@ -40,7 +40,7 @@ If you want to see whether your design makes sense, consider using `godoc` to ha
 
 Does the interface look complete to you? Great! But there's another question you should ask: Does it look *redundant* to you?
 
-```
+```go
 // Param represents a named value.
 type Param struct {
 	Value int    // the parameter's value
@@ -51,7 +51,7 @@ type Param struct {
 func (p *Param) SetName(name string) {
 	delete(paramMap, p.Name)
 	p.Name = name
-	paramMap(p.Name) = p
+	paramMap[p.Name] = p
 }
 
 // GetName gets the param's name. (But also don't use a method name like this.)
