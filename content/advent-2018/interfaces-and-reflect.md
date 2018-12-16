@@ -287,9 +287,9 @@ func main() {
 ```
 
 In this last example, we combine what we've learned to actually modify a value
-via the `reflect.Value`.  In this case, someone wrote a function called
-`nice()` (probably Hank) that will toggle any struct item from naughty to nice
-where the name is "Hank".
+via a `reflect.Value`.  In this case, someone wrote a function called `nice()`
+(probably Hank) that will toggle any struct item in a slice from naughty to
+nice where the name is "Hank".
 
 Notice that `nice()` is able to modify the value of any slice you pass to it
 and it doesn't matter exactly what type it receives -- as long as it is a slice
