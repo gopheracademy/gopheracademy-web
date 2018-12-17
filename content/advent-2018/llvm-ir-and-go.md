@@ -294,6 +294,8 @@ The future is bright, happy hacking!
 
 There is a very well written [chapter about LLVM](http://www.aosabook.org/en/llvm.html) by Chris Lattner -- who wrote the initial design of LLVM -- in the Architecture of Open Source Applications book.
 
+The [Implement a language with LLVM](https://llvm.org/docs/tutorial/LangImpl01.html) tutorial -- often referred to as the *Kaleidoscope* tutorial -- provides great detail on how to implement a simple programming language that compiles to LLVM IR. It goes through the main tasks involved in writing a front-end for LLVM, including lexing, parsing and code generation.
+
 For anyone interested in writing compilers targetting LLVM IR, the [Mapping High Level Constructs to LLVM IR](https://mapping-high-level-constructs-to-llvm-ir.readthedocs.io/) gitbook is warmly recommended.
 
 The [official Go bindings for LLVM](https://godoc.org/llvm.org/llvm/bindings/go/llvm) is a good fit for many projects, as they expose the LLVM C API which is very powerful and also quite stable.
