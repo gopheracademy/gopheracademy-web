@@ -486,7 +486,7 @@ func main() {
 	r := csv.NewReader(
 		f, schema,
 		csv.WithComment('#'), csv.WithComma(';'),
-		csv.WithChunk(3),
+		csv.WithChunk(4),
 	)
 	defer r.Release()
 
@@ -494,7 +494,7 @@ func main() {
 	for r.Next() {
 		rec := r.Record()
 		for i, col := range rec.Columns() {
-			fmt.Printf("rec[%d][%q]: %v\n", i, rec.ColumnName(i), col)
+			fmt.Printf("rec[%d][%q]: %v\n", n, rec.ColumnName(i), col)
 		}
 		n++
 	}
@@ -505,18 +505,15 @@ Running the code above will result in:
 
 ```
 $> go run ./read-csv.go
-rec[0]["i64"]: [0 1 2]
-rec[1]["f64"]: [0 1 2]
-rec[2]["str"]: ["str-0" "str-1" "str-2"]
-rec[0]["i64"]: [3 4 5]
-rec[1]["f64"]: [3 4 5]
-rec[2]["str"]: ["str-3" "str-4" "str-5"]
-rec[0]["i64"]: [6 7 8]
-rec[1]["f64"]: [6 7 8]
-rec[2]["str"]: ["str-6" "str-7" "str-8"]
-rec[0]["i64"]: [9]
-rec[1]["f64"]: [9]
-rec[2]["str"]: ["str-9"]
+rec[0]["i64"]: [0 1 2 3]
+rec[0]["f64"]: [0 1 2 3]
+rec[0]["str"]: ["str-0" "str-1" "str-2" "str-3"]
+rec[1]["i64"]: [4 5 6 7]
+rec[1]["f64"]: [4 5 6 7]
+rec[1]["str"]: ["str-4" "str-5" "str-6" "str-7"]
+rec[2]["i64"]: [8 9]
+rec[2]["f64"]: [8 9]
+rec[2]["str"]: ["str-8" "str-9"]
 ```
 
 ## Conclusions
