@@ -21,7 +21,7 @@ _**TL;DR** we wrote a library for interacting with LLVM IR in pure Go, see links
 
 ## Quick primer on LLVM IR
 
-_(For those already familiar with LLVM IR, feel free to [skip this section](#llvm-ir-library-in-pure-go))._
+_(For those already familiar with LLVM IR, feel free to [jump to the next section](#llvm-ir-library-in-pure-go))._
 
 [LLVM IR](https://llvm.org/docs/LangRef.html) is a low-level intermediate representation used by the [LLVM compiler framework](http://llvm.org/). You can think of LLVM IR as a platform-independent assembly language with an infinite number of function local registers.
 
@@ -155,7 +155,7 @@ The `phi` instruction (sometimes referred to as `phi` nodes) in the above exampl
 
 ## LLVM IR library in pure Go
 
-There primarily exist two libraries for working with LLVM IR in Go.
+The two main libraries for working with LLVM IR in Go are:
 
 * [llvm.org/llvm/bindings/go/llvm](https://llvm.org/svn/llvm-project/llvm/trunk/bindings/go/README.txt): the official LLVM bindings for the Go programming language.
 * [github.com/llir/llvm](https://github.com/llir/llvm): a pure Go library for interacting with LLVM IR.
@@ -166,7 +166,7 @@ This post focuses on `llir/llvm`, but should generalize to working with other li
 
 ### Why write a new library?
 
-The primary motivation for developing a pure Go library for interacting with LLVM IR was to make it more fun to code compilers and static analysis tools that rely on and interact with the LLVM compiler framework. In part because the compile time of projects relying on the official LLVM bindings for Go could be quite substantial (Thanks to [@aykevl](https://github.com/aykevl), the author of [tinygo](https://github.com/aykevl/tinygo), there are now ways to speed up the compile time by dynamically linking against a system-installed version of LLVM[^4]).
+The primary motivation for developing a pure Go library for interacting with LLVM IR was to make it more fun to code compilers and static analysis tools that rely on and interact with the LLVM compiler framework. In part because the compile time of projects relying on the official LLVM bindings for Go could be quite substantial (Thanks to [@aykevl](https://github.com/aykevl), the author of [TinyGo](https://github.com/aykevl/tinygo), there are now ways to speed up the compile time by dynamically linking against a system-installed version of LLVM[^4]).
 
 Another leading motivation was to try and design an idiomatic Go API from the ground up. The main difference between the API of the LLVM bindings for Go and `llir/llvm` is how LLVM values are modelled. In the LLVM bindings for Go, LLVM values are modelled as [a concrete struct type](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value), which essentially contains every possible method of every possible LLVM value. My personal experience with using this API is that it was difficult to know what subsets of methods you were allowed to invoke for a given value. For instance, to retreive the Opcode of an instruction, you'd invoke the [InstructionOpcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.InstructionOpcode) method -- which is quite intuitive. However, if you happen to invoke the [Opcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.Opcode) method instead (which is used to retreive the Opcode of constant expressions), you'd get the runtime errors _"cast&lt;Ty&gt;() argument of incompatible type!"_.
 
