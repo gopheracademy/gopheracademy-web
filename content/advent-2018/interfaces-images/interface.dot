@@ -1,0 +1,42 @@
+digraph G {
+  rankdir="LR";
+  subgraph X {
+		color = none;
+    node [shape=record]
+    subgraph cluster_0 {
+			label = "Interface"
+			subgraph {
+				label = "struct iface";
+				iface [ label = " <iftab> *tab  | <data> *data " ];
+			}
+    }
+    subgraph cluster_1 {
+			label = "Method Set";
+			subgraph cluster_itab {
+				bgcolor=palegreen1;
+				label = "struct itab";
+				itable [ label = " <itab> *inter  | <type> *_type | hash | ... | *fun[0] | *fun[1] | ... | *fun[n] " ];
+			}
+    }
+    subgraph cluster_2  {
+			label = "Value"
+			subgraph cluster_value {
+				label = "0xf7fc4380"
+				bgcolor=orchid1;
+				object [ label = "runtime\nobject" ];
+			}	
+    }
+    subgraph cluster_3 {
+			label = "Type"
+			subgraph cluster_type {
+				label = "struct _type";
+				bgcolor=lightblue;
+				type [ label = " size | ... | kind | ...| str (name) | ptr | []fields (structs)" ];
+			}
+    }
+  }
+  itable:type -> type;
+  iface:iftab -> itable:itab;
+  iface:data -> object;
+
+}
