@@ -34,7 +34,7 @@ Compilers are therefore often split into three components, the front-end, middle
 
 ### Example program in LLVM IR assembly
 
-To get a glimps of what LLVM IR assembly may look like, lets consider the following C program.
+To get a glimpse of what LLVM IR assembly may look like, lets consider the following C program.
 
 ```c
 int f(int a, int b) {
@@ -170,9 +170,9 @@ This post focuses on `llir/llvm`, but should generalize to working with other li
 
 The primary motivation for developing a pure Go library for interacting with LLVM IR was to make it more fun to code compilers and static analysis tools that rely on and interact with the LLVM compiler framework. In part because the compile time of projects relying on the official LLVM bindings for Go could be quite substantial (Thanks to [@aykevl](https://github.com/aykevl), the author of [TinyGo](https://github.com/aykevl/tinygo), there are now ways to speed up the compile time by dynamically linking against a system-installed version of LLVM[^4]).
 
-Another leading motivation was to try and design an idiomatic Go API from the ground up. The main difference between the API of the LLVM bindings for Go and `llir/llvm` is how LLVM values are modelled. In the LLVM bindings for Go, LLVM values are modelled as [a concrete struct type](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value), which essentially contains every possible method of every possible LLVM value. My personal experience with using this API is that it was difficult to know what subsets of methods you were allowed to invoke for a given value. For instance, to retreive the Opcode of an instruction, you'd invoke the [InstructionOpcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.InstructionOpcode) method -- which is quite intuitive. However, if you happen to invoke the [Opcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.Opcode) method instead (which is used to retreive the Opcode of constant expressions), you'd get the runtime errors _"cast&lt;Ty&gt;() argument of incompatible type!"_.
+Another leading motivation was to try and design an idiomatic Go API from the ground up. The main difference between the API of the LLVM bindings for Go and `llir/llvm` is how LLVM values are modelled. In the LLVM bindings for Go, LLVM values are modelled as [a concrete struct type](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value), which essentially contains every possible method of every possible LLVM value. My personal experience with using this API is that it was difficult to know what subsets of methods you were allowed to invoke for a given value. For instance, to retrieve the Opcode of an instruction, you'd invoke the [InstructionOpcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.InstructionOpcode) method -- which is quite intuitive. However, if you happen to invoke the [Opcode](https://godoc.org/llvm.org/llvm/bindings/go/llvm#Value.Opcode) method instead (which is used to retrieve the Opcode of constant expressions), you'd get the runtime errors _"cast&lt;Ty&gt;() argument of incompatible type!"_.
 
-The `llir/llvm` library was therefore designed to provide compile time guarantes by further relying on the Go type system. LLVM values in `llir/llvm` are modelled as [an interface type](https://godoc.org/github.com/llir/llvm/ir/value#Value). This approach only exposes the minimum set of methods shared by all values, and if you want to access more specific methods or fields, you'd use a type switch (as illustrated in the [analysis example](#analysis-example-processing-llvm-ir) below).
+The `llir/llvm` library was therefore designed to provide compile time guarantees by further relying on the Go type system. LLVM values in `llir/llvm` are modelled as [an interface type](https://godoc.org/github.com/llir/llvm/ir/value#Value). This approach only exposes the minimum set of methods shared by all values, and if you want to access more specific methods or fields, you'd use a type switch (as illustrated in the [analysis example](#analysis-example-processing-llvm-ir) below).
 
 ### Usage examples
 
@@ -351,7 +351,7 @@ One particularly challenging part of the `llir/llvm` project has been to constru
 
 <!--(essentially, cross-reference the C++ code, the LLVM Language Reference and LLVM blog posts, where C++ would be the source of truth unless it contained language ambiguities)-->
 
-The exciting part of having a grammar for LLVM IR is that it enables a lot of interesting projects. For instance, generating syntactically valid LLVM IR assembly to be used for fuzzing tools and libraries consuming LLVM IR (the same approach as taken by [GoSmith](https://github.com/dvyukov/gosmith)). This could be used for cross-validation efforts between LLVM projects implemented in different languages, and also help tease out potential security vulnerabilites and bugs in implementations.
+The exciting part of having a grammar for LLVM IR is that it enables a lot of interesting projects. For instance, generating syntactically valid LLVM IR assembly to be used for fuzzing tools and libraries consuming LLVM IR (the same approach as taken by [GoSmith](https://github.com/dvyukov/gosmith)). This could be used for cross-validation efforts between LLVM projects implemented in different languages, and also help tease out potential security vulnerabilities and bugs in implementations.
 
 The future is bright, happy hacking!
 
@@ -361,7 +361,7 @@ There is a very well written [chapter about LLVM](http://www.aosabook.org/en/llv
 
 The [Implement a language with LLVM](https://llvm.org/docs/tutorial/LangImpl01.html) tutorial -- often referred to as the *Kaleidoscope* tutorial -- provides great detail on how to implement a simple programming language that compiles to LLVM IR. It goes through the main tasks involved in writing a front-end for LLVM, including lexing, parsing and code generation.
 
-For anyone interested in writing compilers targetting LLVM IR, the [Mapping High Level Constructs to LLVM IR](https://mapping-high-level-constructs-to-llvm-ir.readthedocs.io/) gitbook is warmly recommended.
+For anyone interested in writing compilers targeting LLVM IR, the [Mapping High Level Constructs to LLVM IR](https://mapping-high-level-constructs-to-llvm-ir.readthedocs.io/) gitbook is warmly recommended.
 
 The [official Go bindings for LLVM](https://godoc.org/llvm.org/llvm/bindings/go/llvm) is a good fit for many projects, as they expose the LLVM C API which is very powerful and also quite stable.
 
