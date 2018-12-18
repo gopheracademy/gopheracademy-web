@@ -6,7 +6,7 @@ date = 2018-12-18T00:00:00Z
 series = ["Advent 2018"]
 +++
 
-Today we will see how [Apache Arrow](https://arrow.apache.org) could be useful for data science, or -- really -- a lot of analysis' workloads.
+Today we will see how [Apache Arrow](https://arrow.apache.org) could be useful for data science, or -- really -- a lot of analysis workloads.
 
 ## Lingua franca
 
@@ -18,7 +18,7 @@ This means that a lot of the libraries are written in Python, with the CPU inten
 This also means that:
 
 - the vast majority of the analysis pipelines are written in Python;
-- it is not completely straightforward to migrate parts of these pipelines to other languages, in an adiabatic and piecewise process.
+- it is not completely straightforward to migrate parts of these pipelines to other languages, in a smooth and piecewise process.
 
 So why would anyone use Go for this?
 
@@ -83,13 +83,13 @@ interprocess communication.
 ![arrow shared](/postimages/advent-2018/go-arrow/arrow-shared.png)
 
 The idea behind Arrow is to describe and implement a cross-language open standard for representing structured data, and for efficiently sharing this data across languages and processes.
-This is embodied as an `arrow::array` in C++, and the `Vector`  classes in Java, the reference implementations.
-Languages currently supported include C, C++, Java, JavaScript, Python, Ruby, Rust, R, and MATLAB.
+This is embodied as an `arrow::Array` class in C++, and the `Vector` class in Java, the reference implementations.
+Languages currently supported include C, C++, Java, JavaScript, R, Ruby, Rust, MATLAB and Python.
 
 ... and -- of course -- Go :)
 
 [InfluxData](https://www.influxdata.com/) contributed the original Go code for Apache Arrow, as announced [here](https://www.influxdata.com/blog/influxdata-apache-arrow-go-implementation/).
-The Go Arrow package (started by [Stuart Carnie](https://twitter.com/stuartcarnie) had support for:
+The Go Arrow package (started by [Stuart Carnie](https://twitter.com/stuartcarnie)) had support for:
 
 - primitive arrays (`{u,}int{8,16,32,64}`, `float{32,64}`, ...)
 - parametric types (`timestamp`)
@@ -104,7 +104,9 @@ Since then, a few contributors provided implementations for:
 - time arrays
 - loading `CSV` data to Arrow arrays,
 - tables and records,
-- tensors (_a.k.a._ n-dimensional arrays.)
+- tensors (_a.k.a._ n-dimensional arrays), the Swiss Army knife of machine learning.
+
+Note that tensors are not part of the columnar format: they are actually built on top of Arrow arrays.
 
 But what are those arrays?
 
@@ -293,13 +295,17 @@ Similar code can be written for arrays of `float64`, `float32`, unsigned integer
 But not everything can be mapped or simply expressed in terms of these basic primitives.
 What if we need a more detailed data type?
 That is expressed with `List`s or `Struct`s.
+
 Let us imagine we need to represent an array of "Person" type like:
 ```go
 type Person struct {
-	Name string
-	Age  int32  // presumably, int8 should suffice.
+	Name  string
+	Age   int32    // presumably, int8 should suffice.
+	Langs []string // natural or programming languages.
 }
 ```
+Handling nested data and finding an efficient representation for this kind data are key features of the [Apache Arrow](https://arrow.apache.org) project.
+Minute details of this efficient representation are reported in the [memory layout](https://arrow.apache.org/docs/memory_layout.html) document.
 
 Structured types in Arrow can be seen as entries in a database, with a specified schema.
 While many databases are row oriented, data is column-oriented in Arrow:
@@ -319,8 +325,9 @@ With Arrow, the `Person` type defined previously could be implemented as the fol
 ```go
 mem := memory.NewGoAllocator()
 dtype := arrow.StructOf([]arrow.Field{
-	{Name: "Name", Type: arrow.ListOf(arrow.PrimitiveTypes.Uint8)},
-	{Name: "Age",  Type: arrow.PrimitiveTypes.Int32},
+	{Name: "Name",  Type: arrow.ListOf(arrow.PrimitiveTypes.Uint8)},
+	{Name: "Age",   Type: arrow.PrimitiveTypes.Int32},
+	{Name: "Langs", Type: arrow.ListOf(arrow.BinaryTypes.String)},
 }...)
 
 bld := array.NewStructBuilder(mem, dtype)
