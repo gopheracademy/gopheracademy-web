@@ -148,6 +148,7 @@ All of this can be summarized in three C macros below which appear in [different
 ```
 
 Taking in all this information, I started to translate this to Go. First I needed to memory map the GPIO registers. `syscall` makes this very easy by having an `Mmap` method. It requires that I provide: 
+
 1. *File Descriptor* - Mmap can be used for normal files as well as special memory mapped GPIO. To use it for GPIOs, I need to access a special file that represents all the memory accessible to the kernel. Normally this file is `/dev/mem` but Raspbian has an additional version of it that just gives access to the GPIOs called `/dev/gpiomem`, either should work. By opening this file and passing it to `Mmap`, you can select *ANY* portion of memory. 
 1. *Offset Value* -  The offset value, I need to get the memory offset for the GPIO registers, this is calculated by taking the peripheral memory offset, which can be different for different Pi Models , and then adding the GPIO offset, which is always 0x200000.
 1. *Memory Size* - The memory size only needs to be 11*4 bytes because the highest register we need access to is register 10 and they are 4 bytes (32 bits) each; however, due to how memory mapping works we round this up to the nearest memory page size, 4*1024 bytes.
