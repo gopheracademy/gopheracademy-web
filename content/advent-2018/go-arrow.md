@@ -82,9 +82,9 @@ interprocess communication.
 
 ![arrow shared](/postimages/advent-2018/go-arrow/arrow-shared.png)
 
-The idea behind Arrow is to describe and implement a cross-language mechanism for efficiently sharing data across languages and processes.
-This is embodied as an `arrow::array` in C++, the reference implementation.
-Languages currently supported include C, C++, Java, JavaScript, Python, and Ruby.
+The idea behind Arrow is to describe and implement a cross-language open standard for representing structured data, and for efficiently sharing this data across languages and processes.
+This is embodied as an `arrow::array` in C++, and the `Vector`  classes in Java, the reference implementations.
+Languages currently supported include C, C++, Java, JavaScript, Python, Ruby, Rust, R, and MATLAB.
 
 ... and -- of course -- Go :)
 
