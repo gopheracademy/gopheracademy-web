@@ -26,7 +26,7 @@ Well... the usual reasons:
 
 - Go is easier to deploy,
 - Go is faster than pure Python,
-- it is easier to write concurrent code in Go,
+ - Go code is simpler when dealing with concurrency,
 - Go code and results are easy to reproduce,
 - Go code is more amenable to mechanical refactoring,
 - Go code tends to be more robust at scale than Python code.
