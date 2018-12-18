@@ -71,6 +71,7 @@ By looking at the LLVM IR assembly above, we may observe a few noteworthy detail
 * Each function may use an infinite number of registers (i.e. we are not limited to 32 general purpose registers).
 * Global identifiers (e.g. `@f`) and local identifiers (e.g. `%a`, `%1`) are distinguished by their prefix (`@` and `%`, respectively).
 * Most instructions do what you'd think, `mul` performs multiplication, `add` addition, etc.
+* Line comments are prefixed with `;` as is quite common for assembly languages.
 
 ### The structure of LLMV IR assembly
 
@@ -149,6 +150,10 @@ ret:
 The `phi` instruction (sometimes referred to as `phi` nodes) in the above example essentially models the set of possible incoming values as distinct assignment statements, exactly one of which is executed based on the control flow path taken to reach the basic block of the `phi` instruction during execution. One way to illustrate the corresponding data flow is as follows:
 
 <img alt="phi instruction" src="/postimages/advent-2018/llvm-ir-and-go/phi_instruction.png" width="300">
+
+In general, when developing compilers which translates source code into LLVM IR, all local variables of the source code may be transformed into SSA-form, with the exception of variables of which the address is taken.
+
+To simplify the implementation of LLVM front-ends, one recommendation is to model local variables in the source language as memory allocated variables (using [alloca](https://llvm.org/docs/LangRef.html#alloca-instruction)), model assignments to local variables as [store](https://llvm.org/docs/LangRef.html#store-instruction) to memory, and uses of local variables as [load](https://llvm.org/docs/LangRef.html#load-instruction) from memory. The reason for this is that it may be non-trivial to directly translate a source language into LLVM IR in SSA-form. As long as the memory accesses follows certain patters, we may then rely on the `mem2reg` LLVM optimization pass to translate memory allocate local variables to registers in SSA-form (using `phi` nodes where necessary).
 
 ## LLVM IR library in pure Go
 
