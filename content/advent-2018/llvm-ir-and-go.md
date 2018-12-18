@@ -1,17 +1,14 @@
 +++
 title = "LLVM IR and Go"
-date = 2017-12-19T08:00:00Z
+date = 2018-12-19T08:00:00Z
 author = ["Robin Eklind"]
 series = ["Advent 2018"]
 +++
-
-<!-- TODO: remember to update date to 2018 -->
 
 In this post, we'll look at how to build Go programs -- such as compilers and static analysis tools -- that interact with the LLVM compiler framework using the LLVM IR assembly language.
 
 _**TL;DR** we wrote a library for interacting with LLVM IR in pure Go, see links to [code](https://github.com/llir/llvm) and [example projects](https://github.com/llir/llvm#users)._
 
-<!-- TODO: remove 3. Building a toy compiler in Go section? If time allows, add it :) -->
 <!-- 3. Building a toy compiler in Go -->
 
 1. [Quick primer on LLVM IR](#quick-primer-on-llvm-ir)
@@ -41,11 +38,11 @@ To get a glimps of what LLVM IR assembly may look like, lets consider the follow
 
 ```c
 int f(int a, int b) {
-	return a + 2*b;
+    return a + 2*b;
 }
 
 int main() {
-	return f(10, 20);
+    return f(10, 20);
 }
 ```
 
@@ -54,15 +51,15 @@ Using [Clang](https://clang.llvm.org/)[^3], the above C code compiles to the fol
 ```llvm
 define i32 @f(i32 %a, i32 %b) {
 ; <label>:0
-	%1 = mul i32 2, %b
-	%2 = add i32 %a, %1
-	ret i32 %2
+    %1 = mul i32 2, %b
+    %2 = add i32 %a, %1
+    ret i32 %2
 }
 
 define i32 @main() {
 ; <label>:0
-	%1 = call i32 @f(i32 10, i32 20)
-	ret i32 %1
+    %1 = call i32 @f(i32 10, i32 20)
+    ret i32 %1
 }
 ```
 
@@ -275,8 +272,71 @@ func genCallgraph(m *ir.Module) []byte {
 
 #### Output example - Producing LLVM IR
 
-<!-- TODO: write output section -->
-TODO
+```go
+// This example produces LLVM IR code equivalent to the following C code, which
+// implements a pseudo-random number generator.
+//
+//    int abs(int x);
+//
+//    int seed = 0;
+//
+//    // ref: https://en.wikipedia.org/wiki/Linear_congruential_generator
+//    //    a = 0x15A4E35
+//    //    c = 1
+//    int rand(void) {
+//       seed = seed*0x15A4E35 + 1;
+//       return abs(seed);
+//    }
+package main
+
+import (
+    "fmt"
+
+    "github.com/llir/llvm/ir"
+    "github.com/llir/llvm/ir/constant"
+    "github.com/llir/llvm/ir/types"
+)
+
+func main() {
+    // Create convenience types and constants.
+    i32 := types.I32
+    zero := constant.NewInt(i32, 0)
+    a := constant.NewInt(i32, 0x15A4E35) // multiplier of the PRNG.
+    c := constant.NewInt(i32, 1)         // increment of the PRNG.
+
+    // Create a new LLVM IR module.
+    m := ir.NewModule()
+
+    // Create an external function declaration and append it to the module.
+    //
+    //    int abs(int x);
+    abs := m.NewFunc("abs", i32, ir.NewParam("x", i32))
+
+    // Create a global variable definition and append it to the module.
+    //
+    //    int seed = 0;
+    seed := m.NewGlobalDef("seed", zero)
+
+    // Create a function definition and append it to the module.
+    //
+    //    int rand(void) { ... }
+    rand := m.NewFunc("rand", i32)
+
+    // Create an unnamed entry basic block and append it to the `rand` function.
+    entry := rand.NewBlock("")
+
+    // Create instructions and append them to the entry basic block.
+    tmp1 := entry.NewLoad(seed)
+    tmp2 := entry.NewMul(tmp1, a)
+    tmp3 := entry.NewAdd(tmp2, c)
+    entry.NewStore(tmp3, seed)
+    tmp4 := entry.NewCall(abs, tmp3)
+    entry.NewRet(tmp4)
+
+    // Print the LLVM IR assembly of the module.
+    fmt.Println(m)
+}
+```
 
 ## Closing notes
 
