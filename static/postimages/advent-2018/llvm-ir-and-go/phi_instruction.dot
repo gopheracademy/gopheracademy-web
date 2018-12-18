@@ -1,0 +1,8 @@
+digraph {
+	bgcolor=transparent
+   nodesep=1.5
+   entry -> case1
+   entry -> default
+   case1 -> ret [label="%x.0 = %x.1" constraint=false]
+   default -> ret [label="%x.0 = %x.2"]
+}

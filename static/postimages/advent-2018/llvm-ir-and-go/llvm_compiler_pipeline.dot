@@ -1,0 +1,48 @@
+digraph {
+	bgcolor=transparent
+	rankdir=LR
+	node [shape=none]
+	subgraph cluster_0 {
+		label="Front-end"
+		color=blue
+		Clang [shape=box]
+		Gollvm [shape=box]
+		rustc [shape=box]
+		toyc [shape=box style=dashed]
+	}
+	subgraph cluster_1 {
+		label="Middle-end"
+		color=blue
+		opt [label="LLVM optimizer" shape=box]
+	}
+	subgraph cluster_2 {
+		label="Back-end"
+		color=blue
+		llc [label="LLVM static compiler" shape=box]
+	}
+	llvm_ir_unopt [label="LLVM IR"]
+	llvm_ir_opt [label="LLVM IR"]
+	// Front-end
+	C -> Clang
+	"C++" -> Clang
+	Go -> Gollvm
+	Rust -> rustc
+	Toy -> toyc [style=dashed]
+	// Middle-end
+	Clang -> llvm_ir_unopt
+	Gollvm -> llvm_ir_unopt
+	rustc -> llvm_ir_unopt
+	toyc -> llvm_ir_unopt [style=dashed]
+	// opt
+	llvm_ir_unopt -> opt
+	opt -> llvm_ir_opt
+	// llc
+	llvm_ir_opt -> llc
+	// Back-end
+	llc -> x86
+	llc -> ARM
+	llc -> "RISC-V"
+	llc -> MIPS
+	llc -> PowerPC
+	llc -> "..."
+}
