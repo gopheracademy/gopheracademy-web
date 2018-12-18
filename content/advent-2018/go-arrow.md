@@ -26,7 +26,7 @@ Well... the usual reasons:
 
 - Go is easier to deploy,
 - Go is faster than pure Python,
- - Go code is simpler when dealing with concurrency,
+- Go code is simpler when dealing with concurrency,
 - Go code and results are easy to reproduce,
 - Go code is more amenable to mechanical refactoring,
 - Go code tends to be more robust at scale than Python code.
@@ -56,13 +56,13 @@ There are also a few packages that enable file-level interoperability with many 
 - [Cassandra](https://godoc.org/github.com/gocql/gocql)
 - ...
 
-Many basic ingredients are already there, even if some are still not there, yet (_e.g._ [ODE](https://en.wikipedia.org/wiki/Ordinary_differential_equation) is not implemented in [Gonum](https://gonum.org).)
+Many basic ingredients are already there, even if some are still missing.
 
 But even if basic file-level interoperability is (somewhat) achieved, one still needs to implement readers, writers and converters from one file format to any another when integrating with a new analysis pipeline:
 
 ![file formats](/postimages/advent-2018/go-arrow/arrow-copy.png)
 
-In many scenarii, this implies a large fraction of the computation is wasted on serialization and deserialization, reimplementing over and over the same features for converting from `format-1` to `format-n` or from `format-1` to `format-m`, _etc..._
+In many scenarios, this implies a large fraction of the computation is wasted on serialization and deserialization, reimplementing over and over the same features for converting from `format-1` to `format-n` or from `format-1` to `format-m`, _etc..._
 
 What if we had a common data layer between all these analysis pipelines, a common tool that would also be efficient?
 
@@ -446,7 +446,7 @@ Finally, to conclude with our quick whirlwind overview of what Go Arrow can prov
 As mentioned earlier, many analysis pipelines start with ingesting [CSV](https://en.wikipedia.org/wiki/Comma-separated_values).
 The Go standard library already provides a package to decode and encode data using this comma-separated values (CSV) "format".
 But what the [encoding/csv](https://godoc.org/encoding/csv) package exposes is slices of `string`s, not values of a specific type.
-This is left to the user of that package.
+Converting `string` values to a specific type (`float64`, `int`, ...) is left to the user of that package.
 
 The [arrow/csv](https://godoc.org/github.com/apache/arrow/go/arrow/csv) package leverages the `arrow.Schema` and `array.Record` types to provide a typed and (eventually) scalable+optimized API.
 
