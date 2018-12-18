@@ -120,7 +120,7 @@ A [terminator instruction](https://llvm.org/docs/LangRef.html#terminator-instruc
 
 ### Static Single Assignment form
 
-One very important property of LLVM IR is that it is in [SSA](https://en.wikipedia.org/wiki/SSA_(static_single_assignment_form))-form (Static Single Assignment), which essentially means that each register is assigned exactly once. This property simplifies data flow analysis.
+One very important property of LLVM IR is that it is in [SSA](https://en.wikipedia.org/wiki/Static_single_assignment_form)-form (Static Single Assignment), which essentially means that each register is assigned exactly once. This property simplifies data flow analysis.
 
 To handle variables that are assigned more than once in the original source code, a notion of [phi](https://llvm.org/docs/LangRef.html#phi-instruction) instructions are used in LLVM IR. A `phi` instruction essentially returns one value from a set of incoming values, based on the control flow path taken during execution to reach the phi instruction. Each incoming value is therefore associated with a predecessor basic block.
 
