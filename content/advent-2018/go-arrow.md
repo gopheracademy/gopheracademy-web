@@ -1,12 +1,12 @@
 +++
 author = ["Sebastien Binet"]
-title = "Go and Arrow: building blocks for data science"
+title = "Go and Apache Arrow: building blocks for data science"
 linktitle = "go-arrow"
 date = 2018-12-18T00:00:00Z
 series = ["Advent 2018"]
 +++
 
-Today we will see how [Arrow](https://arrow.apache.org) could be useful for data science, or -- really -- a lot of analysis' workloads.
+Today we will see how [Apache Arrow](https://arrow.apache.org) could be useful for data science, or -- really -- a lot of analysis' workloads.
 
 ## Lingua franca
 
@@ -66,9 +66,9 @@ In many scenarios, this implies a large fraction of the computation is wasted on
 
 What if we had a common data layer between all these analysis pipelines, a common tool that would also be efficient?
 
-## Arrow
+## Apache Arrow
 
-What is [Arrow](https://arrow.apache.org)? From the website:
+What is [Apache Arrow](https://arrow.apache.org)? From the website:
 
 ```
 Apache Arrow is a cross-language development platform for in-memory data.
@@ -89,7 +89,7 @@ Languages currently supported include C, C++, Java, JavaScript, Python, and Ruby
 ... and -- of course -- Go :)
 
 [InfluxData](https://www.influxdata.com/) contributed the original Go code for Apache Arrow, as announced [here](https://www.influxdata.com/blog/influxdata-apache-arrow-go-implementation/).
-Initially, the Go Arrow package implemented by [Stuart Carnie](https://twitter.com/stuartcarnie) had support for:
+The Go Arrow package (started by [Stuart Carnie](https://twitter.com/stuartcarnie) had support for:
 
 - primitive arrays (`{u,}int{8,16,32,64}`, `float{32,64}`, ...)
 - parametric types (`timestamp`)
