@@ -363,6 +363,8 @@ The [Implement a language with LLVM](https://llvm.org/docs/tutorial/LangImpl01.h
 
 For anyone interested in writing compilers targeting LLVM IR, the [Mapping High Level Constructs to LLVM IR](https://mapping-high-level-constructs-to-llvm-ir.readthedocs.io/) gitbook is warmly recommended.
 
+A good set of slides is [LLVM, in Great Detail](https://www.cs.cmu.edu/afs/cs/academic/class/15745-s13/public/lectures/L6-LLVM-Detail-1up.pdf), which provides an overview of important concepts in LLVM IR, gives an introduction to the LLVM C++ API, and in particular describes very useful LLVM optimization passes.
+
 The [official Go bindings for LLVM](https://godoc.org/llvm.org/llvm/bindings/go/llvm) is a good fit for many projects, as they expose the LLVM C API which is very powerful and also quite stable.
 
 A good complement to this post is the article [An introduction to LLVM in Go](https://blog.felixangell.com/an-introduction-to-llvm-in-go/).
