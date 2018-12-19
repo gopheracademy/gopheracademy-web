@@ -95,7 +95,7 @@ The GC is considerably more than 1000 times faster, for exactly the same amount 
 
 The other thing we can do is hide the allocations from the Go GC. If we ask the OS for memory directly, the Go GC never finds out about it, and therefore does not scan it. Doing this is a little more involved than our previous example!
 
-Here's the equivalent of our first program where we allocate a []*int with a billion (1e9) entries. This time, we use the mmap syscall to ask for the memory directly from the OS kernel. Note this only works on unix-like operating systems, but there are similar things you can do on Windows.
+Here's the equivalent of our first program where we allocate a `[]*int` with a billion (1e9) entries. This time, we use the mmap syscall to ask for the memory directly from the OS kernel. Note this only works on unix-like operating systems, but there are similar things you can do on Windows.
 
 ```go
 package main
