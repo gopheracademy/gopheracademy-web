@@ -211,7 +211,7 @@ a[2] is C00008C030
 *a[2] is 811295018
 ```
 
-Not good. If we alter this to use a normally allocated []*int as follows we get the expected result.
+Not good. If we alter this to use a normally allocated `[]*int` as follows we get the expected result.
 
 ```go
 func main() {
