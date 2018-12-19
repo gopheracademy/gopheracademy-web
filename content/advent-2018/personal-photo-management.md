@@ -29,7 +29,7 @@ comes with a built-in Web server, is easy to learn and open-source, has an amazi
 plus there is an API for [Google TensorFlow](https://www.tensorflow.org/).
 
 User [feedback](https://github.com/photoprism/photoprism/wiki/Concerns) we received later, while our project was [trending on Reddit](https://www.reddit.com/r/golang/comments/9nwjpf/photoprism_personal_photo_management_powered_by/),
-also made clear that we have to provide a single binary including all dependencies for reach broad adoption.
+also made clear that we have to provide a single binary including all dependencies to reach broad adoption.
 Other than developers, most users are not comfortable using Docker.
 
 ### Go-native replacement for MySQL ###
