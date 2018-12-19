@@ -101,7 +101,7 @@ The problem with this approach is that while cgo is amazing at utilizing existin
 
 ## Memeory Mapped GPIOs - a rocket w/o seatbelts
 
-At this point I was considering using the `periph` Go library, which almost certainly would have given me the speed I needed, but I was too curious to rely on a higher level solution at this point. To look for lower level solutions, I began looking at C methods for accessing GPIOs quickly and the top result was [Memory Mapped I/O](http://www.pieter-jan.com/node/15).
+At this point I was considering using the `periph` Go library, which almost certainly would have given me the speed I needed, but I was too curious to rely on a higher level solution. To look for lower level solutions, I began looking at C methods for accessing GPIOs quickly and the top result was [Memory Mapped I/O](http://www.pieter-jan.com/node/15).
 
 Memory Mapped I/O streamlines the processes of writing to board peripherals by allowing direct access, bypassing much of the logic the kernel uses to access them. All peripheral devices are accessible at a range of memory addresses. Given those parameters, memory mapping exposes that chunk of memory as if it was an array and all writes to the array are sent to those addresses automatically via syncing mechanisms. This is extremely useful, but it also means that you need to understand the registers exposed in the memory chunk in order to actually control the device. You no longer have the kernel making life easy.
 
@@ -149,11 +149,11 @@ All of this can be summarized in three C macros below which appear in [different
 
 Taking in all this information, I started to translate this to Go. First I needed to memory map the GPIO registers. `syscall` makes this very easy by having an `Mmap` method. It requires that I provide: 
 
-1. *File Descriptor* - Mmap can be used for normal files as well as special memory mapped GPIO. To use it for GPIOs, I need to access a special file that represents all the memory accessible to the kernel. Normally this file is `/dev/mem` but Raspbian has an additional version of it that just gives access to the GPIOs called `/dev/gpiomem`, either should work. By opening this file and passing it to `Mmap`, you can select *ANY* portion of memory. 
-1. *Offset Value* -  The offset value, I need to get the memory offset for the GPIO registers, this is calculated by taking the peripheral memory offset, which can be different for different Pi Models , and then adding the GPIO offset, which is always 0x200000.
-1. *Memory Size* - The memory size only needs to be 11*4 bytes because the highest register we need access to is register 10 and they are 4 bytes (32 bits) each; however, due to how memory mapping works we round this up to the nearest memory page size, 4*1024 bytes.
+1. *File Descriptor* - Mmap can be used for normal files as well as special memory mapped IO. To use it for GPIOs, I need to access a special file that represents all the memory accessible to the kernel. Normally this file is `/dev/mem` but Raspbian has an additional version of it that just gives access to the GPIOs called `/dev/gpiomem`, either should work. By opening this file and passing it to `Mmap`, you can select *ANY* portion of memory. 
+1. *Offset Value* -  The offset value, I need to get the memory offset for the GPIO registers in reference to where the file descriptor starts reading memory. This is calculated by taking the peripheral memory offset, which can be different for different Pi Models (Zero is 0x20000000), and then adding the GPIO offset, which is always 0x200000 for Rasbperry Pis.
+1. *Memory Size* - The memory size only needs to be 11 * 4 bytes because the highest addressed register we need access to is GPCLR0 at register 10 and each register is 4 bytes (32 bits); however, due to how memory mapping works we round this up to the nearest memory page size, 4*1024 bytes.
 1. *Permissions*- We need to read and write to the memory region, so we need to pass PROT_WRITE| PROT_READ
-1. *Change Mode*- We want write to the array to be sent to hardware as soon as possible, so we set the change mode to MAP_SHARED
+1. *Change Mode*- We want writes to the array to be sent to hardware as soon as possible, so we set the change mode to MAP_SHARED
 
 This can call be implemented with many magic values in Go as:
 
@@ -162,7 +162,7 @@ mmfile, _ = os.OpenFile("/dev/mem", os.O_RDWR, 0)
 mmtmp, _ := syscall.Mmap(int(mmfile.Fd(), 0x20200000, 4 * 1024, 
                         syscall.PROT_WRITE|syscall.PROT_READ, syscall.MAP_SHARED)
 ```
-The problem is that the slice returned by `Mmap` is a `byte` type and I'd prefer to work with `int32` so that values match the register sizes. This is easy to do in C, but in Go this is trickier. I cannot move the internal array in the slice because it is the special memory mapped array, so I have to modify the slice header directly. I need to write a new slice header that will treat the underlying array as ints and also adjust the length and capacity for the data type size difference. The result is the helper function below:
+The problem is that the slice returned by `Mmap` is of `byte` type and I'd prefer to work with `int32` so that values match the register sizes. This is easy to do in C, but in Go this is trickier. I cannot move the internal array in the slice because it is the special memory mapped array, so I have to modify the slice header directly. I need to write a new slice header that will treat the underlying array as ints and also adjust the length and capacity for the data type size difference. The result is the helper function below:
 
 ```
 //int is int32 on raspberyy pi zero
@@ -308,7 +308,7 @@ var segdisp = [][]int{
 }
 ```
 
-With the segments, dots and digits mapped to GPIOs, I can finally write the main driver loop to display the individual digits. The initial implementation is below and it implements the strobing solution discussed before. First the last digit is turned off.  At this point nothing is actually lit because all the digit pins are set high, preventing current from flowing through LEDs. Next the segments are set to high or low corresponding to the desired number. The dot is also set if desired. The corresponding digit pin is then turned low, lighting the single digit. The program then keeps that digit lit for a given amount of milliseconds and finally moves onto the next digit.
+With the segments, dots and digits mapped to GPIOs, I can finally write the main driver loop to display the individual digits. The initial attempt is below and it implements the strobing solution discussed before. First the last digit is turned off.  At this point nothing is actually lit because all the digit pins are set high, preventing current from flowing through LEDs. Next the segments are set to high or low corresponding to the desired number. The dot is also set if desired. The corresponding digit pin is then turned low, lighting the single digit. The program then keeps that digit lit for a given amount of milliseconds and finally moves onto the next digit.
 
 ```
 for {
@@ -354,17 +354,21 @@ The entire implementation can be seen [here](https://github.com/upsampled/mmgpio
 
 ## Result
 
-I ended up modifying the code more to allow for the display to be driven in its own goroutine via atomics. Overall I am very happy with the outcome, but there is a slight flicker that can be noticed. This is likely due to the fact I am using `Sleep` in the main driver loop and not accounting for the OS Scheduler or Go Garbage Collection. I should be able to substitute `Sleep` for some sort of spinning lock that looks at the system clock to account for these gaps. I could also increase the Nice level of the program to minimize the OS Scheduler's interference at the cost of other applications performance.
+I ended up modifying the code more to allow for the display to be driven in its own goroutine via atomics. Overall I am very happy with the outcome, but there is a slight flicker that can be noticed. This is likely due to the fact I am using `Sleep` in the main driver loop and not accounting for the OS Scheduler or Go Garbage Collection. I should be able to substitute `Sleep` for some sort of spinning lock that looks at the system clock to account for these gaps. I could also increase the Nice level of the program to minimize the OS Scheduler's interference at the cost of other applications' performance.
 
 ![1,2,3](/postimages/advent-2018/gpio-and-go/seven-seg-result.gif)
 
 # Discussion
 
-To be more thorough I should have tried to measure the different GPIO implementations and benchmarked them. The problem I saw was that in order to do this properly I really couldn't trust the software. How was i to know if an on/off cycle was missed? Actually in some of the video frames I believe I saw errors in some frames, but I cannot be certain given how cell phones cameras raster. In order to do measure the GPIO output properly. I really need to get a scope of the output and measure the generated square wave. My USB scope is currently in disrepair, so until it is fixed I will just need to really on other references.
+To be more thorough I should have tried to measure the different GPIO implementations and benchmarked them. The problem I saw was that in order to do this properly I really couldn't trust the software. How was i to know if an on/off cycle was missed? Actually in some of the video frames I believe I saw brief errors (when 3 goes to 4, one frame showed a 9), but I cannot be certain given how cell phone camera's raster. In order to measure the GPIO output properly, I really need to get a scope of the output and measure the generated square wave. My USB scope is currently in disrepair, so until it is fixed I will just need to really on other references.
 
-Also, I mentioned them briefly, but the `periph` project is clearly where you should look if you want a batteries included framework for working with GPIOs or peripherals. Their slack channel, as well as #writing and #darkarts, helped me at the beginning of my research to assure me that Mmaping GPIO in Go was possible. They even mentioned that they use Mmaps in their framework.
+Also, I mentioned them briefly, but the `periph` project is clearly where you should look if you want a batteries included framework for working with GPIOs or peripherals. Their slack channel, as well as #writing and #darkarts, helped me at the beginning of my research to assure me that Mmaping GPIO in Go was possible. They also use Mmaps in their framework.
 
-As for future work, I think I am going to explore getting the driver loop more periodically. I have heard these mechanisms being called ‘soft realtime’ because you are trying to emulate realtime behavior in a non-realtime operating system. This is not a trivial task because it has to take into account the OS and the language garbage collector.
+As for future work, I think I am going to explore getting the driver to loop more periodically. I have heard these mechanisms being called ‘soft realtime’ because you are trying to emulate realtime behavior in a non-realtime operating system. This is not a trivial task because it has to take into account the OS and the language garbage collector. 
+
+In the meantime, I now have my heads up display in a usable condition. Just need to expose some API calls and I can start integrating it into my services. 
+
+Thank you for reading!  If you have any questions feel free to contact me via twitter [@Upsampled](https://twitter.com/Upsampled) or liamkelly17@gmail.com.
 
 
 
