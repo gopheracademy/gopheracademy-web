@@ -22,7 +22,7 @@ More information and a [demo](https://demo.photoprism.org/) can be found on [pho
 
 ![](https://dl.photoprism.org/assets/img/usa.jpg)
 
-### Broad adoption requires a single binary ###
+### Broad Adoption Requires a Single Binary ###
 
 Go was the natural choice for our endeavour: It is available for all major operating systems,
 comes with a built-in Web server, is easy to learn and open-source, has an amazing community,
@@ -32,7 +32,7 @@ User [feedback](https://github.com/photoprism/photoprism/wiki/Concerns) we recei
 also made clear that we have to provide a single binary including all dependencies to reach broad adoption.
 Other than developers, most users are not comfortable using Docker.
 
-### Go-native replacement for MySQL ###
+### Go-native Replacement for MySQL ###
 
 Finding a native replacement for MySQL was one of the challenges we had to solve for this.
 The two obvious alternatives were using a key/value store like [LevelDB](https://github.com/google/leveldb)
@@ -112,12 +112,8 @@ Using dlib.
 
 Andrea Ceroni.
 
-### Funding the project ###
-
-Join our community
+### Outlook ###
 
 PhotoPrism will be released when it's done in good quality. You can expect a release in the first half of 2019.
-
-### The future ###
 
 Our long-term goal is to become an open platform for machine learning research based on real-world photo collections.
