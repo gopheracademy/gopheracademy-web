@@ -28,7 +28,7 @@ Go was the natural choice for our endeavour: It is available for all major opera
 comes with a built-in Web server, is easy to learn and open-source, has an amazing community,
 plus there is an API for [Google TensorFlow](https://www.tensorflow.org/).
 
-User [feedback](https://github.com/photoprism/photoprism/wiki/Concerns) we received later, while our project was [trending on Reddit](https://www.reddit.com/r/golang/comments/9nwjpf/photoprism_personal_photo_management_powered_by/),
+User [feedback](https://github.com/photoprism/photoprism/wiki/Concerns) we received while PhotoPrism was [trending on Reddit](https://www.reddit.com/r/golang/comments/9nwjpf/photoprism_personal_photo_management_powered_by/)
 also made clear that we have to provide a single binary including all dependencies to reach broad adoption.
 Other than developers, most users are not comfortable using Docker.
 
@@ -47,12 +47,12 @@ Plus building gets ugly because of the C library.
 
 In a commercial project, this might have been the end of the story, but we saw this as a unique
 opportunity to experiment: [TiDB](https://github.com/pingcap/tidb) is a New SQL database implemented in pure Go.
-Why not embed TiDB and run our own MySQL-compatible database server? Problem [solved](https://github.com/photoprism/photoprism/issues/60#issuecomment-448470212).
+Why not embed TiDB and run our own MySQL-compatible database server? Problem [solved](https://github.com/photoprism/photoprism/issues/60#issuecomment-448470212), at least for now.
 
 ### Image Classification using TensorFlow ###
 
 The [TensorFlow API for Go](https://www.tensorflow.org/install/lang_go) is well suited to loading [existing models](https://github.com/tensorflow/models/blob/master/research/slim/README.md) and executing them within a Go application.
-It is not designed to train models - you'll have to learn Python for this and it obviously requires a very large labeled set of images for training.
+It is not designed to train models - you'll have to learn Python for this and it obviously requires a very large labeled set of images.
 
 Getting a list of tags for an image is [pretty simple](https://outcrawl.com/image-recognition-api-go-tensorflow) and requires less than 200 lines of code.
 All you need to do is load one of the free models (thank you Google!), resize the image to whatever the model uses as input,
