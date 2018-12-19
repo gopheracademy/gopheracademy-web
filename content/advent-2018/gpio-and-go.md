@@ -22,6 +22,11 @@ Seven segment displays are relics from another, more groovy, era, and while they
 
 Above is the electrical diagram of the four digit, seven segment display I am using. It shows that pins 11,7,4,2,1,10,5, and 3 (the dot) are all tied to four LED anodes corresponding to positional segments (IE: pin 11 is in contact with all four top segments, pin 7 to all the top right segments, etc.) and that pins 12,9,8, and 6 are all tied to 8 LED cathodes corresponding to digits. Connecting these pins to the GPIOs of the Raspberry Pi Zero allows the segments to be lit by setting all the GPIOs to output mode and then either setting them high, where they act as 3.3V and current sources, or low , where they are < 0V, current sinks. This means that if a segment pin is high and a digit pin is low, then current will flow through that segment's LED in that digit and light up. The problem with this is that unless you are going to show the same thing on all the digits, there is no built-in way to change individual digits while keeping the others lit (IE: If you have all the segment pins high and digit pins low, then there will be four eights with dots on the display).
 
+
+```
+Magic Smoke Warning - If you are making this circuit, put a current limiting resistor (300 Ohm should work) between GPIO sources and sinks.
+```
+
 The way around this is to strobe the lights to give the appearance of individual digit control. There is enough control to light up one digit with the segments I want at a time (IE: lit digit pin is set low, all others are digit pins are high and the segment pins to whatever I want to show). If I cycle through lighting each digit up quickly with the segments I want, then the human eye will perceive that they are all lit up and unique. The YouTube below is a slow motion shot of an LED clock where you can actually see this strobing effect in action:
 
 {{< youtube CQfmi4CRcDk >}}
