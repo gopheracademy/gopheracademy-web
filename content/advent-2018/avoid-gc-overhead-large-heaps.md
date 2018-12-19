@@ -5,7 +5,7 @@ title = "Avoiding high GC overhead with large heaps"
 series = ["Advent 2018"]
 +++
 
-The Go Garbage Collector (GC) works exceptionally well when the amount of memory allocated is relatively small, but with larger heap sizes the GC can end up using considerable amounts of CPU, or even in extreme cases it can fail to keep up.
+The Go Garbage Collector (GC) works exceptionally well when the amount of memory allocated is relatively small, but with larger heap sizes the GC can end up using considerable amounts of CPU. In extreme cases it can fail to keep up.
 
 # What's the problem?
 
@@ -50,7 +50,7 @@ The GC takes over half a second. And why should that be surprising? I've allocat
 
 # So what next?
 
-That seems like a fundamental problem. If our application needs a large in-memory lookup table, or if our application fundamentally is a large in-memory lookup table, then we've got a problem if the GC insists on periodically scanning all the memory we've allocated. We'll lose huge amounts of the available processing power to the GC. What can we do about this?
+That seems like a fundamental problem. If our application needs a large in-memory lookup table, or if our application fundamentally is a large in-memory lookup table, then we've got a problem. If the GC insists on periodically scanning all the memory we've allocated we'll lose huge amounts of the available processing power to the GC. What can we do about this?
 
 We essentially have two choices. We either hide the memory from the GC, or make it uninteresting to the GC.
 
@@ -299,11 +299,11 @@ For `mystrings` Len and Cap will each be 100,000,000, and Data will point to a c
 
 The strings themselves comprise two pieces. The `StringHeader`s that are contained in this slice, and the Data for each string, which are separate allocations, none of which can contain pointers. It's the string headers which are a problem from a GC point of view, not the string data itself. The string data contains no pointers so is not scanned. The huge array of string headers does contain pointers, so must be scanned on every GC cycle.
 
-![A big string slice](/postimages/advent-2018/large-heaps/stringslice.jpg)
+![A big string slice](/postimages/advent-2018/large-heaps/stringslice.png)
 
 What can we do about this? Well, if all the string bytes were in a single piece of memory, we could track the strings by offsets to the start and end of each string in this memory. By tracking offsets we no-longer have pointers in our large slice, and the GC is no longer troubled.
 
-![Use offsets instead of pointers](/postimages/advent-2018/large-heaps/stringtrick.jpg)
+![Use offsets instead of pointers](/postimages/advent-2018/large-heaps/stringtrick.png)
 
 What we give up by doing this is the ability to free up memory for individual strings, and we've added some overhead copying the string bodies into our big byte slice.
 
@@ -372,5 +372,5 @@ I've [blogged before](https://syslog.ravelin.com/go-and-a-not-tiny-amount-of-mem
 Here are some resources that you might find helpful dealing with these issues.
 
 - The [string store](https://github.com/philpearl/stringbank) I mentioned above
-- A string [interning library](https://github.com/philpearl/intern) that stores strings in stringbank and ensures they are unique
+- A string [interning library](https://github.com/philpearl/intern) that stores strings in a stringbank and ensures they are unique
 - A [variation](https://github.com/philpearl/symboltab) that converts between unique strings in a stringbank and sequence numbers that can be used to index into an array.
