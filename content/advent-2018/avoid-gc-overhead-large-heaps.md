@@ -11,7 +11,7 @@ The Go Garbage Collector (GC) works exceptionally well when the amount of memory
 
 The GC's job is to work out which pieces of memory are available to be freed, and it does this by scanning through memory looking for pointers to memory allocations. To put it simply, if there are no pointers to an allocation then the allocation can be freed. This works very well, but the more memory there is to scan the more time it takes. 
 
-Suppose you've written an in-memory database, or you're building a data pipeline that needs a huge lookup table. In those scenarios you may have several Gigabytes or 10s of Gigabytes of memory allocated. In these cases you may be losing quite a bit of potential performance to the GC.
+Suppose you've written an in-memory database, or you're building a data pipeline that needs a huge lookup table. In those scenarios, you may have Gigabytes of memory allocated. In this case, you may be losing quite a bit of potential performance to the GC.
 
 # Is it a big problem?
 
