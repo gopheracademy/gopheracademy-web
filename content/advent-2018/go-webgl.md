@@ -28,9 +28,9 @@ But, first, let's do a quick recap of what's WebGL and how does it really work.
 
 WebGL is a rasterization engine – a relatively tiny layer between the GPU and user's JS code. It takes control code in JavaScript and [GLSL](https://en.wikipedia.org/wiki/OpenGL_Shading_Language) (OpenGL Shader Language) and draws lines, points and triangles using your OS capacity to talk to GPU. In order to work, WebGL must be implemented by the browser, and, luckily, [all major browsers already do support it](https://caniuse.com/#feat=webgl).
 
-On top of WebGL there are [third-party libraries and frameworks exist](https://en.wikipedia.org/wiki/List_of_WebGL_frameworks) – like [Three.js](http://babylonjs.com), [Babylon.js](http://babylonjs.com) or [A-Frame](https://aframe.io). They abstract many of the complexities of working with raw shader code, points and triangles, and provide higher-level tools like "*material*", "*mesh*", "*geometry*", "*camera*", "*light*" etc.
+On top of WebGL there are [third-party libraries and frameworks exist](https://en.wikipedia.org/wiki/List_of_WebGL_frameworks) – like [Three.js](https://threejs.org), [Babylon.js](http://babylonjs.com) or [A-Frame](https://aframe.io). They abstract many of the complexities of working with raw shader code, points and triangles, and provide higher-level tools like "*material*", "*mesh*", "*geometry*", "*camera*", "*light*" etc.
 
-The most popular library is probably [Three.js](http://babylonjs.com), and it has really nice and clean API. I would love to have something similar in Go. Maybe we can use GopherJS to automatically transpile Go code into JS?
+The most popular library is probably [Three.js](https://threejs.org), and it has really nice and clean API. I would love to have something similar in Go. Maybe we can use GopherJS to automatically transpile Go code into JS?
 
 ## GopherJS
 
