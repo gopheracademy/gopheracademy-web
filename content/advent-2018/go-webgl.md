@@ -90,7 +90,7 @@ cd $(go env GOPATH)/src/github.com/divan/go-webgl-example
 
 And create two files – `main.go` and `index.html`, which we will use to start our app in the browser:
 
-`index.html` doesn't nothing more than just defining a single canvas tag, which will be used for WebGL rendering, and including `three.js` code with our GopheJS-generated `go-webgl-example.js` code:
+`index.html` does nothing more than just defining a single canvas tag, which will be used for WebGL rendering, and including `three.js` code with our GopherJS-generated `go-webgl-example.js` code:
 
 ```html
 <!DOCTYPE html>
