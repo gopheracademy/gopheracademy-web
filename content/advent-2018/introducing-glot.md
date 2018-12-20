@@ -2,7 +2,7 @@
 author = ["Arafat Dad Khan"]
 title = "Introducing Glot the plotting library for Golang"
 linktitle = "Introducing Glot the plotting library for Golang"
-date = "2018-1-19T00:00:00"
+date = "2018-12-20T00:00:00"
 series = ["Advent 2018"]
 +++
 
