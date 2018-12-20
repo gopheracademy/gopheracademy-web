@@ -82,7 +82,7 @@ A function declaration contains zero basic blocks and a function definition cont
 A more detailed example of an LLVM IR module is given below, including the global definition `@foo` and the function definition `@f` containing three basic blocks (`%entry`, `%block_1` and `%block_2`).
 
 ```llvm
-; Global variable initialized to the 32-bit integer value 32.
+; Global variable initialized to the 32-bit integer value 21.
 @foo = global i32 21
 
 ; f returns 42 if the condition cond is true, and 0 otherwise.
@@ -178,11 +178,11 @@ The `llir/llvm` library was therefore designed to provide compile time guarantee
 
 Now, lets consider a few concrete usage examples. Given that we have a library to work with, what may we wish to do with LLVM IR?
 
-Firstly, we may want to *parse* LLVM IR produced by other tools, such as Clang and the LLVM optimizer `opt` (see [input example](#input-example-parsing-llvm-ir) below).
+Firstly, we may want to *parse* LLVM IR produced by other tools, such as Clang and the LLVM optimizer `opt` (see the [input example](#input-example-parsing-llvm-ir) below).
 
-Secondly, we may want to *process* LLVM IR to perform analysis of our own (e.g. custom optimization passes) or implement interpreters and Just-in-Time compilers (see [analysis example](#analysis-example-processing-llvm-ir) below).
+Secondly, we may want to *process* LLVM IR to perform analysis of our own (e.g. custom optimization passes) or implement interpreters and Just-in-Time compilers (see the [analysis example](#analysis-example-processing-llvm-ir) below).
 
-Thirdly, we may want to *produce* LLVM IR to be consumed by other tools. This is the approach taken when developing a front-end for a new programming language (see [output example](#output-example-producing-llvm-ir) below).
+Thirdly, we may want to *produce* LLVM IR to be consumed by other tools. This is the approach taken when developing a front-end for a new programming language (see the [output example](#output-example-producing-llvm-ir) below).
 
 #### Input example - Parsing LLVM IR
 
