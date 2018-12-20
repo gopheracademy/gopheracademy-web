@@ -6,7 +6,7 @@ date = "2018-12-20T00:00:00"
 series = ["Advent 2018"]
 +++
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-1.jpeg)
+![System diagram](/postimages/advent-2018/introducing-glot/glot-1.jpeg)
 
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software. It provides an expressive syntax with its lightweight type system and comes with concurrency as a built-in feature at the language level. With all these features its not a surprise that Golang is really hot these days and tons of developers are shifting towards it.
 
@@ -45,7 +45,7 @@ func main() {
 ```
 The commented code above is self-explanatory and plain. Notice how, the many customization options available make it easier to work with your plots.
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-2.png)
+![System diagram](/postimages/advent-2018/introducing-glot/glot-2.png)
 
 That’s just an intro. The real takeaway is that the plot type is very dynamic and supports easy adding and removing of different types of point groups to the same plot. So now I am gonna add a simple line curve to this plot.
 
@@ -90,7 +90,7 @@ points = [][]float64{{7, 3, 3, 5.6, 5.6, 7, 7, 9, 13, 13, 9, 9}, {10, 10, 4, 4, 
 
 ```
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-3.png)
+![System diagram](/postimages/advent-2018/introducing-glot/glot-3.png)
 
 *See what I did there ^^.*
 
@@ -104,11 +104,11 @@ Y = Function(X) or Z = Function(X,Y)
 
 Lets take a look
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-4.png)
+![System diagram](/postimages/advent-2018/introducing-glot/glot-4.png)
 
 Glot also supports 3-d plots
 
-![System diagram](/static/postimages/advent-2018/introducing-glot/glot-5.png)     
+![System diagram](/postimages/advent-2018/introducing-glot/glot-5.png)
 For more information checkout my [medium blog](https://medium.com/@Arafat./).
 
 Acknowledgements
