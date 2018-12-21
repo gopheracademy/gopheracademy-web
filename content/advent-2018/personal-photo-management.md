@@ -21,7 +21,7 @@ Go itself is a great example for the power of [simplicity](https://talks.golang.
 This article explains our choice of technology and highlights interesting challenges we are solving.
 More information and a [demo](https://demo.photoprism.org/) can be found on [photoprism.org](https://photoprism.org/).
 
-![](https://dl.photoprism.org/assets/img/usa.jpg)
+![User Interface](/postimages/advent-2018/photoprism/preview.jpg)
 
 ### Broad Adoption Requires a Single Binary ###
 
@@ -122,7 +122,7 @@ func (t *TensorFlow) GetImageTagsFromFile(filename string) (
 }
 ```
 
-Application code can now find matching tags using a simple function:
+Application code can now easily find matching tags for an image:
 
 ```go
 tf := NewTensorFlow(conf.TensorFlowModelPath())
@@ -130,8 +130,9 @@ tags, err := tf.GetImageTagsFromFile("IMG_6788.JPG")
 ```
 
 The true challenges come after: To build a single binary, we need a statically linkable
-version of the [TensorFlow C library](https://github.com/photoprism/photoprism/issues/83) - which is [not available](https://github.com/tensorflow/tensorflow/issues/15563) yet,
-unless you compile it yourself. Plus a good user experience requires [natural language processing](https://github.com/photoprism/photoprism/wiki/Image-Classification#natural-language-processing) to match search terms with similar tags/labels.
+version of the [TensorFlow C library](https://github.com/photoprism/photoprism/issues/83) for
+every operating system we want to support. It is [not available](https://github.com/tensorflow/tensorflow/issues/15563) yet,
+unless you compile it yourself. A good user experience also requires [natural language processing](https://github.com/photoprism/photoprism/wiki/Image-Classification#natural-language-processing) to match search terms with similar tags/labels.
 
 If this sounds like something you enjoy, you're welcome to [join our team](https://docs.photoprism.org/en/latest/contribute/)!
 
@@ -145,22 +146,23 @@ at least using the same framework. This is not the case.
 While there are a number of interesting machine learning projects written in
 pure Go, using [dlib](http://dlib.net/) - another external library - seems to be
 the only way to go for proper face recognition. If you just want to detect faces
-without identifying them, have a look at https://github.com/esimov/pigo.
+without identifying them, check out https://github.com/esimov/pigo.
 
-We are looking for a contributor who likes to [implement a simple poof-of-concept](https://github.com/photoprism/photoprism/issues/22).
+We are looking for a contributor who likes to [implement a simple poof-of-concept](https://github.com/photoprism/photoprism/issues/22)
+using [go-face](https://github.com/Kagami/go-face).
 You can even earn $36 as this issue is [funded](https://github.com/photoprism/photoprism/issues?q=is%3Aissue+is%3Aopen+label%3AIssueHunt) by IssueHunt.
 Think of open-source development as free training with a visible outcome. Of course we are there to help, if needed.
 
 ### Resampling JPEG Images ###
 
 Thumbnails are essential for every photo app. We want the best possible
-quality for all images, without compromise. This is a photo a cat's whiskers
+quality for all images, without compromise. This is a photo of a cat's whiskers
 downsampled to 240x160 from 6000x4000, first Flickr then PhotoPrism
 (Facebook's quality is so bad, you don't even need to compare it):
 
-![](https://dl.photoprism.org/assets/img/resampling/flickr.png)
+![Cat's whiskers downsampled by Flickr](/postimages/advent-2018/photoprism/flickr.png)
 
-![](https://dl.photoprism.org/assets/img/resampling/photoprism.png)
+![Cat's whiskers downsampled by PhotoPrism](/postimages/advent-2018/photoprism/photoprism.png)
 
 Notice the subtle, but significant differences. This fantastic quality
 is possible thanks to the [disintegration/imaging](https://github.com/disintegration/imaging)
