@@ -198,7 +198,7 @@ as we are looking for a way to continue doing this full-time.
 
 We've recently started organizing small [meetups in Berlin](https://github.com/photoprism/photoprism/wiki/Meetups).
 You're welcome to join us, even if you're new to Go or software development in general.
-Ideally, we also manage to establish regular learning sessions for beginners.
+We would like to establish regular learning sessions for beginners.
 
 Our long-term goal is to become an open platform for machine learning research
 based on real-world photo collections. Andrea Ceroni
