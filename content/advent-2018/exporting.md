@@ -2,7 +2,7 @@
 author = ["Seebs"]
 title = "Members, Methods, and Interfaces"
 linktitle = "members methods interfaces"
-date = 2018-12-17T00:00:00Z
+date = 2018-12-21T00:00:00Z
 series = ["Advent 2018"]
 +++
 
