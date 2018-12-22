@@ -2,7 +2,7 @@
 author = ["Liam Kelly"]
 title = "GPIOs and Go"
 linktitle = "go mmap gpio"
-date = 2018-12-19T00:00:00Z
+date = 2018-12-22T00:00:00Z
 series = ["Advent 2018"]
 +++
                         
