@@ -2,7 +2,7 @@
 author = ["Sebastien Binet"]
 title = "Computing and plotting π with Gonum and a zest of Monte Carlo"
 linktitle = "monte-carlo"
-date = 2018-12-22T00:00:01Z
+date = 2018-12-23T00:00:01Z
 +++
 
 Today we will see how we can compute π with a technique called [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method).
