@@ -8,7 +8,7 @@ series = ["Advent 2018"]
                         
 ![Cannot Spell GPIO without Go](/postimages/advent-2018/gpio-and-go/seven_seg.svg)
 
-_Go Advent, Dec. 19, 2019_
+_Go Advent, Dec. 22, 2018_
 
 Recently, I decided that I needed a small heads up display for import things I kept forgetting, like the time until an event started or number of unread emails in my inbox. I wanted the display to be simple and bright so it would really catch my eye. I naturally started to look at seven segment displays. Four digit, seven segment displays are available in most hobby electronics stores and come in a variety of packages. What is most noticeable when comparing these packages is that the 12 pin, analog package is significantly cheaper than the packages with bus interfaces (UART, SPI, I2C, etc.) and less pins. I wasn't using the majority of GPIOs on my Raspberry Pi Zero and being frugal, I decided to buy the analog package. What happened next was an exploration into how Go can quickly control GPIO pins to make the display actually work well. 
 
