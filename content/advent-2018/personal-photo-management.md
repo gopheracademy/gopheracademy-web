@@ -2,7 +2,7 @@
 author = ["Michael Mayer"]
 title = "Personal Photo Management using Go and TensorFlow"
 linktitle = "Personal Photo Management using Go and TensorFlow"
-date = 2018-12-26
+date = 2018-12-27
 series = ["Advent 2018"]
 +++
 
