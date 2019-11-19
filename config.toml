@@ -2,11 +2,59 @@ baseurl = "https://blog.gopheracademy.com"
 languageCode = "en-us"
 title = "Gopher Academy Blog"
 disqusShortname = "gopheracademy"
-theme = "gaweb"
 pygmentscodefences = true
 pygmentsStyle = "vs"
+
+theme = "mediumish-gohugo-theme"
+copyright = "Copyright © 2019, GopherAcademy; all rights reserved."
+canonifyurls = true
+paginate = 10
+summaryLength = 25
+# Enable syntax highlighting
+# comment or delete the following lines 11 ~ 14
+pygmentsCodefences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsUseClasses=true
+pygmentsOptions = "linenos=table"
+
 [taxonomies]
-   author = "authors"
    series = "series"
    tag = "tags"
-   category = "categories"
+
+# If you want to use disqus, uncomment the line below
+# disqusShortname = "yourdiscussshortname"
+
+# ids used below are not valid. Replace with valid ones
+[params]
+  # ga_analytics = "" # google analytics ID e.g UA-116386578-1
+  
+  # ga_verify = "" # google verification code e.g 5jb-rxeBfITeJQKOuUss3ud6FPGTxXkCho-ZN5qlrZg
+  # twitter = "" # twitter handle e.g @weru
+
+[params.index]
+  picture = "/images/galogo16.png"
+  title = "GopherAcademy Blog"
+  subtitle = "Community Contributed Articles and Tutorials on Go"
+  mdtext = ''' '''
+  alertbar = true
+
+[params.social]
+  github = "gopheracademy"
+  twitter = "gopheracademy"
+
+## Main Menu
+[[menu.main]]
+    name = "Series"
+    weight = 100
+    identifier = "series"
+    url = "/series"
+[[menu.main]]
+    name = "Tags"
+    identifier = "tags"
+    weight = 200
+    url = "/tags"
+[[menu.main]]
+    name = "Imprint"
+    identifier = "imprint"
+    weight = 200
+    url = "/static/imprint"

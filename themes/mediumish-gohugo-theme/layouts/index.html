@@ -1,0 +1,50 @@
+{{ define "header"}}
+    {{- partial "_shared/navbar.html" . -}}
+{{ end }}
+
+{{ define "main" }}
+    <div class="main-content">
+        <header class="text-center">
+            {{ with .Site.Params.index.picture }}
+                <img src="{{ . | urlize | relURL }}" class="rounded-circle text-center index-image">
+            {{ end }}
+            <h1 class="index-title">{{ .Site.Params.index.title }}</h1>
+        </header>
+
+        <section class="text-center">
+            {{ with .Site.Params.index.subtitle }}
+            <h3 class="index-sub">{{ . }}</h3>
+            {{ end }}
+            {{ with .Site.Params.index.mdtext }}
+            <h6 class="index-text">{{ . | markdownify }}</h6>
+            {{ end }}
+        </section>
+    </div>
+
+    <div class="main-content">
+        <!-- Posts Index
+        ================================================== -->
+        <section class="recent-posts">            
+            <div class="section-title">                
+                <h2><span>All Posts</span></h2>                
+            </div>            
+            <div class="row listrecent">
+                {{ $post_paginator := .Paginate (.Pages) 6 }}
+                {{ range $post_paginator.Pages }}
+                    {{- partial "list-partials/postbox.html" . -}}
+                {{end}}
+            </div>
+        </section>
+        {{- partial "list-partials/pagination.html" $post_paginator -}}
+    </div>
+    {{- partial "_shared/social.html" . -}}
+    {{ if isset .Site.Params.index "alertbar" }}
+    	{{ if .Site.Params.index.alertbar }}
+            {{- partial "_shared/alertbar.html" . -}}
+        {{ end }}
+    {{ end }}
+{{end}}
+
+{{ define "footer" }}
+    {{- partial "_shared/footer.html" . -}}
+{{end}}

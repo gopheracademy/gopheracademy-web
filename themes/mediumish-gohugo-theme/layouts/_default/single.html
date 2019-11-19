@@ -1,0 +1,91 @@
+{{ define "header"}}
+    {{- partial "_shared/navbar.html" . -}}
+{{ end }}
+
+{{ define "main" }}
+    {{- partial "_shared/title.html" . -}}
+    <div class="main-content">
+        <!-- Begin Article
+        ================================================== -->
+        <div class="container">
+            <div class="row">
+                <!-- Post Share -->
+                <div class="col-md-2 pl-0">      
+                    {{- partial "single-partials/share.html" . -}}
+                </div>
+                <!-- Post -->                
+                <div class="col-md-9 flex-first flex-md-unordered">
+                    <div class="mainheading">
+                        <!-- Author Box -->	
+                        <div class="row post-top-meta">
+                            <div class="col-xs-12 col-md-3 col-lg-2 text-center text-md-left mb-4 mb-md-0 md-nopad-right">
+                                <img class="author-thumb" src="/images/galogo16.png" alt="GopherAcademy">
+                            </div>
+                            <div class="col-xs-12 col-md-9 col-lg-10 text-center text-md-left md-nopad-left">
+                                {{ range .Params.Author }}
+                                <a target="_blank" class="link-dark">{{ . }}</a><br>
+                                {{ end}}
+                                <span class="author-description">
+                                    <i class="far fa-star"></i>
+                                    {{ dateFormat "Jan 2, 2006" .PublishDate }}
+                                    <i class="far fa-clock clock"></i>
+                                    {{ .ReadingTime }} min read
+                                </span>					
+                            </div>
+                        </div>			
+                        <!-- Post Title -->
+                        <h1 class="posttitle">{{ .Title }}</h1> 
+                    </div>
+
+                    <!-- Post Featured Image -->
+                    {{$images := .Resources.ByType "image"}}
+                    {{with $images.GetMatch "*cover*" }}
+                        <img class="featured-image img-fluid" src="{{ .Permalink }}" alt="thumbnail for this post">
+                    {{end}}
+                    <!-- End Featured Image -->
+
+                    <!-- Post Content -->
+                    <div class="article-post">
+                        {{ .Content}}
+                    </div>
+                    
+                    <!-- Post Categories -->
+                    <div class="after-post-tags">
+                        <ul class="tags">
+                        {{ range .Params.tags }}
+                        <li>
+                        <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{.}}</a>
+                        </li>
+                        {{ end }}
+                        </ul>
+                    </div>
+                    <!-- End Categories -->
+                    
+                    <!-- Next and PrevPage inside current section -->
+                    <div class="row PageNavigation d-flex justify-content-between font-weight-bold">
+                    {{with .NextInSection}}
+                        <a class="d-block col-md-6" href="{{.Permalink}}"> &laquo; {{.Title}}</a>
+                    {{end}}
+                    {{with .PrevInSection}}
+                        <a class="d-block col-md-6 text-lg-right" href="{{.Permalink}}">{{.Title}} &raquo;</a>
+                    {{end}}
+                    <div class="clearfix"></div>
+                    </div>
+                    <!-- End Next and PrevPage -->
+                </div>
+                <!-- End Post -->
+            </div>
+        </div>
+        <!-- End Article
+        ================================================== -->
+        {{ if .Params.comments }}
+            {{- partial "single-partials/comments.html" . -}}
+        {{ end }}
+    </div>
+    {{- partial "_shared/alertbar.html" . -}}
+{{ end }}
+
+{{ define "footer"}}
+    {{- partial "_shared/jumbotron.html" . -}}
+    {{- partial "_shared/footer.html" . -}}
+{{ end }}
