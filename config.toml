@@ -53,8 +53,3 @@ pygmentsOptions = "linenos=table"
     identifier = "tags"
     weight = 200
     url = "/tags"
-[[menu.main]]
-    name = "Imprint"
-    identifier = "imprint"
-    weight = 200
-    url = "/static/imprint"
