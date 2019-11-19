@@ -1,6 +1,6 @@
 +++
 author = ["Gianluca Arbezzano"]
-date = "2019-01-19T15:07:34+09:00"
+date = "2019-11-19T15:07:34+09:00"
 linktitle = "Reactive planning and reconciliation in Go"
 title = "Reactive planning and reconciliation in Go"
 +++
