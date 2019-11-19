@@ -1,0 +1,11 @@
+[build]
+publish = "public"
+command = "hugo --gc --minify"
+
+[context.production.environment]
+HUGO_VERSION = "0.57.2"
+HUGO_ENV = "production"
+HUGO_ENABLEGITINFO = "true"
+
+
+[context.branch-deploy]
