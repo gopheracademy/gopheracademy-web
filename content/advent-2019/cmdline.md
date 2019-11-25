@@ -47,9 +47,83 @@ philosophy](http://www.catb.org/esr/writings/taoup/html/ch01s06.html)
 - Rule of Composition: Design programs to be connected with other programs.
 - Rule of Silence: When a program has nothing surprising to say, it should say nothing.
 
-If you don't follow these you might end up in the following situation
+If you don't follow these and let your command line interface grow organically,
+you might end up in the following situation
 
-![](https://imgs.xkcd.com/comics/tar.png)
+[![](https://imgs.xkcd.com/comics/tar.png)](https://xkcd.com/1168/)
+
+
+## Help
+
+Let's assume your team have a `nuke-db` utility. You forgot how to invoke it
+and you do:
+
+```
+$ ./nuke-db --help
+database nuked
+```
+
+Ouch!
+
+Using the [flag](https://golang.org/pkg/flag/), you can add support for `--help` in 2 extra lines of code
+
+```go
+package main
+
+import (
+	"flag" // extra line 1
+	"fmt"
+)
+
+func main() {
+	flag.Parse() // extra line 2
+	fmt.Println("database nuked")
+}
+```
+
+Now your program behaves
+
+```
+$ ./nuke-db --help
+Usage of ./nuke-db:
+$ ./nuke-db
+database nuked
+```
+
+If you'd like to provide more help, use `flag.Usage`
+
+```go
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+)
+
+var usage = `usage: %s [DATABASE]
+
+Delete all data and tables from DATABASE.
+`
+
+func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+	fmt.Println("database nuked")
+}
+```
+
+And now
+```
+$ ./nuke-db --help
+usage: ./nuke-db [DATABASE]
+
+Delete all data and tables from DATABASE.
+```
+
 
 
 # About the Author
