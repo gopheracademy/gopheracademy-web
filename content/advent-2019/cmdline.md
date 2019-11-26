@@ -134,6 +134,11 @@ usage: ./nuke-db [DATABASE]
 Delete all data and tables from DATABASE.
 ```
 
+## Progress
+
+cmdline/spinner.go
+cmdline/progress.go
+
 
 
 # About the Author
