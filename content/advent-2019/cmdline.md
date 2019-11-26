@@ -45,7 +45,17 @@ philosophy](http://www.catb.org/esr/writings/taoup/html/ch01s06.html)
 
 - Rule of Modularity: Write simple parts connected by clean interfaces.
 - Rule of Composition: Design programs to be connected with other programs.
-- Rule of Silence: When a program has nothing surprising to say, it should say nothing.
+- Rule of Silence: When a program has nothing surprising to say, it should say
+  nothing.
+
+These rules allow you to write small program that do one thing.
+
+- A user asks for support of reading data from REST API? Have them pipe a
+  `curl` command output to your program
+- A user wants only top n results? Have them pipe your program output through
+  `head
+- A user wants only the second column of data? Since you write tab seperated
+  output, they can pipe your output via `cut` or `awk`
 
 If you don't follow these and let your command line interface grow organically,
 you might end up in the following situation
