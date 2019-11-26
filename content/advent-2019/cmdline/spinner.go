@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -22,11 +23,21 @@ func (s *Spinner) Tick() {
 	s.i = (s.i + 1) % len(spinChars)
 }
 
+func isTTY() bool {
+	fi, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+	return fi.Mode()&os.ModeCharDevice != 0
+}
+
 func main() {
 	flag.Parse()
 	s := NewSpinner("working...")
 	for i := 0; i < 100; i++ {
-		s.Tick()
+		if isTTY() {
+			s.Tick()
+		}
 		time.Sleep(100 * time.Millisecond)
 	}
 
