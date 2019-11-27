@@ -194,6 +194,18 @@ func writeJSON(m map[string]interface{}) {
 
 ```
 
+Then
+
+```
+$ ./finfo finfo.go
+mode: -rw-r--r--
+size: 783
+dir: false
+modified: 2019-11-27 11:49:03.280857863 +0200 IST
+$ ./finfo -json finfo.go
+{"dir":false,"mode":"-rw-r--r--","modified":"2019-11-27T11:49:03.280857863+02:00","size":783}
+```
+
 ## Progress
 
 Some operations can take long time, one way to make them faster is not by
