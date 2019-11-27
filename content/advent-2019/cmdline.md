@@ -134,14 +134,173 @@ usage: ./nuke-db [DATABASE]
 Delete all data and tables from DATABASE.
 ```
 
+## Structured Output
+
+Plain text is the universal interface. However, when the output becomes
+complex, it might be easier for machines to deal with formatted output. One of
+the most common format is of course JSON.
+
+A good way to do it is not to print using `fmt.Printf` but use your own
+printing function which can be either text or JSON. Let's see an example:
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"log"
+	"os"
+)
+
+func main() {
+	var jsonOut bool
+	flag.BoolVar(&jsonOut, "json", false, "output in JSON format")
+	flag.Parse()
+	if flag.NArg() != 1 {
+		log.Fatal("error: wrong number of arguments")
+	}
+
+	write := writeText
+	if jsonOut {
+		write = writeJSON
+	}
+
+	fi, err := os.Stat(flag.Arg(0))
+	if err != nil {
+		log.Fatalf("error: %s\n", err)
+	}
+
+	m := map[string]interface{}{
+		"size":     fi.Size(),
+		"dir":      fi.IsDir(),
+		"modified": fi.ModTime(),
+		"mode":     fi.Mode(),
+	}
+	write(m)
+}
+
+func writeText(m map[string]interface{}) {
+	for k, v := range m {
+		fmt.Printf("%s: %v\n", k, v)
+	}
+}
+
+func writeJSON(m map[string]interface{}) {
+	m["mode"] = m["mode"].(os.FileMode).String()
+	json.NewEncoder(os.Stdout).Encode(m)
+}
+
+```
+
 ## Progress
 
-cmdline/spinner.go
-cmdline/progress.go
+Some operations can take long time, one way to make them faster is not by
+optimizing the code but by showing a spinner/progress bar. Don't beleive me,
+here's an excerpt from a [Nielsen
+research](https://www.nngroup.com/articles/progress-indicators/)
+
+> people who saw the moving feedback bar experienced higher satisfaction and
+> were willing to wait on average 3 times longer than those who did not see any
+> progress indicators.
+
+### Spinner
+
+Adding a spinner does not require any special packages:
+
+```go
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+	"time"
+)
+
+var spinChars = `|/-\`
+
+type Spinner struct {
+	message string
+	i       int
+}
+
+func NewSpinner(message string) *Spinner {
+	return &Spinner{message: message}
+}
+
+func (s *Spinner) Tick() {
+	fmt.Printf("%s %c \r", s.message, spinChars[s.i])
+	s.i = (s.i + 1) % len(spinChars)
+}
+
+func isTTY() bool {
+	fi, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+	return fi.Mode()&os.ModeCharDevice != 0
+}
+
+func main() {
+	flag.Parse()
+	s := NewSpinner("working...")
+	for i := 0; i < 100; i++ {
+		if isTTY() {
+			s.Tick()
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+
+}
+```
+
+Run it and you'll see a small spinner going.
 
 
+### Progress Bar
+
+For progress bar, you'll probably need an external package such as
+`github.com/cheggaaa/pb/v3`
+
+```go
+package main
+
+import (
+	"flag"
+	"time"
+
+	"github.com/cheggaaa/pb/v3"
+)
+
+func main() {
+	flag.Parse()
+	count := 100
+	bar := pb.StartNew(count)
+	for i := 0; i < count; i++ {
+		time.Sleep(100 * time.Millisecond)
+		bar.Increment()
+	}
+	bar.Finish()
+
+}
+```
+
+Run it and you'll see a nice progress bar.
+
+
+# Conclusion
+
+It's almost 2020, and command line applications are here to stay. They are the
+key to automation and if written well, provide elegant "lego like" components
+to build complex flows.
+
+I hope that this article will prompt you to be a good citizen of the command
+line nation.
 
 # About the Author
+
 Hi there, I'm Miki, nice to e-meet you ☺. I've been a long time developer and
 have been working with Go for about 10 years now. I write code professionally as
 a consultant and contribute a lot to open source. Apart from that I'm a [book
