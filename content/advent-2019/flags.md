@@ -31,3 +31,9 @@ the organizers of [GopherCon Israel](https://www.gophercon.org.il/) and [an
 instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
 line](mailto:miki@353solutions.com) and let me know if you learned something
 new or if you'd like to learn more.
+
+---
+- options struct
+- FlagSet
+- flag.Var
+
