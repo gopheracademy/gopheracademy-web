@@ -1,6 +1,6 @@
 +++
 author = ["Jesus R. Gonzalez L."]
-date = "2019-11-28T00:00:00-08:00"
+date = "2019-11-29T15:07:34+09:00"
 title = "Como construir sitios web con HUGO"
 series = ["Tutorial"]
 +++
