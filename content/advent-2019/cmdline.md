@@ -30,7 +30,7 @@ here to stay.
 
 If you don't believe me, see:
 
-- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) having close to 100,000 starts on GitHub
+- [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) having close to 100,000 stars on GitHub
 - [Data Science at the Command Line](https://www.datascienceatthecommandline.com/) book
 - [Command-line Tools can be 235x Faster than your Hadoop Cluster](https://adamdrake.com/command-line-tools-can-be-235x-faster-than-your-hadoop-cluster.html)
 - ...
