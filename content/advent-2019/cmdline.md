@@ -273,7 +273,7 @@ Run it and you'll see a small spinner going.
 
 ### Progress Bar
 
-For progress bar, you'll probably need an external package such as
+For a progress bar, you'll probably need an external package such as
 `github.com/cheggaaa/pb/v3`
 
 ```go
