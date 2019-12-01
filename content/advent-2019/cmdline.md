@@ -209,7 +209,7 @@ $ ./finfo -json finfo.go
 ## Progress
 
 Some operations can take long time, one way to make them faster is not by
-optimizing the code but by showing a spinner/progress bar. Don't beleive me,
+optimising the code but by showing a spinner/progress bar. Don't believe me,
 here's an excerpt from a [Nielsen
 research](https://www.nngroup.com/articles/progress-indicators/)
 
