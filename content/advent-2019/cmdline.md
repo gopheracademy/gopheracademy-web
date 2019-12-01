@@ -210,7 +210,7 @@ $ ./finfo -json finfo.go
 
 Some operations can take long time, one way to make them faster is not by
 optimising the code but by showing a spinner/progress bar. Don't believe me,
-here's an excerpt from a [Nielsen
+here's an excerpt from [Nielsen
 research](https://www.nngroup.com/articles/progress-indicators/)
 
 > people who saw the moving feedback bar experienced higher satisfaction and
