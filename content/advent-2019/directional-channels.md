@@ -36,18 +36,23 @@ var receiveOnlyChan <-chan string // can read from, but cannot write to or close
 var sendOnlyChan chan<- string    // cannot read from, but can write to and close()
 ```
 
+A good way to remember how this works is that, in declarations, the arrow indicates how the channel is allowd to be used:
+```
+<-chan // data only comes out
+chan<- // data only goes in
+```
+
 At first glance, this might seem pretty useless --how useful is a new channel if it can't work in both directions?-- but there's another important line in the spec in the very same paragraph:
 
 > A channel may be constrained only to send or only to receive by **assignment** or **explicit conversion**.
 
-This means channels can start out bidirectional, but magically _become_ directional simply by assigning a regular channel to a variable of a constrained type (or passing it into a function with a constrained channel argument, which accomplishes the same thing). This is very useful for creating receive-only channels that no one can close but you.
+This means channels can start out bidirectional, but magically _become_ directional simply by assigning a regular channel to a variable of a constrained type. This is very useful for creating receive-only channels that no one can close but you.
 
 ## Receive-only Channels
 
 ```go
 var biDirectional chan string
 var readOnly <-chan string
-func takesReadonly(c <-chan string){}
 
 biDirectional = make(chan string)
 
@@ -55,7 +60,25 @@ takesReadonly(biDirectional)
 readOnly = biDirectional
 ```
 
-`readOnly` now shares the same underlying channel, as `biDirectional`, but it cannot be written to *or* closed. Most crucially, this distinction is part of its *type*, which means these restrictions can be enforced at *compile time*.
+`readOnly` now shares the same underlying channel, as `biDirectional`, but it cannot be written to *or* closed. This can also be done on the way into our out of a function, simply by specifying a direction in the argument or return type:
+
+```go
+func takesReadonly(c <-chan string){
+    // c is now receive-only inside the function and anywhere else it might go from here
+}
+
+func returnsReadOnly() <-chan string{
+    c := make(chan string)
+    go func(){
+        // some concurrent work with c
+    }()
+    return c
+}
+readOnly := returnsReadOnly()
+
+```
+
+This is a pretty nifty trick, and works a bit differently to conversions in the rest of the language, but, most crucially, the change in direction is reflected in the *type*, which means these restrictions can be enforced at *compile time*.
 
 ```go
 go func() {
@@ -75,7 +98,7 @@ fmt.Println(<-readOnly)      // "hello" (same underlying channel!)
 This is useful not only to control who can write to or close your channel, but also in terms of descriptiveness and Intentionality. One of the nice things about strongly-typed languages like Go is that they can be tremendously descriptive just through their API. Take the following function as an example:
 
 ```go
-func SliceIterChan(s []int) <-chan int
+func SliceIterChan(s []int) <-chan int {}
 ```
 
 Even without the documentation or implementation, this code unambiguously states that it returns a channel that the consumer is supposed to read from, either forever, or until it's closed (which documentation can help clarify). This lends itself very well to a **for-range** over the provided channel.
@@ -87,7 +110,7 @@ for i := range SliceIterChan(someSlice) {
 fmt.Println("channel closed!")
 ```
 
-Diving into the implementation, the function creates a bidirectional channel for its own use, and then all it needs to do to ensure that it has full control over writing to and closing the channel is to return it, whereupon it will be converted into a receive-only channel automatically.
+Diving into the implementation, the function creates a bidirectional channel for its own use, and then all it needs to do to ensure that it has full control over writing to and closing the channel is to return it, whereupon it will be converted into a read-only channel automatically.
 
 ```go
 // SliceIterChan returns each element of a slice on a channel for concurrent
