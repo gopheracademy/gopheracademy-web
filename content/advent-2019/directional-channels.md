@@ -18,7 +18,7 @@ fmt.Printf("%T\n", stringChan) // "chan string"
 ```
 [playground](https://play.golang.org/p/F58BWz2HJEZ)
 
-This is the declaration format most people first encounter when working with channels, and any channel created in this way will be *bidirectional*, which means that anyone who has access to a channel value can read from it *and* write to it. This can cause problems in a concurrent environment, and many a Go programmer has torn hair from their heads trying to debug a `panic: send on a closed channel`.
+This is the declaration format most people first encounter when working with channels. But any channel created in this way will be bidirectional as the default behavior. This means that anyone who has access to a channel value can read from it *and* write to it. This can cause problems in a concurrent environment, and many a Go programmer has torn hair from their heads trying to debug a `panic: send on a closed channel`.
 
 The common wisdom is that only the sender should close a channel, and this makes sense. Only the sender can know when there's no more data to send, and it's the receiver's responsibility to watch for the close, or ideally, to simply `range` over the channel, exiting the loop naturally when it's done. If this order is upset, it's generally a sign something very wrong is going on, hence the panic. But if anyone can perform any action on a channel, including calling `close()`, how can you reel this in?
 
@@ -181,9 +181,13 @@ Here, the user is expected to pre-allocate an `os.Signal` channel for receiving 
 func Notify(depth uint, sig ...os.Signal) <-chan os.Signal
 ```
 
-Returning a receive-only channel, similarly to how package `time` operates. The only difference is that, by taking a channel as an argument package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive.
+Returning a receive-only channel, similarly to how package `time` operates. The only difference is by taking a channel as an argument, package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive.
 
 This is a very specific use case, however, and one that involves a global state, so you're better off finding another way to support something like this, if that's your goal.
+
+## Conclusion
+
+I hope this gives advent readers a better understanding of Go's channel direction behavior and using channels to their full capabilities.
 
 ## About the Author
 Andy Walker is a Go GDE and co-organizer of [Baltimore Go](https://www.meetup.com/BaltimoreGolang/), as well as the primary orgnizer of the GopherCon Guide Program. He is a programmer in security research for a major cybersecurity company. He enjoys hardware, 3D printing, and talking way too much about philosophy. He can be reached at andy-at-[andy.dev](https://andy.dev).
