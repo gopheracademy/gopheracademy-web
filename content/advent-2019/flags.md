@@ -221,8 +221,11 @@ func runHTTPD() {
 The `flag` package is flexible and will probably support all of your command
 line parsing needs. It might be more verbose than other packages but it's in
 the standard library so you don't need any extra dependencies and can count on
-it's API keeping the [Go compatibility
+its API keeping the [Go compatibility
 promise](https://golang.org/doc/go1compat).
+
+You can see the full source code for the examples
+[here](https://github.com/gopheracademy/gopheracademy-web/blob/master/content/advent-2019/flag).
 
 
 # About the Author
