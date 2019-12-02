@@ -75,7 +75,7 @@ fmt.Println(<-readOnly)      // "hello" (same underlying channel!)
 This is useful not only to control who can write to or close your channel, but also in terms of descriptiveness and Intentionality. One of the nice things about strongly-typed languages like Go is that they can be tremendously descriptive just through their API. Take the following function as an example:
 
 ```go
-func SliceIterChan(s []int) <-chan int {}
+func SliceIterChan(s []int) <-chan int
 ```
 
 Even without the documentation or implementation, this code unambiguously states that it returns a channel that the consumer is supposed to read from, either forever, or until it's closed (which documentation can help clarify). This lends itself very well to a **for-range** over the provided channel.
