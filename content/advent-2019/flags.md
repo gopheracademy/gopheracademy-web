@@ -11,14 +11,14 @@ use the built-in [flag](https://golang.org/pkg/flag/) package to write command
 line applications.
 
 There are other third-party packages for writing command line interfaces, see
-[here](https://github.com/avelino/awesome-go#command-line) for a list. However
-depending on third-party package [carries a
+[here](https://github.com/avelino/awesome-go#command-line) for a list of them.
+However depending on third-party package [carries a
 risk](https://research.swtch.com/deps) and I prefer to use the standard library
 as much as I can.
 
 ## httpd
 
-Let's write a HTTP server. It'll take the host & port to listen on from the
+Let's write an HTTP server. It'll take the host & port to listen on from the
 command line.
 
 ```go
@@ -33,7 +33,7 @@ import (
 	"strconv"
 )
 
-var config struct {
+var config struct { // [1]
 	port int
 	host string
 }
@@ -47,13 +47,13 @@ Options:
 )
 
 func main() {
-	flag.IntVar(&config.port, "port", config.port, "port to listen on")
-	flag.StringVar(&config.host, "host", config.host, "host to listen on")
-	flag.Usage = func() {
+	flag.IntVar(&config.port, "port", config.port, "port to listen on")    // [2]
+	flag.StringVar(&config.host, "host", config.host, "host to listen on") // [3]
+	flag.Usage = func() {                                                  // [4]
 		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
 		flag.PrintDefaults()
 	}
-	flag.Parse()
+	flag.Parse() // [5]
 
 	http.HandleFunc("/", handler)
 	addr := fmt.Sprintf("%s:%d", config.host, config.port)
@@ -64,7 +64,7 @@ func main() {
 
 }
 
-func init() {
+func init() { // [6]
 	// Set defaults
 	s := os.Getenv("HTTPD_PORT")
 	p, err := strconv.Atoi(s)
@@ -85,19 +85,18 @@ func init() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello Gophers\n")
 }
-
 ```
 
-- I tend to use a `config` struct for configuration instead of separate
+1. I tend to use a `config` struct for configuration instead of separate
   variables. When applications evolve, the number of configuration option will
   grows and I'd like to keep them in one place.
-- `flag.IntVar` will bind `config.port` to the `-port` command line option
-- `flag.StringVar` will bind `config.host` to the `-host` command line option
-- Set `flag.Usage` to a function that will print your help
-- `flag.Parse` will parse command line arguments and will print help when
+2. `flag.IntVar` will bind `config.port` to the `-port` command line option
+3. `flag.StringVar` will bind `config.host` to the `-host` command line option
+4. Set `flag.Usage` to a function that will print your help
+5. `flag.Parse` will parse command line arguments and will print help when
   calling your application with `-h` or `--help`. `flag.Parse` will exit the
   program on any command line error
-- You can use `init` to set default values and populate values from environment
+6. You can use `init` to set default values and populate values from environment
   variables
 
 ## Validation
@@ -111,7 +110,14 @@ We'll define `portVar` struct that will implement the
 [flag.Value](https://golang.org/pkg/flag/#Value) interface. We'll also provide
 a `PortVar` function to create such a variable.
 
+Then we'll change our main to use `PortVar` instead of `IntVar`.
+
 ```go
+func main() {
+	flag.Var(PortVar(&config.port), "port", "port to listen on")
+	// ...
+}
+
 func PortVar(port *int) *portVar {
 	return &portVar{port}
 }
@@ -151,10 +157,9 @@ it's alive. We can have one executable that does both commands (same as `git`
 have many commands). We can do that with [flag.FlagSet](https://golang.org/pkg/flag/#FlagSet).
 
 ```go
-
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s httpd|check\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s check|httpd\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()

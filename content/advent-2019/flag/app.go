@@ -25,7 +25,7 @@ Options:
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s httpd|check\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s check|httpd\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()

@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-var config struct {
+var config struct { // [1]
 	port int
 	host string
 }
@@ -23,13 +23,13 @@ Options:
 )
 
 func main() {
-	flag.IntVar(&config.port, "port", config.port, "port to listen on")
-	flag.StringVar(&config.host, "host", config.host, "host to listen on")
-	flag.Usage = func() {
+	flag.IntVar(&config.port, "port", config.port, "port to listen on")    // [2]
+	flag.StringVar(&config.host, "host", config.host, "host to listen on") // [3]
+	flag.Usage = func() {                                                  // [4]
 		fmt.Fprintf(flag.CommandLine.Output(), usage, os.Args[0])
 		flag.PrintDefaults()
 	}
-	flag.Parse()
+	flag.Parse() // [5]
 
 	http.HandleFunc("/", handler)
 	addr := fmt.Sprintf("%s:%d", config.host, config.port)
@@ -40,7 +40,7 @@ func main() {
 
 }
 
-func init() {
+func init() { // [6]
 	// Set defaults
 	s := os.Getenv("HTTPD_PORT")
 	p, err := strconv.Atoi(s)
