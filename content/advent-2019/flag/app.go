@@ -24,65 +24,76 @@ Options:
 )
 
 func main() {
-	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s check|httpd\n", os.Args[0])
+	flag.Usage = func() { // [1]
+		fmt.Fprintf(flag.CommandLine.Output(), "usage: %s check|run\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 
-	if len(os.Args) < 2 {
+	if len(os.Args) < 2 { // [2]
 		log.Fatalf("error: wrong number of arguments")
 	}
 
-	switch os.Args[1] {
-	case "httpd":
-		runHTTPD()
+	var err error
+	switch os.Args[1] { // [3]
+	case "run":
+		err = runHTTPD()
 	case "check":
-		runCheck()
+		err = checkHTTPD()
 	default:
-		log.Fatalf("error: unknown command - %s", os.Args[1])
+		err = fmt.Errorf("error: unknown command - %s", os.Args[1])
+	}
+
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
 }
 
-func runCheck() {
-	fs := flag.NewFlagSet("check", flag.ExitOnError)
+func checkHTTPD() error {
+	fs := flag.NewFlagSet("check", flag.ContinueOnError) // [4]
 	fs.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), checkUsage, os.Args[0])
 		fs.PrintDefaults()
 	}
 
-	fs.Parse(os.Args[2:])
-	if fs.NArg() != 1 {
-		log.Fatalf("error: wrong number of arguments")
+	if err := fs.Parse(os.Args[2:]); err != nil { // [5]
+		return err
 	}
 
-	url := fs.Arg(0)
+	if fs.NArg() != 1 {
+		return fmt.Errorf("error: wrong number of arguments")
+	}
+
+	url := fs.Arg(0) // [6]
 	resp, err := http.Get(url)
 	switch {
 	case err != nil:
-		log.Fatalf("error: %s", err)
+		return err
 	case resp.StatusCode != http.StatusOK:
-		log.Fatalf("error: bad status - %s", resp.Status)
+		return fmt.Errorf("error: bad status - %s", resp.Status)
 	}
+
+	return nil
 }
 
-func runHTTPD() {
-	fs := flag.NewFlagSet("check", flag.ExitOnError)
+func runHTTPD() error {
+	fs := flag.NewFlagSet("check", flag.ContinueOnError)
 	fs.Var(PortVar(&config.port), "port", "port to listen on")
 	fs.StringVar(&config.host, "host", config.host, "host to listen on")
 	fs.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), httpdUsage, os.Args[0])
 		fs.PrintDefaults()
 	}
-	fs.Parse(os.Args[2:])
+
+	if err := fs.Parse(os.Args[2:]); err != nil {
+		return err
+	}
 
 	http.HandleFunc("/", handler)
 	addr := fmt.Sprintf("%s:%d", config.host, config.port)
 	fmt.Printf("server ready on %s\n", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatalf("error: %s", err)
-	}
+	return http.ListenAndServe(addr, nil)
 }
 
 func PortVar(port *int) *portVar {
