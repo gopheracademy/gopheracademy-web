@@ -89,7 +89,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 1. I tend to use a `config` struct for configuration instead of separate
   variables. When applications evolve, the number of configuration option will
-  grows and I'd like to keep them in one place.
+  grows and I'd like to keep them in one place
 2. `flag.IntVar` will bind `config.port` to the `-port` command line option
 3. `flag.StringVar` will bind `config.host` to the `-host` command line option
 4. Set `flag.Usage` to a function that will print your help
@@ -246,10 +246,10 @@ func runHTTPD() error {
 2. We should have at lest two `os.Args` - the executable and the sub command name
 3. `os.Args[1]` is the subcommand (`os.Args[1]` is the executable name)
 4. Create a new `FlagSet` to parse the command line for this sub command. Use
-   `flag.ContinueOnError` so error will not exit the program. The only function
+   `flag.ContinueOnError` so parse error will not exit the program. The only function
    that should exit the program is `main`, all others should return an error
-5. Pass rest of arguments. e.g. `["app", "check", "http://localhost:8080"] ->
-   ["localhost:8081]`
+5. Pass rest of arguments. e.g. `["app", "check", "http://localhost:8080"]` →
+   `["localhost:8081]`
 6. [fs.Arg](https://golang.org/pkg/flag/#FlagSet.Arg) returns the nth command
    line argument (not including the program name) after parsing
 
