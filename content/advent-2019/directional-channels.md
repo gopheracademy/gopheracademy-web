@@ -1,6 +1,6 @@
 +++
 title= "Directional Channels in Go"
-date = "2019-11-03T00:00:00+00:00"
+date = "2019-12-03T00:00:00+00:00"
 series = ["Advent 2019"]
 author = ["Andy Walker"]
 linktitle = "flag"
