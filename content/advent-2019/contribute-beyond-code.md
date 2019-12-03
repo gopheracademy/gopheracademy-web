@@ -121,7 +121,7 @@ Another method to find a project to contribute to is to look at **aggregating pl
 A final method is to look for **community inquiries**. These can come via different channels the [Gophers slack](https://invite.slack.golangbridge.org/) or Twitter, for example. 
 
 * [Carolyn Van Slyck](https://twitter.com/carolynvs) [put out a call for Porter contributors](https://twitter.com/carolynvs/status/1174373191998943234) on Twitter in September of 2019. [Porter](https://porter.sh/contribute/) has a welcoming website that states the project values and guidelines upfront and lists the steps to take to get started contributing. 
-* More recently, [Aaron Schesinger](https://twitter.com/arschles/status/1201966836083875840) shared a call for support for [Athens on Azure Kubernetes Service](https://arschles.com/blog/athens-on-azure-kubernetes-service/) with a more detailed [blog post](https://arschles.com/blog/athens-on-azure-kubernetes-service/) describing in broad strokes the plan. 
+* In December of 2019 on Twitter, [Aaron Schesinger](https://twitter.com/arschles/status/1201966836083875840) shared a call for support for [Athens on Azure Kubernetes Service](https://arschles.com/blog/athens-on-azure-kubernetes-service/) with a more detailed [blog post](https://arschles.com/blog/athens-on-azure-kubernetes-service/) describing in broad strokes the plan. 
 
 ### Identify possible contributions
 
@@ -146,6 +146,12 @@ If you want to have a greater impact and support open source as a whole, [join t
 If you want to learn more about contributing to open source, read [Forge Your Future with Open Source](https://pragprog.com/book/vbopens/forge-your-future-with-open-source) by VM Brasseur.
 
 I'd love to hear about your open source contributions (especially the ones that aren't visible because they aren't PRs). Share in the comments or with `#OSSandTell` on Twitter.
+
+Thank you to 
+
+* [Dan Maher](https://twitter.com/phrawzty) for editing the [original version](https://sysadvent.blogspot.com/2019/12/day-3-contributing-to-open-source.html) of this article for Sysadvent. 
+* [Aaron Schlesinger](https://twitter.com/arschles) for his invaluable time in the Go project walkthrough, as well as early feedback for this article.
+* [Carolyn Van Slyck](https://twitter.com/carolynvs) for quality project maintership that encourages contribution.
 
 Additional Resources:
 
