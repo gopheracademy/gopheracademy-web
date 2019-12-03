@@ -151,9 +151,9 @@ Unlike the example above, neither timers nor tickers are ever closed to prevent 
 
 ## Send-only Channels
 
-You can also declare channels as send-only, but these are of much more limited use. While they can provide useful assertions internally that a channel is never read from, receiving them with an API is kind of backwards, and you are generally better off using a bidirectional channel internally, and moderating channel writes with a function or method.
+You can also declare channels as send-only, but these are of more limited use, at least to an API. While they can provide useful assertions internally that a channel is never read from, and you should do this when you can, receiving them with an API is kind of backwards, and you are generally better off using a bidirectional channel internally, and moderating channel writes with a function or method.
 
-Send-only channels make only one appearance in the standard library in `os/signal`:
+Send-only channels make only one appearance in the API of the standard library: in `os/signal`.
 
 ```
 func Notify(c chan<- os.Signal, sig ...os.Signal)
@@ -173,6 +173,11 @@ func Notify(c chan<- os.Signal, sig ...os.Signal)
     It is allowed to call Notify multiple times with different channels and the
     same signals: each channel receives copies of incoming signals
     independently.
+
+func Stop(c chan<- os.Signal)
+    Stop causes package signal to stop relaying incoming signals to c. It undoes
+    the effect of all prior calls to Notify using c. When Stop returns, it is
+    guaranteed that c will receive no more signals.
 ```
 
 Here, the user is expected to pre-allocate an `os.Signal` channel for receiving incoming signals from the OS. The API asserts that the channel will only ever be written to, and informs the user that they need to create a buffered channel of whatever size they deem necessary to avoid blocking. It might seem necessary to take a send-only channel to allow the user to set their own channel depth, but the signature could just as easily have been something like:
@@ -181,13 +186,13 @@ Here, the user is expected to pre-allocate an `os.Signal` channel for receiving 
 func Notify(depth uint, sig ...os.Signal) <-chan os.Signal
 ```
 
-Returning a receive-only channel, similarly to how package `time` operates. The only difference is by taking a channel as an argument, package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive.
+Which returns a receive-only channel, similarly to how package `time` operates. The only difference is by taking a channel as an argument, package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive, or calling `Stop()` to cease them.
 
-This is a very specific use case, however, and one that involves a global state, so you're better off finding another way to support something like this, if that's your goal.
+This is a very specific use case, however, so you're better off finding another way to support something like this, if you can.
 
 ## Conclusion
 
-I hope this gives advent readers a better understanding of Go's channel direction behavior and using channels to their full capabilities.
+Hopefully you have a better understanding of channel directions and how they might be used, and what they might express. Thanks for following along, Advent readers!
 
 ## About the Author
-Andy Walker is a Go GDE and co-organizer of [Baltimore Go](https://www.meetup.com/BaltimoreGolang/), as well as the primary orgnizer of the GopherCon Guide Program. He is a programmer in security research for a major cybersecurity company. He enjoys hardware, 3D printing, and talking way too much about philosophy. He can be reached at andy-at-[andy.dev](https://andy.dev). Twitter: [@flowchartsman](https://twitter.com/flowchartsman)
+Andy Walker (@flowchartsman) is a Go GDE and co-organizer of [Baltimore Go](https://www.meetup.com/BaltimoreGolang/). He is a programmer in security research for a major cybersecurity company, and enjoys hardware, 3D printing, and talking way too much about philosophy. He can be reached at andy-at-[andy.dev](https://andy.dev).
