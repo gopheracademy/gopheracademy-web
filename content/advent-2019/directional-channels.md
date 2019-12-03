@@ -186,9 +186,7 @@ Here, the user is expected to pre-allocate an `os.Signal` channel for receiving 
 func Notify(depth uint, sig ...os.Signal) <-chan os.Signal
 ```
 
-Which returns a receive-only channel, similarly to how package `time` operates. The only difference is by taking a channel as an argument, package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive, or calling `Stop()` to cease them.
-
-This is a very specific use case, however, so you're better off finding another way to support something like this, if you can.
+Which returns a receive-only channel, similarly to how package `time` operates. The only difference is by taking a channel as an argument, package `os/signal` can keep track of the user's notify channels, allowing for the multiple calls it mentions to expand the set of signals the channel will receive, or calling `Stop()` to cease them. This is not possible without taking a channel as an argument, so in this case, a send-only channel is the way to go.
 
 ## Conclusion
 
