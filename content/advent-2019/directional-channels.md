@@ -190,4 +190,4 @@ This is a very specific use case, however, and one that involves a global state,
 I hope this gives advent readers a better understanding of Go's channel direction behavior and using channels to their full capabilities.
 
 ## About the Author
-Andy Walker is a Go GDE and co-organizer of [Baltimore Go](https://www.meetup.com/BaltimoreGolang/), as well as the primary orgnizer of the GopherCon Guide Program. He is a programmer in security research for a major cybersecurity company. He enjoys hardware, 3D printing, and talking way too much about philosophy. He can be reached at andy-at-[andy.dev](https://andy.dev).
+Andy Walker is a Go GDE and co-organizer of [Baltimore Go](https://www.meetup.com/BaltimoreGolang/), as well as the primary orgnizer of the GopherCon Guide Program. He is a programmer in security research for a major cybersecurity company. He enjoys hardware, 3D printing, and talking way too much about philosophy. He can be reached at andy-at-[andy.dev](https://andy.dev). Twitter: [@flowchartsman](https://twitter.com/flowchartsman)
