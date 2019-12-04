@@ -134,7 +134,6 @@ Some projects use labels to mark issues that are good for new contributors. Thes
 Sometimes projects will use Trello or GitHub Projects to organize planned issues. Larger projects may have a regular scheduled online community hangout to plan and identify areas of concern. 
 
 Here is an example of the [Porter project](https://github.com/orgs/deislabs/projects/2) project and prioritized tasks using a [GitHub Project board](https://help.github.com/en/github/managing-your-work-on-github/managing-project-boards):
-(images/project_planning.png)
 ![Review Project Plans](/postimages/advent-2019/contribute-beyond-code/porter-project-plan.png)
 
 The Porter project has a rich set of labels from this prioritized view to see "good first issue" tasks as well as more specific classification of issues.
