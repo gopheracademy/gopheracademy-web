@@ -6,7 +6,7 @@ author = ["Jennifer Davis"]
 linktitle = "flag"
 +++
 
-Developers are often encouraged to contribute to open source. If you don't consider yourself a developer, it can feel daunting to start on the journey to contributing. In the last year, I've found that the number of folks participating in open source is minimal in part to imposter syndrome associated with "but I'm not a developer". In this article, I will share a little about why you should contribute, and provide some information about where to contribute, including some additional resources to get you started. 
+Developers are often encouraged to contribute to open source. If you don't consider yourself a developer, it can feel daunting to start on the journey to contributing. In the last year, I've found that the number of folks participating in open source is minimal in part to imposter syndrome associated with "but I'm not a developer". In this article, I will share a little about why you should contribute to Go OSS projects, and provide some information about where to contribute, including some additional resources to get you started. 
 
 ## Why should you contribute to an open source project?
 
@@ -45,7 +45,7 @@ Many large projects have contributor summits that allow individuals to meet and 
 
 Sometimes, the best question to ask is _who_ rather than _what_. Who do you want to collaborate with? Understanding the who can help guide your focus to specific projects that allow you to work with those folks. 
 
-Another question to ask prior to what is: How long do you want to contribute? For example, is this a one-time contribution, or something you are willing to provide on-going support? Being clear with your objectives can help you be successful in your selection of projects and contributions. 
+Another question to ask yourself up front: How long do you want to contribute? For example, is this a one-time contribution, or something you are willing to provide on-going support? Being clear with your objectives can help you be successful in your selection of projects and contributions. 
 
 > 💡 Just because something is "public" on GitHub or Gitlab, and even if there are `CONTRIBUTING` files, it doesn't mean that the repository owner wants collaborators or contributors. Sometimes folks are coding in the open. Before you invest a lot of work into a contribution, send an initial query through an issue or via a contact address.
 
@@ -57,7 +57,7 @@ You can also explore things that aren't related to your company at all! This wil
 
 One method to find projects is to look for **active projects in your skill sets**. I'm going to walk through finding a Go project.  
 
-> 💡 Communities may have a specific artifact repository that can help you identify popular projects. [Chef Supermarket](https://supermarket.chef.io/), [Puppet Forge](https://forge.puppet.com/), and [RubyGems](https://rubygems.org/) can help you find chef, puppet, and ruby projects for example.
+> 💡 Communities may have a specific artifact repository that can help you identify popular projects. [Chef Supermarket](https://supermarket.chef.io/), [Puppet Forge](https://forge.puppet.com/), [Go Packages](https://godoc.org/),[RubyGems](https://rubygems.org/) can help you find Chef, Puppet, Go, and Ruby projects for example.
 
 Lots of Go projects are on GitHub. Searching for go, and then limiting the Languages to Go specifically will give me a sorted list of projects based on "Best Match". 
 
@@ -72,6 +72,8 @@ Choosing "Most stars" will start with huge projects like [go](https://github.com
 The [Hugo](https://github.com/gohugoio/hugo) project is a little bit further down and looks like a great project that is slightly smaller but still has a lot of support and impact.
 
 One of the first things I do when evaluating a project is to verify that the project is properly [licensed](https://opensource.org/licenses) for open source. Just because something is on GitHub doesn't mean that it's available to use, modify or share. If it doesn't have an explicit license that allows for using, modifying, and sharing, then it's a non-starter for contributions.
+
+> 💡 The Open Source Initiative maintains the [list of open source licenses](https://opensource.org/licenses) that comply with the Open Source Definition. Licenses that are included in this list allow software to be freely used, modified, and shared. 
 
 The `hugo` project has an [Apache-2.0 License](https://opensource.org/licenses/Apache-2.0) so it's good for contributions. 
 
@@ -127,7 +129,7 @@ A final method is to look for **community inquiries**. These can come via differ
 
 Some projects use labels to mark issues that are good for new contributors. These issues generally focus on documentation or code issues but are good way to learn about the project as a beginner. It's helpful to lurk and examine both open and closed issues to see how contributors participate and maintainers support contributions.
 
-> 💡 The most important thing is to be kind in your contributions. If you find that your chosen project has toxic contributors, it's OK to walk away from the project. 
+> 💡  Be kind in your contributions.  If you find that your chosen project has toxicity that makes contributing negative, it's OK to walk away from the project and find something new. Toxicity can look and feel different to each contributor. 
 
 Sometimes projects will use Trello or GitHub Projects to organize planned issues. Larger projects may have a regular scheduled online community hangout to plan and identify areas of concern. 
 
@@ -139,7 +141,7 @@ The Porter project has a rich set of labels from this prioritized view to see "g
 
 ## Wrap Up
 
-While many of the resources out there focus on developers, we all have a lot to contribute to open source. We don't have to accept software as-is. We can shape, define, and help move industry practices in our desired directions.
+While many of the resources out there focus on developers, we all have a lot to contribute to go projects in open source. We don't have to accept software as-is. We can shape, define, and help move industry practices in our desired directions.
 
 If you want to have a greater impact and support open source as a whole, [join the Open Source Initiative](https://opensource.org/membership), a member-driven community non-profit that promotes the use of open source software.
 
@@ -157,9 +159,8 @@ Additional Resources:
 
 * [A Model IP and Open Source Contribution Policy](https://processmechanics.com/2015/07/22/a-model-ip-and-open-source-contribution-policy/)
 * [Forge Your Future with Open Source](https://pragprog.com/book/vbopens/forge-your-future-with-open-source) by VM Brasseur
-* [Open Source Licenses](https://opensource.org/licenses)
+* [Check whether a license is a valid Open Source Licenses](https://opensource.org/licenses)
 * [Join the Open Source Initiative](https://opensource.org/membership)
-* [Open Source Licensing in the Real World](http://sysadvent.blogspot.com/2017/12/day-23-open-source-licensing-in-real.html)
 * [Open Source Guides](https://opensource.guide/) and the [project](https://github.com/github/opensource.guide)
 
 ## About the Author
