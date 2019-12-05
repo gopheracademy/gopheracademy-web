@@ -15,12 +15,19 @@ Here are the articles from our previous years:
 
 [2018 Posts](https://blog.gopheracademy.com/series/advent-2018/) 
 
-[2017 Posts](https://blog.gopheracademy.com/series/advent-2017/) 
+[2017 Posts](https://blog.gopheracademy.com/series/advent-2017/)
 
-[2016 Posts](https://blog.gopheracademy.com/series/advent-2016/) 
+[2016 Posts](https://blog.gopheracademy.com/series/advent-2016/)
 
-[2015 Posts](https://blog.gopheracademy.com/series/advent-2015/) 
+[2015 Posts](https://blog.gopheracademy.com/series/advent-2015/)
 
-[2014 Posts](https://blog.gopheracademy.com/series/advent-2014/) 
+[2014 Posts](https://blog.gopheracademy.com/series/advent-2014/)
 
-[2013 Posts](https://blog.gopheracademy.com/series/advent-2013/) 
+[2013 Posts](https://blog.gopheracademy.com/series/advent-2013/)
+
+We hope you enjoy these posts from the community!
+
+Brian Ketelsen and Erik St. Martin
+Gopher Academy 
+
+P.S. Keep your eyes on the [GopherCon](https://www.gophercon.com) website; 2020 information is going to be posted soon!
