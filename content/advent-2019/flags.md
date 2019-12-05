@@ -1,11 +1,11 @@
 +++
 title = "Fun With Flags"
-date = "2019-12-08T00:00:00+00:00"
+date = "2019-12-06T00:00:00+00:00"
 series = ["Advent 2019"]
 author = ["Miki Tebeka"]
 +++
 
-In a [previous article](FIXME) we discussed why command line applications are
+In a [previous article](https://blog.gopheracademy.com/advent-2019/cmdline/) we discussed why command line applications are
 important and talked about few guidelines. In this article we'll see how we can
 use the built-in [flag](https://golang.org/pkg/flag/) package to write command
 line applications.
@@ -153,7 +153,7 @@ func (p *portVar) Set(s string) error {
 ## Sub Commands
 
 Instead of having one executable to start the HTTP server and another to check
-it's alive. We can have one executable that does both commands (same as `git`
+it's alive, we can have one executable that does both commands (same as `git`
 have many sub-commands - `clone`, `add`, `diff` ...). We can do that with
 [flag.FlagSet](https://golang.org/pkg/flag/#FlagSet).
 
@@ -249,7 +249,7 @@ func runHTTPD() error {
    `flag.ContinueOnError` so parse error will not exit the program. The only function
    that should exit the program is `main`, all others should return an error
 5. Pass rest of arguments. e.g. `["app", "check", "http://localhost:8080"]` →
-   `["localhost:8081]`
+   `["localhost:8081"]`
 6. [fs.Arg](https://golang.org/pkg/flag/#FlagSet.Arg) returns the nth command
    line argument (not including the program name) after parsing
 
@@ -268,12 +268,14 @@ You can see the full source code for the examples
 
 
 # About the Author
+
 Hi there, I'm Miki, nice to e-meet you ☺. I've been a long time developer and
-have been working with Go for about 10 years. I write code professionally as
-a consultant and contribute a lot to open source. Apart from that I'm a [book
-author](https://www.amazon.com/Forging-Python-practices-lessons-developing-ebook/dp/B07C1SH5MP) author, an author on [LinkedIn
-learning](https://www.linkedin.com/learning/search?keywords=miki+tebeka), one of
-the organizers of [GopherCon Israel](https://www.gophercon.org.il/) and [an
-instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
+have been working with Go for about 10 years. I write code professionally as a
+consultant and contribute a lot to open source. Apart from that I'm a [book
+author](https://www.amazon.com/Forging-Python-practices-lessons-developing-ebook/dp/B07C1SH5MP),
+an author on [LinkedIn
+learning](https://www.linkedin.com/learning/instructors/miki-tebeka?u=2125562),
+one of the organizers of [GopherCon Israel](https://www.gophercon.org.il/) and
+[an instructor](https://www.353.solutions/workshops).  Feel free to [drop me a
 line](mailto:miki@353solutions.com) and let me know if you learned something
 new or if you'd like to learn more.
