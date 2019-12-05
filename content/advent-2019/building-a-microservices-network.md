@@ -1,5 +1,5 @@
 +++
-title = Building a global services network using Go, QUIC and Micro
+title = "Building a global services network using Go, QUIC and Micro"
 author = ["Milos Gajdos", "Jake Sanders", "Asim Aslam"]
 series = ["Advent 2019"]
 date = "2019-12-08T00:00:00+00:00"
