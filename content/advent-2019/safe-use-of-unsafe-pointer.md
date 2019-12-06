@@ -2,6 +2,7 @@
 date = "2019-12-05T00:00:00+00:00"
 title = "Safe use of unsafe.Pointer"
 subtitle = "Using Go tools to safely write unsafe code."
+series = ["Advent 2019"]
 +++
 
 Package [`unsafe`](https://golang.org/pkg/unsafe/) provides an escape hatch from
