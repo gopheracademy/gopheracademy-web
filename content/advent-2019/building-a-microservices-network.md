@@ -73,7 +73,7 @@ It may look fairly familiar to Go developers. With Go Micro we’ve tried to mai
 
 Most of the interface methods should hopefully be self-explanatory, but you might be wondering about channels and sessions. Channels are much like addresses, providing a way to segment different message streams over the tunnel. Listeners listen on a given channel and return a unique session when a client dials into the channel. The session is used to communicate between peers on the same tunnel channel. The Go Micro tunnel provides different communication semantics too. You can choose to use either unicast or multicast. 
 
-<img src="https://raw.githubusercontent.com/micro/docs/master/images/session.svg" />
+<img src="https://raw.githubusercontent.com/micro/docs/master/images/session.svg?sanitize=true" />
 
 In addition tunnels enable bidirectional connections; sessions can be dialled or listened from either side. This enables the reversal of connections so anything behind a [NAT](https://en.wikipedia.org/wiki/Network_address_translation) or without a public IP can become a server.
 
