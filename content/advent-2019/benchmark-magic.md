@@ -1,4 +1,5 @@
 +++
+author = ["Seebs"]
 date = "2019-12-09T00:00:00+00:00"
 title = "Benchmark Surprises"
 subtitle = "Any Sufficiently Advanced Benchmark Is Indistinguishable From Magic"
