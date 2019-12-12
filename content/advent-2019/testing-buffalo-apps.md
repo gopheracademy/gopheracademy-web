@@ -221,7 +221,7 @@ This test ensures that the resulting date is formatted accordingly.
 
 ## Actions
 
-Actions are the C in the MVC design pattern is where we join our application domain and uses the view to represent a correct response to the user (or external system in the case of an API).
+Actions are the C in the MVC design pattern, we join our application domain with the view in the actions, to represent a correct response to the user (or external system in the case of an API).
 
 These are also called handlers. And its tests are typically integration tests. This is because Actions are not intended to store business logic in them (Fat controller anti-pattern), hence testing Actions will imply using the model and the view layers to test the complete operation. 
 
