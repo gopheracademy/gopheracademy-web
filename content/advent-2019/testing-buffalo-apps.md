@@ -7,7 +7,7 @@ linktitle = "Testing Buffalo"
 
 Buffalo is a great tool to rapidly ship software solutions to the market, inspired by the famous Ruby on Rails framework, it brought Rapid Application Development to the Go Language. I say Buffalo, by far provides the best developer experience among other web development frameworks in Go, but I'm obviously biased by being part of the Buffalo core team. Buffalo's existence has lead my team at Wawandco to deliver great apps within the last 2 years, and we are still delivering. 
 
-Don't worry, this article is not (only) about the greatness of buffalo, with the speed that buffalo provides comes a lot of responsibility when it comes to developing apps. As (Uncle) Bob C. Martin says:
+Don't worry, this article is not (only) about the greatness of Buffalo, with the speed that Buffalo provides comes a lot of responsibility when it comes to developing apps. As (Uncle) Bob C. Martin says:
 
 >
 > The only way to go fast, is to go well!
@@ -25,7 +25,7 @@ $ buffalo test -v
 $ buffalo test ./actions/... --run ActionsSuite/MyActionTest
 ```
 
-However, while the framework provides the foundational aspects to do great testing, I've found that my coworkers and I struggled at some point with understanding how to test different elements of Buffalo, and deep at the 3rd of 4th why we found that it was more about understanding the buffalo stack, the anatomy of a Buffalo app and the responsibilities of each of these parts or a Buffalo app.
+However, while the framework provides the foundational aspects to do great testing, I've found that my coworkers and I struggled at some point with understanding how to test different elements of Buffalo, and deep at the 3rd of 4th why we found that it was more about understanding the Buffalo stack, the anatomy of a Buffalo app and the responsibilities of each of these parts or a Buffalo app.
 
 In this post I plan to explain how my team and I test Buffalo apps by going through the different layers of a typical Buffalo app.
 
@@ -175,7 +175,7 @@ func HelperFormatDate(t time.Time) string {
 }
 ```
 
-And are added to buffalo apps on the render.go `init()` function. 
+And are added to Buffalo apps on the render.go `init()` function. 
 
 ```go
 func init() {
@@ -330,7 +330,7 @@ That takes us into the last and in my opinion more important of the layers, the 
 - Reporting specific queries in functions that talk to our database and return structs
 - Important background procedures like saving certain events in our db for later consumption.
 
-And the Database? Yes, model in a buffalo app usually is connected with the database, not that the database is the center of our domain model but usually our apps will save state in a persistent storage in the shape of a database.
+And the Database? Yes, model in a Buffalo app usually is connected with the database, not that the database is the center of our domain model but usually our apps will save state in a persistent storage in the shape of a database.
 
 Tests here usually imply loading data to the database, and then doing something with the data in the database. Or passing something to a function and checking that it reacts with the correct response for what we have passed. Tests here are about the correctness in relation with our business.
 
@@ -385,7 +385,7 @@ func (ms *ModelSuite) Test_ComputeMonthlySalary() {
 
 Where you load employees, time-offs and loans and then check that the employee NextPay method returns the correct value.
 
-Fixtures, in Buffalo, are a great tool when it comes to loading data. I will not cover these and other tools like Fako in this article, but I hope to plant the seed for you to start doing a lot more testing your buffalo apps.
+Fixtures, in Buffalo, are a great tool when it comes to loading data. I will not cover these and other tools like Fako in this article, but I hope to plant the seed for you to start doing a lot more testing your Buffalo apps.
 
 ## Wrapping up
 
