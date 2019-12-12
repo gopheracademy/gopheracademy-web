@@ -96,7 +96,7 @@ As you might have noticed we’ve not entered in detail on things like What the 
 In Buffalo a middleware typically looks like:
 
 ```go
-func AuthorizeHousingCompany(next buffalo.Handler) buffalo.Handler {
+func AuthorizeCompany(next buffalo.Handler) buffalo.Handler {
    return func(c buffalo.Context) error {
       // do something here and then execute the next handler
        return next(c)
