@@ -223,7 +223,7 @@ This test ensures that the resulting date is formatted accordingly.
 
 Actions are the C in the MVC design pattern, we join our application domain with the view in the actions, to represent a correct response to the user (or external system in the case of an API).
 
-These are also called handlers. And its tests are typically integration tests. This is because Actions are not intended to store business logic in them (Fat controller anti-pattern), hence testing Actions will imply using the model and the view layers to test the complete operation. 
+These are also called handlers, and its tests are typically integration tests. This is because Actions are not intended to store business logic in them (Fat controller anti-pattern), hence testing Actions will imply using the model and the view layers to test the complete operation. 
 
 Another layer that often gets in the mix is the middleware layer, when testing actions we typically test the middlewares applied to the action in app.go.
 
@@ -244,7 +244,7 @@ func HomeHandler(c buffalo.Context) error {
 }
 ```
 
-The action itself doesn’t do much, it just renders a view (index.html). And index.html looks like 
+The action itself doesn’t do much, it just renders a view (index.html). index.html looks like: 
 
 ```html
 <p>Welcome to your app</p>
@@ -389,6 +389,6 @@ Fixtures, in Buffalo, are a great tool when it comes to loading data. I will not
 
 ## Wrapping up
 
-As I mentioned when I started this post Buffalo comes with testing ready for you. I explained in this post some of the layers that you should be testing in a typical Buffalo app but there are other layers that I didn’t mention (Background Tasks and Emails jump to my mind immediately).
+As I mentioned when I started this post, Buffalo comes with testing ready for you. I explained in this post some of the layers that you should be testing in a typical Buffalo app but there are other layers that I didn’t mention (Background Tasks and Emails jump to my mind immediately).
 
 I hope you enjoyed the read, If you have questions or comments reach me in twitter at [@paganotoni](https://twitter.com/paganotoni) or find more about my company (Wawandco) at [wawand.co](http://wawand.co) or if you’re someone visual you can check our our [dribbble profile](https://dribbble.com/wawandco).
