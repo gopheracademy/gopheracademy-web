@@ -1,5 +1,5 @@
 +++
-date = 2019-27-01T06:40:42Z
+date = "2019-12-27T00:00:00+00:00"
 author = ["Antonio Pagano"]
 title = "Testing Buffalo Applications"
 linktitle = "Testing Buffalo"
@@ -343,7 +343,7 @@ type Employee struct {
    YearlySalary float64
 }
  
-//NextPay computes next employee monthly payment.
+// NextPay computes next employee monthly payment.
 func (e Employee) NextPay() float64 {
    result := e.YearlySalary / 12.0
    result -= e.totalMonthlyReductions() //Loans and so on
