@@ -244,7 +244,7 @@ func HomeHandler(c buffalo.Context) error {
 }
 ```
 
-The action itself doesn’t do much, it just renders a view (index.html). And index.html looks like 
+The action itself doesn’t do much, it just renders a view (index.html). index.html looks like: 
 
 ```html
 <p>Welcome to your app</p>
