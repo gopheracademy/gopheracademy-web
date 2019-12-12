@@ -5,12 +5,12 @@ title = "Testing Buffalo Applications"
 linktitle = "Testing Buffalo"
 +++
 
-Buffalo is a great tool to rapidly ship software solutions to the market, inspired by the famous Ruby on Rails framework, it brought Rapid Application Development to the Go Language. I say Buffalo, by far provides the best developer experience among other web development frameworks in Go, but I'm obviously biased by being part of the Buffalo core team. Buffalo existence has lead my team at Wawandco to deliver great apps within the last 2 years, and we are still delivering. 
+Buffalo is a great tool to rapidly ship software solutions to the market, inspired by the famous Ruby on Rails framework, it brought Rapid Application Development to the Go Language. I say Buffalo, by far provides the best developer experience among other web development frameworks in Go, but I'm obviously biased by being part of the Buffalo core team. Buffalo's existence has lead my team at Wawandco to deliver great apps within the last 2 years, and we are still delivering. 
 
 Don't worry, this article is not (only) about the greatness of buffalo, with the speed that buffalo provides comes a lot of responsibility when it comes to developing apps. As (Uncle) Bob C. Martin says:
 
 >
-> The only way to go fast, is go well!
+> The only way to go fast, is to go well!
 >
 > Bob C. Martin
 
