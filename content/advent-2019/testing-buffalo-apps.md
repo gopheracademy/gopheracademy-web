@@ -343,7 +343,7 @@ type Employee struct {
    YearlySalary float64
 }
  
-//NextPay computes
+//NextPay computes next employee monthly payment.
 func (e Employee) NextPay() float64 {
    result := e.YearlySalary / 12.0
    result -= e.totalMonthlyReductions() //Loans and so on
