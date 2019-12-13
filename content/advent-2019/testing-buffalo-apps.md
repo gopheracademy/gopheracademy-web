@@ -39,11 +39,15 @@ And now lets go one by one of these layers to explain what that layer does and s
 
 ## R is for routes
 
-Routes are defined typically in the app.go App(). This function is in charge of building the app object that would be used by the main package.
+Routes are defined typically in the `app.go` file `App()` function. This function is in charge of building the buffalo.App object, that would be used by the main package of our binary.
 
-In the App() function you will see instructions like `app.GET(“/home”, homeHandler)` which associate an HTTP method, a path and a Buffalo handler.
+A simple route looks like
 
-Routes define what will be served and where will it be served. So our route tests should specify where our handlers are mounted.
+```go
+app.GET("/home", home) // GET method to the /home path will be handled by the home Handler
+```
+
+A route allows to associate an HTTP method, a Path and a Buffalo handler. One pattern that my team uses is adding a test case for all the routes in our application. Something Like:
 
 ```go
 /* in app_test.go */
@@ -96,7 +100,7 @@ As you might have noticed we’ve not entered in detail on things like What the 
 In Buffalo a middleware typically looks like:
 
 ```go
-func AuthorizeCompany(next buffalo.Handler) buffalo.Handler {
+func Company(next buffalo.Handler) buffalo.Handler {
    return func(c buffalo.Context) error {
       // do something here and then execute the next handler
        return next(c)
