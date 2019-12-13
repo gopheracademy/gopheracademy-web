@@ -39,7 +39,7 @@ And now lets go one by one of these layers to explain what that layer does and s
 
 ## R is for routes
 
-Routes are defined typically in the `app.go` file `App()` function. This function is in charge of building the buffalo.App object, that would be used by the main package of our binary.
+Routes are defined typically in the `actions/app.go` file. There the `App()` function is in charge of building the `buffalo.App` instance that would be used by the main package of our binary.
 
 A simple route looks like
 
