@@ -1,5 +1,5 @@
 +++
-date = "2019-12-27T00:00:00+00:00"
+date = "2019-12-01T00:00:00+00:00"
 author = ["Antonio Pagano"]
 title = "Testing Buffalo Applications"
 linktitle = "Testing Buffalo"
@@ -166,6 +166,61 @@ func (ms *MiddlewareSuite) Test_Company_Middleware() {
 
 ```
 
+### Fixtures? What's that?
+
+Ok, you caught me. I used Fixtures in the `Test_Company_Middleware`. So what's a Fixture?.
+
+[Fixtures](https://github.com/gobuffalo/suite/tree/master/fix) are a great way to have your test data separated from your actual test code. The sample fixture in the fixtures can illustrate how it typically looks:
+
+```yaml
+[[scenario]]
+name = "lots of widgets"
+
+  [[scenario.table]]
+    name = "widgets"
+
+    [[scenario.table.row]]
+      id = "<%= uuidNamed("widget") %>"
+      name = "This is widget #1"
+      body = "some widget body"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "This is widget #2"
+      body = "some widget body"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "This is widget #3"
+      body = "some widget body"
+      created_at = "<%= nowSub(3600) %>"
+      updated_at = "<%= nowAdd(3600) %>"
+
+  [[scenario.table]]
+    name = "users"
+
+    [[scenario.table.row]]
+      id = "<%= uuid() %>"
+      name = "Mark Bates"
+      admin = true
+      price = 19.99
+      widget_id = "<%= uuidNamed("widget") %>"
+      created_at = "<%= now() %>"
+      updated_at = "<%= now() %>"
+```
+
+These can be referenced by the test by using the [`Suite`](https://github.com/gobuffalo/suite) `LoadFixture` method. p.e:
+
+```go
+func (ms *MiddlewareSuite) Test_Company_Middleware() {
+   ms.LoadFixture("Load companies") //load companies fixture
+```
+
+Which allows to load the companies in our database before running tests.
 
 ## Helpers 
 
