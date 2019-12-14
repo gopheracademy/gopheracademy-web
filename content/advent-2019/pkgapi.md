@@ -175,9 +175,11 @@ Put thus, we can just import `willshakes` and to access the text of MacBeth we s
 
 The difference between the CUDA example and the Shakespeare example is that the CUDA example is an example where the resource is dynamic, while in the Shakespeare example, the resource is static.
 
-The use of the terms "static" and "dynamic" is good, but are standard use. To make it clearer, allow me to further explain:
+The use of the terms "static" and "dynamic" is not good, but are in standard use. To make it clearer, allow me to further explain:
 
-A resource is static if it is known at compile time. A resource is dynamic if it is unknown at compile time.
+A resource is static if its state is known at compile time. A resource is dynamic if its state unknown at compile time.
+
+Thus the Shakespeare resource is static because the entire corpus is known and available at compile time. The state of a graphics card availability may change and needs to be determined at runtime, therefore it is a dynamic resource.
 
 At the time of writing, there is [a proposal to allow static resources to be embedded in the final binary of a Go program](https://github.com/golang/go/issues/35950), so the story is still to be told on the Go end.
 
@@ -208,11 +210,11 @@ I have a few principles that form the axioms of what makes a good library:
 
 1. Reliable
 2. Easy to use/build
-3. Useable in many scenarios
+3. Generic
 
 ## Reliable ##
 
-Under the banner of "reliable", there are two features which makes a library good.
+First and foremost, a library must be reliable. What is the point of using a library if it cannot reliably do what it claims to do? There are many features of a  reliable library, enumerated below.
 
 ### Do One Thing ###
 
@@ -235,8 +237,27 @@ Having said that, if you develop driver libaraies, it might be a bit difficult t
 
 A good library does not manage resources for its user. Instead, it provides resource management utilties to the user.
 
-If you're writing a library that uses an OpenGL context
+For example: If you're writing a library that uses an OpenGL context to do something with OpenGL, don't create the OpenGL context in the library. Instead, require the user to pass in a OpenGL context.
 
-
+This is also true for allocations. Where possible, don't create allocations on behalf of the user.
 
 Dave Cheney recently wrote [a most excellent article on the topic of forcing allocations](https://dave.cheney.net/2019/09/05/dont-force-allocations-on-the-callers-of-your-api). The title's a bit confusing but the main point is similar to what I am espousing here.
+
+When a library doesn't manage resources for the user, it becomes clear that the user has to manage resources by themselves. The brunt of the responsibility falls onto the user, but the library becomes more reliable.
+
+
+## Easy to Use ##
+
+A good library is easy to use. There are a number of ways that a library can be easy to use.
+
+### Good Documentation ###
+
+A good library has good documentation. And to readers who think "tests are documentation", yes! Go has good support for examples, which are both documentation and tests. I enjoy using libraries that have examples when I go to their godoc.
+
+### Minimal Dependencies ###
+
+This is fairly contentious especially in the Big Picture view of this article (XXX section below). But in my opinion a good library has minimal dependencies.
+
+This is especially true of libraries where source code are the primary resource being shared. If a library whose purpose is to share source code were to depend on some resource library, I would be quite suspicious.
+
+Additional dependencies also increase the difficulty to use. I often check what each library imports in order to know that my imports are not going to suddenly call home to some server somewhere. I am not fastidious over it, only because there is so much to check.
