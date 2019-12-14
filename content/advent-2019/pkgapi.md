@@ -5,36 +5,7 @@ linktitle = "Short Title (use when necessary)"
 date = 2019-12-09T06:40:42Z
 +++
 
-There are many ways to think of a programming. Of late, I have been a fan of thinking of the act of programming as a conversation between the programmer and the computer. Furthering the analogy, in the most basic act of modern programming, the programmer is having two conversations with two different parties. These two parties are often conflated with one another, resulting in cofusion when people discuss programming languages. Given this is Gopheracademy, I will use Go to illustrate my points.
-
-The two conversations the programmer has with the computer is a conversation with the compiler and a conversation with the runtime system. I will explain the difference after the examples that follow.
-
-The first conversation the programmer is having is a conversation with the compiler. When we see code like this:
-
-```
-type Foo struct {
-     A, B int
-}
-```
-
-It's the programmer telling the compiler, "hey, next time you see `f := Foo{}`, know that we're talking about some memory space enough for two `int`".
-
-The second conversation the programmer has is telling the computer what to do. So when we see code that looks like this:
-
-```
-type plus(a Foo) int { return a.A+a.B }
-
-...
-two := plus(Foo{1,1})
-```
-
-It's the programmer telling the runtime, "When you see some memory space that we have agreed to call `Foo`, return me the `A+B` value in that memory".
-
-Now, it may seem a bit odd for me to talk about the separate conversations as if the are unrelated with one another. Go is a compiled language so the only thing that the programmer is talking to is the compile. That's true. Ultimately all programs are translated into binary code which the processor executes. However, it is still good to separate the notion of a runtime system and a compile time system.
-
-If you look at a snippet of code, and it doesn't do anything by itself, then it's a piece of code that is part of the conversation with the compiler. If you look at a snippet of code and it appears to tell the computer to do something, then it's a conversation with the runtime system via the compiler.
-
-My introduction of the act of programming as a conversatioon with the computer on two fronts is to facilitate a larger discussion on library design.
+As programmers we use libraries a lot. But library design is hard. In this article, I will walk through some considerations in designing a library.
 
 # Some Definitions and a Raison d'Être #
 
@@ -42,11 +13,11 @@ But first, let's go back to basics and address "why libraries"? Why do we write 
 
 First, note that I am using the term "libraries" instead of "packages", "modules" or "repository". Despite being used interchangably in my mind there are very subtle differences. Allow me to explain.
 
-## A Repository ##
+#### A Repository ####
 
 A repository is a collection of files containing soure code. They are typically arranged within a directory in the file system.
 
-## A Library ##
+#### A Library ####
 
 A library a collection of resources - usually source code - that is shared. Source code sharing can come in many forms. The most common way of doing this in Go is through packages, which the language supports [by specification](https://golang.org/ref/spec#Packages).
 
@@ -99,13 +70,13 @@ Observe that I have shared the source code from `common/lib.go` into two differe
 
 It is in this sense that I use the word "library" - a library is source code that is shared.
 
-## A Package ##
+#### A Package ####
 
 In general, libraries of source code in Go are arranged in packages and modules. A package is a collection of `.go` files. Usually a package does one thing. A package may depend on another package.
 
 The astute reader will note that having `lib.go` in the above example will cause any Go project to have a compilation failure. All `.go` files must declare at the very top, what package it is used for. The declaration `package foo` is a conversation to the compiler, telling the compiler to include the file in a package.
 
-## A Module ##
+#### A Module ####
 
 If a package is a collection of files containing source code, a module is a collection of packages. Go modules were designed to solve package dependency issues. Modules in Go are defined by a `go.mod` file, which lists all the packages the module depends on.
 
@@ -206,7 +177,7 @@ The `willshakes` library is an example of a resource library. For a real life us
 
 Now that I have defined the things that can go into a library, let's take a look at what makes a good library. We will start with the simpler, more obvious statements, before moving on to more nuanced considerations. Despite this, the simpler statements often come with caveats, which will be briefly explored.
 
-I have a few principles that form the axioms of what makes a good library:
+I have a few principles that form the basic principles of what makes a good library:
 
 1. Reliable
 2. Easy to use/build
@@ -216,7 +187,7 @@ I have a few principles that form the axioms of what makes a good library:
 
 First and foremost, a library must be reliable. What is the point of using a library if it cannot reliably do what it claims to do? There are many features of a  reliable library, enumerated below.
 
-### Do One Thing ###
+### Does One Thing ###
 
 A good library does one thing or provides one resource. What constitute "one thing" is usually the point of contention.
 
@@ -225,7 +196,7 @@ For example, consider the [grpc](https://godoc.org/google.golang.org/grpc) libra
 An example on the other extreme can be seen in the packages that pervade npm. `left-pad` was a package that provided one function that padded a string. It did one thing, and many packages depended upon it. Thus when the `left-pad` package was unpublished, it broke the internet.
 
 
-### Well-Tested ###
+### Is Well-Tested ###
 
 A good library is well-tested. Users who use the library must be able to feel confident about the library they're using. I would go so far to prefer only libraries that have been tested using property-based testing (I had previously written [an article about property-based testing on GopherAcademy](https://blog.gopheracademy.com/advent-2017/property-based-testing/)) or have been fuzz-tested.
 
@@ -233,7 +204,7 @@ A good thing to check on a well-tested library is whether the tests test for gen
 
 Having said that, if you develop driver libaraies, it might be a bit difficult to test such libraries. Perhaps this is an indictment on my poor ability to reason about testing, but I have found no good general-purpose testing patterns in the case of driver libraries.
 
-### Don't Manage Resources For Users ###
+### Doesn't Manage Resources For Users ###
 
 A good library does not manage resources for its user. Instead, it provides resource management utilties to the user.
 
@@ -256,11 +227,11 @@ A good library is easy to use. There are a number of ways that a library can be 
 
 A good library has good documentation. And to readers who think "tests are documentation", yes! Go has good support for examples, which are both documentation and tests. I enjoy using libraries that have examples when I go to their godoc.
 
-### Don't Panic ###
+### Doesn't Panic ###
 
 Panics should only happen in a case when there are no better options. Usually returning errors are a better thing to do.
 
-### Minimal Dependencies ###
+### Has Minimal Dependencies ###
 
 This is fairly contentious especially in the Big Picture view of this article (see the Tension section below). But in my opinion a good library has minimal dependencies.
 
@@ -268,7 +239,7 @@ This is especially true of libraries where source code are the primary resource 
 
 Additional dependencies also increase the difficulty to use. I often check what each library imports in order to know that my imports are not going to suddenly call home to some server somewhere. I am not fastidious over it, only because there is so much to check.
 
-### Make the Zero Value Useful ###
+### Makes the Zero Value Useful ###
 
 One of the Go proverbs, the zero value of any data type should be useful. This avoids the need for complicated constructor functions. A very good example I enjoy is Gonum's `mat.Dense` type.
 
@@ -297,17 +268,25 @@ c.Mul(a, b)
 
 A good library is also generic - in that it can be used under a number of different scenarios. This has almost nothing to do with generics. Generics may help, but as of now Go provides enough for a library to be generic.
 
-### Accept Interfaces, Return Structs ###
+### Accepts Interfaces, Returns Structs ###
 
 This has been [said](https://medium.com/@cep21/what-accept-interfaces-return-structs-means-in-go-2fe879e25ee8) [to](https://mycodesmells.com/post/accept-interfaces-return-struct-in-go) [death](https://www.integralist.co.uk/posts/go-interfaces/) (even I had a post of [how to use interfaces in Go](https://blog.chewxy.com/2018/03/18/golang-interfaces/)), so allow me to say it once more: Accept interfaces, Return Structs.
 
 A function that can accept anything within limits is by definition generic.
 
-### Play Nice. Compose ###
+### Is Extensible ###
 
-The key to a library that is generic is that it is composable. Yes, libraries compose. If we are to consider only packages (i.e. libraries whose main purpose is to share source code), then the logical endpoint would be [MLton-style modules](https://mlton.org/Features) (not to be confused with Go modules).
+Allow users of your library to extend the functions and behaviour of the objects in your library. The main method to do so in Go would be to take advantage of the composability of data types.
 
-I hesitate to go further with the logical extreme as introducing MLton (and SML) would require overloading several terms such as `struct` and confusing terms from other languages like `functor`. However, due to the way MLton designed their modules system, the "Do One Thing" ethos is naturally arising - libraries are usually very small. The module system also defines a composing helper that allows modules to be composed.
+Which brings me to my next point -
+
+### Plays Nice ###
+
+The key to a library that is generic is that it is composable. Yes, _libraries_ compose. If we are to consider only packages (i.e. libraries whose main purpose is to share source code), then the logical endpoint would be [MLton-style modules](https://mlton.org/Features) (not to be confused with Go modules).
+
+ Due to the way MLton (and SML) designed their modules system, the "Do One Thing" ethos is naturally arising - libraries are usually very small. The module system of those languages also defines a helper that allows modules to be composed.
+
+Now, I put it to you, dear readers, that something like that is doable in Go, albeit in a less pure manner.
 
 So how does one compose Go packages? Let us imagine an alternative Go with MLton-style modules. The closest equivalent with what we have right now would be to imagine if packages only ever exported interfaces and functions. You can stil write corresponding data types in a package but you cannot export them. What would the end result be?
 
@@ -319,4 +298,129 @@ This happens in Go as is. The following graph shows packages that are composable
 
 [IMAGE]
 
-The arrow points at an interface defined outside the package (i.e. this is a dependency)
+The arrow points at an interface defined outside the package (i.e. this is a dependency). From this we can derive a metric of how composable the entire Go ecosystem is. The eigenvector centrality of packages are distributed as follows:
+
+[IMAGE2]
+
+
+# The Tension in Designing Libraries #
+
+If you are a careful reader, you would have immediately spotted the tension that exists between the principles that I list for what qualifies as a good library.
+
+A good reliable library does not manage resources for the user. However, this usually makes the library difficult to use.
+
+Let us revisit the Gonum example from the section Make The Zero Value Useful.
+
+In the first part of the example, repeated here:
+
+```
+c := mat.NewDense(2, 2, make([]float64, 4))
+c.Mul(a, b)
+```
+
+We see that this follows very much the "Don't manage resources for your user". Instead, the user has to create the `*Dense`, and allocate the value (that's what `make([]float64, 4)` is there for).
+
+Gonum provides a user friendly alternative, as shown in the second part of the example:
+
+```
+var c mat.Dense
+c.Mul(a, b)
+```
+
+However, this violates the "Don't manage resources for your user".
+
+A more egregious example can be found in my own `tensor` library. A `*tensor.Dense` has a method `Mul`, defined with a signature as follows:
+
+```
+func (t *Dense) Mul(other *Dense, opts ...FuncOpt) (*Dense, error)
+```
+
+By default the `tensor` library manages memory allocation for the user. But the functional options allow for modification to the behaviour of `Mul`.
+
+So for example, one may manually manage the allocations:
+
+```
+a := tensor.New(tensor.WithShape(2,3), tensor.WithBacking([]float64{...}))
+b := tensor.New(tensor.WithShape(3,2), tensor.WithBacking([]float64{...}))
+foo := tensor.New(tensor.WithShape(2,2), tensor.Of(tensor.Float64))
+c, err := a.Mul(b, T.WithReuse(foo))
+```
+
+The result, `c` is exactly the same as `foo`.
+
+So why did I bring up the tension, and showed off two "bad" examples?
+
+Because to resolve the tension, one must consider the bigger picture.
+
+## The Bigger Picture ##
+
+Start with the big picture in mind. The big picture for the `tensor` package is so that it  works generically across data types and generically across computation. This is useful for the kinds of deep learning workload that Gorgonia handles.
+
+For example, the same example from above may be used on `float32` types, computed in a GPU:
+
+```
+type Engine struct {
+	tensor.StdEng
+	ctx cu.Context
+	*cublas.Standard
+}
+
+// Engine implemnents `tensor.Engine`
+
+e := newEngine()
+a := tensor.New(tensor.WithShape(2, 3), tensor.WithEngine(e), tensor.Of(tensor.Float32))
+b := tensor.New(tensor.WithShape(3, 2), tensor.WithEngine(e), tensor.Of(tensor.Float32))
+c := tensor.New(tensor.WithShape(2, 2), tensor.WithEngine(e), tensorlOf(tensor.Float32))
+
+// fill up the values of a and b
+// ...
+
+_, err := a.Mul(b, tensor.WithReuse(c))
+
+```
+
+Now that the big picture is clear, we can choose to make some compromises. To take stock:
+
+* The `tensor` library is designed to be generic across data types and generic across computation.
+* We should not manage resources for the user.
+* The library must be easy to use.
+* The library must be extensible.
+
+If we prioritise "not managing resources for the user", then we immediately lose "easy to use" and "extensible".
+
+However, if we do not prioritize "not managing resources for the user", then a user who wants to use the `tensor` package using CUDA might fall into the trap of thinking that the default behaviour for `Mul` would work on CUDA as well (it will not - the program panics because GPU memory access is quite finnicky)
+
+## Consider the Use Cases ##
+
+To resolve the tension, I considered the different use cases. The most common use case, I reasoned, would be to use the `tensor` package on the CPU, with well known data types like `float64` and `float32`.
+
+I built a heirarchy of needs, with GPU usage at the top. This sacrifices some of the ease-of-use, but I reckoned if you want to use GPU, you'd be an expert user.
+
+## Make the Tradeoff Clear ##
+
+After the decision has been made, the tradeoff should be well documented.
+
+# Conclusion #
+
+This article is quite long, at close to 4000 words (if `count-words` is to be trusted). Perhaps it's time to end.
+
+The main point of this article is that library design is hard. There are many considerations to take into account. I list them here:
+
+* What goes into a library?
+* What types of library?
+* A good library is reliable, having the following features:
+    * Does one thing/Provides one resource.
+    * Is eell-tested
+    * Doesn't manage resources for users.
+* A good library is easy to use
+    * Has good documentation and examples
+    * Does not panic
+    * Has minimal dependencies
+    * Makes the zero value useful
+* A good library is generic
+    * Functions that accept interfaces and return structs
+    * Is extensible.
+    * Plays nice with the environment.
+* Consider the big picture reason for designing a library.
+* Consider the use cases.
+* Make the tradeoff clear.
