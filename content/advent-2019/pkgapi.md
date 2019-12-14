@@ -245,19 +245,78 @@ Dave Cheney recently wrote [a most excellent article on the topic of forcing all
 
 When a library doesn't manage resources for the user, it becomes clear that the user has to manage resources by themselves. The brunt of the responsibility falls onto the user, but the library becomes more reliable.
 
+Last but not least, don't spawn goroutines on behalf of the user.
+
 
 ## Easy to Use ##
 
 A good library is easy to use. There are a number of ways that a library can be easy to use.
 
-### Good Documentation ###
+### Good Documentation and Examples ###
 
 A good library has good documentation. And to readers who think "tests are documentation", yes! Go has good support for examples, which are both documentation and tests. I enjoy using libraries that have examples when I go to their godoc.
 
+### Don't Panic ###
+
+Panics should only happen in a case when there are no better options. Usually returning errors are a better thing to do.
+
 ### Minimal Dependencies ###
 
-This is fairly contentious especially in the Big Picture view of this article (XXX section below). But in my opinion a good library has minimal dependencies.
+This is fairly contentious especially in the Big Picture view of this article (see the Tension section below). But in my opinion a good library has minimal dependencies.
 
 This is especially true of libraries where source code are the primary resource being shared. If a library whose purpose is to share source code were to depend on some resource library, I would be quite suspicious.
 
 Additional dependencies also increase the difficulty to use. I often check what each library imports in order to know that my imports are not going to suddenly call home to some server somewhere. I am not fastidious over it, only because there is so much to check.
+
+### Make the Zero Value Useful ###
+
+One of the Go proverbs, the zero value of any data type should be useful. This avoids the need for complicated constructor functions. A very good example I enjoy is Gonum's `mat.Dense` type.
+
+The `mat.Dense` data type has a method `Mul` which performs matrix multiplication. It has the following type signature:
+
+```
+func (m *Dense) Mul(a, b Matrix)
+```
+
+The result of `a × b` is placed in `m`. Thus, if `a` is a (2,3) matrix and `b` is a (3,2) matrix, then `m` will be a (2,2) matrix. The documentation is not clear, so most people will try something like this:
+
+```
+c := mat.NewDense(2, 2, make([]float64, 4))
+c.Mul(a, b)
+```
+
+
+In actuality, this would work as well:
+
+```
+var c mat.Dense
+c.Mul(a, b)
+```
+
+## Generic ##
+
+A good library is also generic - in that it can be used under a number of different scenarios. This has almost nothing to do with generics. Generics may help, but as of now Go provides enough for a library to be generic.
+
+### Accept Interfaces, Return Structs ###
+
+This has been [said](https://medium.com/@cep21/what-accept-interfaces-return-structs-means-in-go-2fe879e25ee8) [to](https://mycodesmells.com/post/accept-interfaces-return-struct-in-go) [death](https://www.integralist.co.uk/posts/go-interfaces/) (even I had a post of [how to use interfaces in Go](https://blog.chewxy.com/2018/03/18/golang-interfaces/)), so allow me to say it once more: Accept interfaces, Return Structs.
+
+A function that can accept anything within limits is by definition generic.
+
+### Play Nice. Compose ###
+
+The key to a library that is generic is that it is composable. Yes, libraries compose. If we are to consider only packages (i.e. libraries whose main purpose is to share source code), then the logical endpoint would be [MLton-style modules](https://mlton.org/Features) (not to be confused with Go modules).
+
+I hesitate to go further with the logical extreme as introducing MLton (and SML) would require overloading several terms such as `struct` and confusing terms from other languages like `functor`. However, due to the way MLton designed their modules system, the "Do One Thing" ethos is naturally arising - libraries are usually very small. The module system also defines a composing helper that allows modules to be composed.
+
+So how does one compose Go packages? Let us imagine an alternative Go with MLton-style modules. The closest equivalent with what we have right now would be to imagine if packages only ever exported interfaces and functions. You can stil write corresponding data types in a package but you cannot export them. What would the end result be?
+
+Such an alternative programming language would produce objects that are highly composable with one another. "Accept Interfaces, Return Structs" becomes less of a maxim and is essentially enforced by the language. `struct`s embed interfaces instead of concrete types.
+
+If all the concrete data types of package A are accepted by functions of package B, then we say package A and package B are composable.
+
+This happens in Go as is. The following graph shows packages that are composable with one another in my GOPATH.
+
+[IMAGE]
+
+The arrow points at an interface defined outside the package (i.e. this is a dependency)
