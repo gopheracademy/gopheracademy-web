@@ -6,8 +6,6 @@ date = 2019-12-14T00:00:00Z
 series = ["Advent 2019"]
 +++
 
-# API Clients for Humans
-
 Most developers, at one point or another, have either built a web API or have been a consumer of one. An API client is a package that provides a set of tools that can be used to develop software that consumes a specific API. These API clients, sometimes also referred to as a Client SDK, make it easier for consumers to integrate with your service. 
 
 API clients are themselves also APIs, and as such it is important to consider the user experience when designing and building them. This post discusses a variety of best practices for building API clients with a focus on delivering a great user experience. Topics that will be covered include object and method design, error handling, and configuration.
@@ -228,3 +226,6 @@ For example, if your API returns a `404`, rather than returning `fmt.Errorf("API
 ## Conclusion
 
 This post has attempted to provide some simple ways you can enhance the user experience for consumers of your API clients. This is by no means an exhaustive list, but will hopefully provide you with a good starting place the next time you sit down to write an API client package.
+
+If you have any questions, feel free to contact me! I'm [jmickey](https://mickey.dev) on [GitHub](https://github.com/jmickey)
+and [@jmickey_ on Twitter](https://twitter.com/jmickey_).
