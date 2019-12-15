@@ -1,8 +1,9 @@
 +++
 author = ["Josh Michielsen"]
 title = "API Clients for Humans"
-linktitle = "API Clients for Humans)"
+linktitle = "API Clients for Humans"
 date = 2019-12-14T00:00:00Z
+series = ["Advent 2019"]
 +++
 
 # API Clients for Humans
