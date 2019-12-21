@@ -11,9 +11,9 @@ We will start by bifurcating the acts of programming. We start by casting the ac
 
 First, consider the act of programming. The main purpose of programming is to produce programs that do useful things. Everything that follows is simply bureaucracy. Modern programming can be split into two main activities: writing the application and writing the support libraries that the application uses.
 
-The act of programming can be also be thought of as the programmer having two simultaneous conversations - one conversation is to the compiler to create a customized runtime environment and one conversation is to tell the runtime system what to do.
+The act of programming can be also be thought of as the programmer having two simultaneous conversations - one conversation is to the compiler to create a customised runtime environment and one conversation is to tell the runtime system what to do.
 
-In the same vein as casting the act of programming as conversations, we can cast the act of writing libraries as two conversations - one with the computer and one with another human (usually oneself in one's own future). We will consider these two kinds of conversation when we talk about the propoerties of a library.
+In the same vein as casting the act of programming as conversations, we can cast the act of writing libraries as two conversations - one with the computer and one with another human (usually oneself in one's own future). We will consider these two kinds of conversation when we talk about the properties of a library.
 
 The following graphic indicates the views of programming that I have espoused here
 
@@ -378,7 +378,7 @@ c.Mul(a, b)
 
 ## Reusable  ##
 
-A good library is also reusable under a number of different scenarios. Often arguments for generics in Go cites reusability as a main reason. However, as is now, Go offers a lot of opportunity for reusability.
+A good library is also reusable under a number of different scenarios. Often arguments for generics in Go cites re-usability as a main reason. However, as is now, Go offers a lot of opportunity for re-usability.
 
 ### Accepts Interfaces, Returns Structs ###
 
@@ -1929,7 +1929,7 @@ type Engine struct {
 	*cublas.Standard
 }
 
-// Engine implemnents `tensor.Engine`
+// Engine implements `tensor.Engine`
 
 e := newEngine()
 a := tensor.New(tensor.WithShape(2, 3), tensor.WithEngine(e), tensor.Of(tensor.Float32))
@@ -1958,13 +1958,13 @@ However, if we do not prioritize "not managing resources for the user", then a u
 
 To resolve the tension, I considered the different use cases. The most common use case, I reasoned, would be to use the `tensor` package on the CPU, with well known data types like `float64` and `float32`.
 
-I built a heirarchy of needs, with GPU usage at the top. This sacrifices some of the ease-of-use, but I reckoned if you want to use GPU, you'd be an expert user.
+I built a hierarchy of needs, with GPU usage at the top. This sacrifices some of the ease-of-use, but I reckoned if you want to use GPU, you'd be an expert user.
 
-## Heirarchical Use of Libraries ##
+## Hierarchical Use of Libraries ##
 
-Sometimes, it's not quite possible to resolve the tension. In cases like that, I would opt to build a heirarchical family of libraries.
+Sometimes, it's not quite possible to resolve the tension. In cases like that, I would opt to build a hierarchical family of libraries.
 
-In the course of programming across different languages, I have noticed some good patterns. Good libraries are somewhat heirarchically organized - they are built on top of structures from libraries in a compositional manner.
+In the course of programming across different languages, I have noticed some good patterns. Good libraries are somewhat hierarchically organised - they are built on top of structures from libraries in a compositional manner.
 
 <div style="margin-left:auto;margin-right:auto; width: 80%; margin-bottom:20px">
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1974,9 +1974,9 @@ In the course of programming across different languages, I have noticed some goo
 
 Recall that the act of building libraries is in service of building a useful program. It would be very nice to build a user-friendly library so that it may be used in the final program.
 
-The solution is hence to build a family of libraries.  Each library builds atop a more fundamental library. As we traverse up the heirarchy of libraries, the use case becomes more narrower. In narrowing the possible use cases, it becomes more feasible to make decisions to perform automatic management for the user.
+The solution is hence to build a family of libraries.  Each library builds atop a more fundamental library. As we traverse up the hierarchy of libraries, the use case becomes more narrower. In narrowing the possible use cases, it becomes more feasible to make decisions to perform automatic management for the user.
 
-Note that this is orthogonal to the notion of abstracting. While it is true that as we traverse upwards along the heirarchy of libraries, the libraries become more abstract in general. But this doesn't necessarily have to be the case. Abstracting away the details is an orthogonal issue to be discussed on another day.
+Note that this is orthogonal to the notion of abstracting. While it is true that as we traverse upwards along the hierarchy of libraries, the libraries become more abstract in general. But this doesn't necessarily have to be the case. Abstracting away the details is an orthogonal issue to be discussed on another day.
 
 There aren't very many "families" of libraries out there in the Go ecosystem. Here are a few:
 
@@ -1986,13 +1986,13 @@ There aren't very many "families" of libraries out there in the Go ecosystem. He
 * [go-gl](https://github.com/go-gl)
 * [fyne](https://fyne.io)
 
-I think it's generally a good thing that there aren't many "families" of libraries. Observe the class of problems that these families of libraries solve - Gorgonia solves the deep learning problem. Gonum solves the numeric libraries problem. Go-HEP solves problems in highe energy physics. Fyne solves GUI problems. These are hard problems. I have no doubt that if we look into the Docker or Kubernetes subecosystems we will find families there too.
+I think it's generally a good thing that there aren't many "families" of libraries. Observe the class of problems that these families of libraries solve - Gorgonia solves the deep learning problem. Gonum solves the numeric libraries problem. Go-HEP solves problems in high energy physics. Fyne solves GUI problems. These are hard problems. I have no doubt that if we look into the Docker or Kubernetes sub-ecosystems we will find families there too.
 
-There is a danger of overengineering when designing families of libraries. That's an article for another day.
+There is a danger of over-engineering when designing families of libraries. That's an article for another day.
 
-## Make the Tradeoff Clear ##
+## Make the Trade-off Clear ##
 
-After the decision has been made, the tradeoff should be well documented. Every library at every level should have the tradeoffs listed.
+After the decision has been made, the trade-off should be well documented. Every library at every level should have the trade-offs listed.
 
 This is especially true of mid-level
 
@@ -2020,7 +2020,7 @@ The main point of this article is that library design is hard. There are many co
 * Consider the big picture reason for designing a library.
 * Consider the use cases.
 * Consider making a family of libraries.
-* Make the tradeoff clear.
+* Make the trade-off clear.
 
 
 ## Some Resources ##
