@@ -6,7 +6,7 @@ title = "Tour of Go Compilers"
 linktitle = "Tour of Go Compilers"
 +++
 
-On a high level, compilers are viewed as a single a single, solid, single-step-worker entity. A Gopher, aka Go programmer, interacts with the Go compiler via the abstractions of `go build` or `go install` commands. However, compilers, in their ideal form, consist of three layers creatively named: frontend, middle-end, and backend. The single `go {build,install}` command embarks on journey through the three layers to convert the raw Go source code into machine code.
+On a high level, compilers are viewed as a single, solid, single-step-worker entity. A Gopher, aka Go programmer, interacts with the Go compiler via the abstractions of `go build` or `go install` commands. However, compilers, in their ideal form, consist of three layers creatively named: frontend, middle-end, and backend. The single `go {build,install}` command embarks on a journey through the three layers to convert the raw Go source code into machine code.
 
 The frontend ingests the source code, perform lexical, syntactical, and semantical analyses to verify all the language level constraints are met and sensical. The frontend then generates what is known as intermediate representation (IR) to handout to the middle-end. The middle-end does not know the syntax of the language nor does it know the machine language. The middle-end is responsible for optimization via symbolic manipulation. The backend converts the IR into machine code suitable for the intended architecture.
 
@@ -16,7 +16,7 @@ In mathematical analogy, translating word problem into a collection of placehold
 
 The Go compiler obtained by downloading the archives available in the [Downloads](https://golang.org/dl/) page is called gc, which stands for "Go compiler", not "Garbage Collection" which is denoted by "GC". The code for gc resides [$GOROOT/src/cmd/compile](https://github.com/golang/go/tree/master/src/cmd/compile).
 
-Before discussing the various compilers of Go, we must know on what basis do they compiler certain source code. In other words, on what basis should any Go compiler accept certain constructs of submitted, presumably, Go code. The answer to this comes down to [The Go Programming Language Specification](https://golang.org/ref/spec).
+Before discussing the various compilers of Go, we must know on what basis do they compile certain source code. In other words, on what basis should any Go compiler accept certain constructs of submitted, presumably, Go code. The answer to this comes down to [The Go Programming Language Specification](https://golang.org/ref/spec).
 
 One of the strong points of Go is that it is based on a specification rather than on an implementation. This allows the implementation to be found right or wrong by testing it against edge-cases and improve either the spec or the implementation. There have been many cases reported in Go's issue tracker where gccgo, gc compiler, and the [go/types](https://golang.org/pkg/go/types/) package disagree on code validity. The fixes vary between fixing go/types, gc, gccgo, or even amending the spec to be more clear and specific about intentions.
 
@@ -64,7 +64,7 @@ Further Reading:
 
 - Iskander Sharipov in a [neat blogpost](https://quasilyte.dev/blog/post/go_ssa_rules/) goes through the SSA optimization rules used in the Go compiler.
 
-- The $GOROOT/src/cmd/compile directory tree contains the [Introduction to the Go compiler](https://github.com/golang/go/blob/master/src/cmd/compile/README.md) and [Introduction to the Go compiler's SSA backend](https://github.com/golang/go/blob/master/src/cmd/compile/internal/ssa/README.md) READMEs for those interested in the inner lives of the Go SSA-based compiler.
+- The `$GOROOT/src/cmd/compile` directory tree contains the [Introduction to the Go compiler](https://github.com/golang/go/blob/master/src/cmd/compile/README.md) and [Introduction to the Go compiler's SSA backend](https://github.com/golang/go/blob/master/src/cmd/compile/internal/ssa/README.md) READMEs for those interested in the inner lives of the Go SSA-based compiler.
 
 - [Go: Overview of the Compiler](https://medium.com/a-journey-with-go/go-overview-of-the-compiler-4e5a153ca889) by Vincent Blanchon.
 
@@ -149,7 +149,7 @@ apt install git gcc ninja-build
 mkdir workarea
 cd workarea
 
-// Sources
+# Sources
 git clone https://github.com/llvm/llvm-project.git
 
 cd llvm-project/llvm/tools
@@ -175,10 +175,10 @@ CC=gcc CXX=g++ cmake \
  -G Ninja \
  ../llvm-project/llvm
 
-// Build all of gollvm
+# Build all of gollvm
 ninja gollvm
 
-// Install gollvm to /usr/local
+# Install gollvm to /usr/local
 ninja install-gollvm
 
 export LD_LIBRARY_PATH=/usr/local/lib64
@@ -201,21 +201,21 @@ As it stands, gccgo & gollvm have a few limitations and/or concerns:
 
 ### Gopherjs
 
-Before the Go compiler (gc) learning how to target wasm [in Go 1.11](https://github.com/golang/go/wiki/WebAssembly), the only way to write Go code targeting JavaScript runtimes was via [gopherjs](https://github.com/gopherjs/gopherjs). The commandable effort results in a [list where the majority of stdlib  package are supported](https://github.com/gopherjs/gopherjs/blob/master/doc/packages.md). Not only are there [bindings](https://github.com/gopherjs/gopherjs/wiki/Bindings) for some of the most common JavaScript libraries and frameworks, there's [Vecty](https://github.com/gopherjs/vecty) for anyone who would like to write their app in Go end-to-end. If you would like to have a peek at something familiar and digestable, you can take a look at the [TodoMVC implementation with Gopherjs](https://github.com/gopherjs/todomvc).
+Before the Go compiler (gc) learning how to target wasm [in Go 1.11](https://github.com/golang/go/wiki/WebAssembly), the only way to write Go code targeting JavaScript runtimes was via [gopherjs](https://github.com/gopherjs/gopherjs). The commandable effort results in a [list where the majority of stdlib package are supported](https://github.com/gopherjs/gopherjs/blob/master/doc/packages.md). Not only are there [bindings](https://github.com/gopherjs/gopherjs/wiki/Bindings) for some of the most common JavaScript libraries and frameworks, there's [Vecty](https://github.com/gopherjs/vecty) for anyone who would like to write their app in Go end-to-end. If you would like to have a peek at something familiar and digestable, you can take a look at the [TodoMVC implementation with Gopherjs](https://github.com/gopherjs/todomvc).
 
 ### TinyGo
 
-Go programmers who are also into programming microcontrolleres and are tired of C/C++ and assembly have the [TinyGo](https://tinygo.org/) project to the rescude. TinyGo is a Go compiler whose tagline is "Go compiler for small places." The compiler relies on LLVM to do the heavy lifting, and supports a decent amount of [the language features](https://tinygo.org/lang-support/) and [the standard library](https://tinygo.org/lang-support/stdlib/). Now you can use Go in your next Arduino Uno project.
+Go programmers who are also into programming microcontrolleres and are tired of C/C++ and assembly have the [TinyGo](https://tinygo.org/) project to the rescue. TinyGo is a Go compiler whose tagline is "Go compiler for small places." The compiler relies on LLVM to do the heavy lifting, and supports a decent amount of [the language features](https://tinygo.org/lang-support/) and [the standard library](https://tinygo.org/lang-support/stdlib/). Now you can use Go in your next Arduino Uno project.
 
 ### TARDIS Go
 
-This is perhaps the most fun compiler. The [TARDIS Go](https://github.com/tardisgo/tardisgo) compiler generates the SSA form of the Go code, then uses the SSA to generate Haxe code conforming to the behavior of the Go code. Wait there's more. The Haxe toolchain can then be invoked to translate the Haxe code to C++, C#, Java, or JavaScript, thus allowing Go packages to be used on the respective platforms (.e.g. JVM).
+This is perhaps the most fun compiler. The [TARDIS Go](https://github.com/tardisgo/tardisgo) compiler generates the SSA form of the Go code, then uses the SSA to generate Haxe code conforming to the behavior of the Go code. Wait there's more. The Haxe toolchain can then be invoked to translate the Haxe code to C++, C#, Java, or JavaScript, thus allowing Go packages to be used on the respective platforms (e.g. JVM).
 
 The [demo page](https://tardisgo.github.io/) of the project is still running the same JavaScript code generated from Haxe that's in turn generated from Go via TARDIS Go. Sadly, the project hasn't been updated since 2016, thus its implementation of the Go runtime is at Go 1.4. It would be nice to see the project resurrected and extended to add Go as Haxe target, thus enabling interoperability across all the supported languages and enriching the entire ecosystem.
 
 ## In Sum
 
-This list is definitely not exhaustive nor should it. Different compilers serve different goals. New implmentations put both the spec and the implementations to the test, more tests means more eyeballs, and "given enough eyeballs, all bugs are shallow." Even compilers that aim at unconventional targets, namely TARDIS Go, managed to [find](https://github.com/golang/go/issues/12196) [three](https://github.com/golang/go/issues/7166) [bugs](https://github.com/golang/go/issues/10127) in Go toolchain.
+This list is definitely not exhaustive nor should it. Different compilers serve different goals. New implementations put both the spec and the implementations to the test, more tests means more eyeballs, and "given enough eyeballs, all bugs are shallow." Even compilers that aim at unconventional targets, namely TARDIS Go, managed to [find](https://github.com/golang/go/issues/12196) [three](https://github.com/golang/go/issues/7166) [bugs](https://github.com/golang/go/issues/10127) in Go toolchain.
 
 Ian Lance Taylor himself has an answer to the question in his Quora response to the prompt [Why are there multiple compilers and interpreters for each programming language?](https://www.quora.com/Why-are-there-multiple-compilers-and-interpreters-for-each-programming-language-How-do-you-go-about-choosing-the-best-interpreter-or-compiler-for-your-project/answer/Ian-Lance-Taylor)
 
