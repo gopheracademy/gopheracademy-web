@@ -244,7 +244,7 @@ func runHTTPD() error {
 
 1. Usage for the main executable
 2. We should have at lest two `os.Args` - the executable and the sub command name
-3. `os.Args[1]` is the subcommand (`os.Args[1]` is the executable name)
+3. `os.Args[1]` is the subcommand (`os.Args[0]` is the executable name)
 4. Create a new `FlagSet` to parse the command line for this sub command. Use
    `flag.ContinueOnError` so parse error will not exit the program. The only function
    that should exit the program is `main`, all others should return an error
