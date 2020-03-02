@@ -16,7 +16,9 @@ However, in order to be prepared for any possible outcomes, we are working with 
 We appreciate your trust in us and we will continue to update you as events unfold in the coming weeks. 
 
 Sincerely,
+
 Brian Ketelsen and Erik St. Martin
+
 _Your GopherCon 2020 Hosts_
 
 External Links:
