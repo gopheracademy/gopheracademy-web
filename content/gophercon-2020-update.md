@@ -22,6 +22,7 @@ Brian Ketelsen and Erik St. Martin
 _Your GopherCon 2020 Hosts_
 
 External Links:
+
 * [1] World Health Organization, [Q&A](https://www.who.int/news-room/q-a-detail/q-a-coronaviruses)
 * [2] World Health Organization, [SitRep 41](https://www.who.int/docs/default-source/coronaviruse/situation-reports/20200301-sitrep-41-covid-19.pdf)
 * [3] World Health Organization, [Advice For International Traffic](https://www.who.int/ith/2019-nCoV_advice_for_international_traffic-rev/en/)
