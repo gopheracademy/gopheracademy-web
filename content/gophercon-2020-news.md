@@ -9,6 +9,8 @@ It's been a few weeks since our [first release about GopherCon and COVID-19](/go
 
 We hope everyone stays safe and sane during this unprecedented time. The thought of gathering with all of you later this year is making it a little easier on us!
 
+**Existing tickets will remain valid for the new dates when announced.**
+
 Sincerely,
 
 Brian Ketelsen and Erik St. Martin
