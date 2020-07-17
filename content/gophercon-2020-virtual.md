@@ -5,33 +5,21 @@ linktitle = "GopherCon 2020 Online"
 title = "GopherCon 2020 Online"
 +++
 
-Greetings from Florida: the hotspot of Covid 19 infections in the United States.
 
-![Daily Infections](/images/dailycases.png)
+#GopherCon is now #GoVirCon!
 
-Things aren't turning out the way any of us would have predicted at the beginning of the year. Even in our last update we were hopeful that this pandemic would be just a bad memory by the time November's Gophercon event happened in Orlando. Instead, Florida now accounts for more than 10% of the Covid 19 related deaths in the United States.
+With increasing cases of coronavirus in the US, travel bans and restrictions holding strong likely through the end of the year, and Gopher Academy's increasing concern regarding the health and well-being of our community members, at the end of June we made a confident decision to cancel the in-person conference.
 
-![Florida Rates](/images/florida.png)
+GopherCon has always represented community, comradery and learning opportunities together as a group; and this year, we are as determined as ever to continue to offer all of this to our gopher family. With that said, we are tentatively planning a week of online programming, networking and engagement November 9th – 13th. Over the course of the next few months it's our planning committee's goal to deliver the high-quality programming and content you've come to expect.
 
-We can't in good conscience invite anyone to our home state with conditions such as these. We've made the only decision that we could; we're canceling the in-person event and moving to an online-only Gophercon. 
+## What Does This Mean For You?
+•       GopherCon will still be a live conference with hosts, workshops, and of course, amazing presentations.
+•       As you can expect, we will have many attendees who will want to make changes to their ticket(s) and/or hotel reservations. Please give our conference planning team the time and opportunity to reach out to you directly to make the process more efficient.
+•       If you don't already have a ticket and would like to attend our first virtual event, tickets will be available on www.gophercon.com soon. We will be sure to make an announcement!
 
-Our online conference will consist of _mostly_ the same high-quality programme that we would have delivered in person. We know that we'll have to make a few adjustments to our plans because of the new format.
+We are feverishly working on the logistics for the new conference, so please give us a few weeks to solidify our plans. If you have any pressing questions or concerns, we're here for you. Otherwise, we will post additional announcements as our planning evolves.
 
-# Here's What This Means For You
-
-Gophercon 2020 Online will still be a live conference with hosts, workshops, and of course, amazing presentations.
-
-* If you've purchased a ticket for Gophercon 2020, we will refund the difference between the in-person rates and the online rates.
-* If you've purchased a ticket for a pre-conference workshop nothing will change.  The workshops will move to online delivery, but at the same time on the same day.
-
-We've been working hard with our sponsors to bring you an event that meets our high standards and still provides them value for their investment in our community.
-
-
-
+Thank you in advance for your continued support of GopherCon!
 
 Sincerely,
-
 Brian Ketelsen and Erik St. Martin
-
-_Your GopherCon 2020 Hosts_
-
