@@ -10,7 +10,7 @@ title = "GopherCon 2020 Online"
 
 With increasing cases of coronavirus in the US, travel bans and restrictions holding strong likely through the end of the year, and Gopher Academy's increasing concern regarding the health and well-being of our community members, at the end of June we made a confident decision to cancel the in-person conference.
 
-GopherCon has always represented community, comradery and learning opportunities together as a group; and this year, we are as determined as ever to continue to offer all of this to our gopher family. With that said, we are tentatively planning a week of online programming, networking and engagement November 9th – 13th. Over the course of the next few months it's our planning committee's goal to deliver the high-quality programming and content you've come to expect.
+[GopherCon](https://www.gophercon.com) has always represented community, comradery and learning opportunities together as a group; and this year, we are as determined as ever to continue to offer all of this to our gopher family. With that said, we are tentatively planning a week of online programming, networking and engagement November 9th – 13th. Over the course of the next few months it's our planning committee's goal to deliver the high-quality programming and content you've come to expect.
 
 ## What Does This Mean For You?
 
@@ -25,4 +25,5 @@ We are feverishly working on the logistics for the new conference, so please giv
 Thank you in advance for your continued support of GopherCon!
 
 Sincerely,
+
 Brian Ketelsen and Erik St. Martin
