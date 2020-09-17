@@ -9,7 +9,7 @@ title = "GopherCon 2020 Agenda"
 
 We're really excited to announce the schedule for our virtual presentation of GopherCon 2020!
 
-Our official programming starts on Monday, November 9th and Tuesday, November 10th with our trademark [pre-conference workshops](https://www.gophercon.com/agenda?dates=1604880000000). There will be many opportunities for you to learn from the experts, whether you are just getting stared with Go or you're looking to dive deep into some advanced topics.
+Our official programming starts on Monday, November 9th and Tuesday, November 10th with our trademark [pre-conference workshops](https://www.gophercon.com/agenda?dates=1604880000000). There will be many opportunities for you to learn from the experts, whether you are just getting started with Go or you're looking to dive deep into some advanced topics.
 
 ## Conference Program
 
@@ -23,17 +23,17 @@ We're teaming up with the GoTime podcast team to give you commentary and recaps 
 
 We have three different options for tickets this year:
 
-- Community Ticket ($100 USD)
-- One-Time 20% Promo Ticket ($395 USD)
-- One-Time 20% Promo plus 10% Perpetual Ticket ($595)
+- Community Ticket (\$100 USD)
+- One-Time 20% Promo Ticket (\$395 USD)
+- One-Time 20% Promo plus 10% Perpetual Ticket (\$595)
 
-The Community Ticket will give you access to all the standard conference programming from Wendesday, November 11th through Friday the 13th. At $100, it's a steal!
+The Community Ticket will give you access to all the standard conference programming from Wendesday, November 11th through Friday the 13th. At \$100, it's a steal!
 
 Two additional ticket types have been created to help GopherCon survive the financial crisis that Covid-19 has caused:
 
-The One-Time 20% Promo Ticket for $395 includes all the same programming, networking, and engagement with your fellow Gophers online Wednesday, November 11th - Friday, November 13th as the Community Ticket does. In addition, we will reciprocate your generosity with a 20% one-time conference ticket discount. This discount is valid for any future year (so far we have dates scheduled through 2024!) and is not applicable to Early Bird or workshop tickets.
+The One-Time 20% Promo Ticket for \$395 includes all the same programming, networking, and engagement with your fellow Gophers online Wednesday, November 11th - Friday, November 13th as the Community Ticket does. In addition, we will reciprocate your generosity with a 20% one-time conference ticket discount. This discount is valid for any future year (so far we have dates scheduled through 2024!) and is not applicable to Early Bird or workshop tickets.
 
-The One-Time 20% Promo, plus 10% Perpetual Ticket for $595 includes all the same programming, networking, and engagement with your fellow Gophers online Wednesday, November 11th - Friday, November 13th as the Community Ticket does. In addition, we will reciprocate your generosity with a one-time 20% conference ticket discount, as well as a perpetual 10% discount for all future ticket purchases. These discounts are valid for all future years (so far we have dates scheduled through 2024!). The 20% one-time discount is not applicable to Early Bird or workshop tickets. However, the perpetual 10% discount can be utilized for any tickets purchased in the future, but cannot be combined with the one-time 20% discount.
+The One-Time 20% Promo, plus 10% Perpetual Ticket for \$595 includes all the same programming, networking, and engagement with your fellow Gophers online Wednesday, November 11th - Friday, November 13th as the Community Ticket does. In addition, we will reciprocate your generosity with a one-time 20% conference ticket discount, as well as a perpetual 10% discount for all future ticket purchases. These discounts are valid for all future years (so far we have dates scheduled through 2024!). The 20% one-time discount is not applicable to Early Bird or workshop tickets. However, the perpetual 10% discount can be utilized for any tickets purchased in the future, but cannot be combined with the one-time 20% discount.
 
 These tickets are a win-win for you and for GopherCon. You'll get some great discounts on future in-person events, and we'll be able to continue our legendary Go conference programming despite the setbacks we've had this year.
 
