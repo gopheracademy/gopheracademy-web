@@ -27,7 +27,7 @@ We have three different options for tickets this year:
 - One-Time 20% Promo Ticket (\$395 USD)
 - One-Time 20% Promo plus 10% Perpetual Ticket (\$595)
 
-The Community Ticket will give you access to all the standard conference programming from Wendesday, November 11th through Friday the 13th. At \$100, it's a steal!
+The Community Ticket will give you access to all the standard conference programming from Wednesday, November 11th through Friday the 13th. At \$100, it's a steal!
 
 Two additional ticket types have been created to help GopherCon survive the financial crisis that Covid-19 has caused:
 
