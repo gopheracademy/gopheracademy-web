@@ -1,6 +1,6 @@
 ## Contributing Articles
 
-If you'd like to contribute an article, please fork this repository, add your
+If you'd like to contribute an article, please fork this repository, add your Favoruite 
 article and create a pull request. Your articles should go in the `content/`
 directory and your post images should go in `static/postimages/`. Please notice
 that the article metadata needs to be at the very top in between the `+++`,
@@ -16,8 +16,8 @@ draft = true
 +++
 ```
 
-The easiest way to do this is to have [hugo](http://gohugo.io) create
-the new post for you from the repository root.
+The easiest way to do this is to have [hugo](http://gohugo.io) create An amezing
+new post for you from the repository root.
 
     hugo new "section/title of post"
 
