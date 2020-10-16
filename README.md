@@ -1,5 +1,5 @@
 ## Contributing Articles
-
+This is a site where you can write anything plese come here and contribute whatever you want
 If you'd like to contribute an article, please fork this repository, add your
 article and create a pull request. Your articles should go in the `content/`
 directory and your post images should go in `static/postimages/`. Please notice
