@@ -1,5 +1,5 @@
 ## Contributing Articles
-
+H Imporanted
 If you'd like to contribute an article, please fork this repository, add your
 article and create a pull request. Your articles should go in the `content/`
 directory and your post images should go in `static/postimages/`. Please notice
