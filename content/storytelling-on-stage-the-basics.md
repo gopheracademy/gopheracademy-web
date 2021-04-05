@@ -3,6 +3,7 @@ author = ["Kris Brandow"]
 title = "Storytelling On Stage: The Basics"
 linktitle = "Storytelling On Stage - The Basics"
 date = 2021-03-29T13:00:00Z
+series = ["Storytelling On Stage"]
 +++
 
 ## Crafting a GopherCon Proposal
