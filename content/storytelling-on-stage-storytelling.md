@@ -9,9 +9,9 @@ series = ["Storytelling On Stage"]
 
 ## Crafting a GopherCon Proposal
 
-The Call for Proposals for GopherCon 2021 is now open! If you're reading this, I'm assuming you're thinking about submitting a proposal. This is Part
-2 in a series of guides intended to help you with just that. If you haven't read the first guide you can read it
-[here](https://blog.gopheracademy.com/storytelling-on-stage-the-basics/).
+The [Call for Proposals for GopherCon 2021](https://www.papercall.io/gophercon-2021) is now open! If you're reading this, I'm assuming you're thinking
+about submitting a proposal. This is Part 2 in a series of guides intended to help you with just that. If you haven't read the first guide you can
+read it [here](https://blog.gopheracademy.com/storytelling-on-stage-the-basics/).
 
 I've previously attended, spoken at, and been part of the Review Committee for GopherCon, so I understand the difficulties of the process: generating
 an idea, writing a proposal, and practicing, then giving, a talk. Through this series of guides I'll provide advice on how to craft a great proposal
