@@ -6,7 +6,7 @@ date = 2021-04-12T13:00:00Z
 series = ["Storytelling On Stage"]
 +++
 
-## Crafting a Gophercon Proposal
+## Crafting a GopherCon Proposal
 
 The [Call for Proposals for GopherCon 2021](https://www.papercall.io/gophercon-2021) is open!
 
