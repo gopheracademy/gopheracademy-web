@@ -6,7 +6,6 @@ title = "GoVirCon is back"
 +++
 
 
-#GoVirCon is back
 With cases of COVID-19 continuing to rise throughout the US due to the Delta variant, we at Gopher Academy have made the bittersweet decision to bring GoVirCon back. As vaccines began to roll out at the beginning of 2021, we were cautiously optimistic we could meet in person by December. Unfortunately, current and emerging variants, along with extended office closures, company travel restrictions, and border closures, have led us to making this painstaking, albeit prudent, decision. Trust us, we’re as sad as you, but we promise this year will be even more exciting than the last!  
 
 ## What to Expect Next...
