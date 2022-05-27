@@ -1,6 +1,6 @@
 +++
 author = ["Erik St. Martin"]
-date = "2022-05-17T11:00:00-05:00"
+date = "2022-05-27T11:00:00-05:00"
 linktitle = "Important Conference Announcement"
 title = "Important Conference Announcement"
 +++
