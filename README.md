@@ -1,6 +1,6 @@
 ## Contributing Articles
 
-If you'd like to contribute an article, please fork this repository, add your
+If you'd like to contribute articles, please fork this repository and add your
 article and create a pull request. Your articles should go in the `content/`
 directory and your post images should go in `static/postimages/`. Please notice
 that the article metadata needs to be at the very top in between the `+++`,
