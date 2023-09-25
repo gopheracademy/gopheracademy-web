@@ -125,7 +125,7 @@ which is, as it's name implies, a package for seeking around in HTTP
 objects (<a
 href="https://github.com/jeffallen/seekinghttp">source on Github</a>).
 
-This package <a href="https://github.com/jeffallen/seekinghttp/blob/master/seekinghttp.go#L26">implements</a>
+This package <a href="https://github.com/jeffallen/seekinghttp/blob/148e434ef13870a1c8e13356bebf42b8c5b7572f/seekinghttp.go#L34">implements</a>
 not only io.ReadSeeker, but also
 io.ReaderAt. Why? Because, as I mentioned above, reading a ZIP file
 requires an io.ReaderAt. It also needs the length of the file passed
@@ -194,11 +194,11 @@ are hard on the server, and terrible for our throughput, since each
 one entails many round-trips to the server.
 
 The solution, of course, is caching. Instead of reading just the first
-512 bytes that the TAR reader asks for, I read 10 times that many, so
-that the next several reads will be serviced directly from cache. If
+512 bytes that the TAR reader asks for, we should read 1 megabyte of data, so
+that the next reads will be serviced directly from cache. If
 there is a read that is outside of the cache, we assume that the other
 reads will come in that area as well, and drop the entire current
-cache, in order to fill it with 10x the current read amount from the
+cache, in order to fill it with 1 megabyte of data from the
 new current offset.
 
 The fact that the TAR reader sends a lot of small reads points out
