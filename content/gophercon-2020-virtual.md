@@ -18,7 +18,7 @@ With increasing cases of coronavirus in the US, travel bans and restrictions hol
 
 •   As you can expect, we will have many attendees who will want to make changes to their ticket(s) and/or hotel reservations. Please give our conference planning team the time and opportunity to reach out to you directly to make the process more efficient.
 
-•   If you don't already have a ticket and would like to attend our first virtual event, tickets will be available on www.gophercon.com soon. We will be sure to make an announcement!
+•   If you don't already have a ticket and would like to attend our first virtual event, tickets will be available on [www.gophercon.com](http://www.gophercon.com) soon. We will be sure to make an announcement!
 
 We are feverishly working on the logistics for the new conference, so please give us a few weeks to solidify our plans. If you have any pressing questions or concerns, we're here for you. Otherwise, we will post additional announcements as our planning evolves.
 
