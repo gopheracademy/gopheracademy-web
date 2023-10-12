@@ -1,4 +1,4 @@
-## Contributing Articles
+## Contributing Articles : A Great Platform to show your creativeness
 
 If you'd like to contribute an article, please fork this repository, add your
 article and create a pull request. Your articles should go in the `content/`
